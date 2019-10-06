@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.king.hrmsdev.mapper.PositionMapper">
+    <!--查找所有职位 -->
+    <select id="findall" resultType="com.king.hrmsdev.entity.Position">
+        select * from position
+    </select>
+    <!--根据职位编号查找职位 -->
+    <select id="findByid" parameterType="int" resultType="com.king.hrmsdev.entity.Position">
+        select * from position where position_id=#{id}
+    </select>
+    <!--多条件模糊查询查找职位 -->
+    <select id="findBycondition" parameterType="com.king.hrmsdev.pojo.Vposition" resultType="com.king.hrmsdev.pojo.Vposition">
+        select dp_position.*,position.position_name,(department.department) department_name,salary from position,department,dp_position
+        <where>
+            <if test="true">
+                position.position_id=dp_position.position_id
+                and department.department_id=dp_position.department_id
+            </if>
+            <if test="relationship_id != null and relationship_id != 0">
+                AND relationship_id  = #{relationship_id}
+            </if>
+            <if test="position_name != null">
+                AND position_name  LIKE  CONCAT('%',#{position_name},'%')
+            </if>
+            <if test="department_name != null">
+                AND department LIKE  CONCAT('%',#{department_name},'%')
+            </if>
+
+        </where>
+    </select>
+
+    <!--多条件模糊查询查找职位 -->
+    <select id="findBydepartmentid" parameterType="com.king.hrmsdev.pojo.Vposition" resultType="com.king.hrmsdev.pojo.Vposition">
+        select dp_position.*,position.position_name,(department.department) department_name,salary from position,department,dp_position where
+                position.position_id=dp_position.position_id
+                AND department.department_id=dp_position.department_id
+                AND dp_position.department_id =  #{department_id}
+    </select>
+
+    <!--删除职位 -->
+    <delete id="deleteposition" parameterType="int">
+        DELETE from position  WHERE position_id=#{id}
+    </delete>
+    <!-- 添加职位-->
+    <insert id="addposition" parameterType="com.king.hrmsdev.entity.Position">
+        insert into position (position_name,salary) values(#{position_name},#{salary})
+    </insert>
+
+
+
+</mapper>

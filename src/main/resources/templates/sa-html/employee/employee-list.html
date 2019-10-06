@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>员工列表</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+
+	<!-- 所有的 css 资源 -->
+	<link rel="stylesheet" href="https://unpkg.com/element-ui@2.8.2/lib/theme-chalk/index.css">
+	<link rel="stylesheet" href="../../static/sa.css">
+
+	<!-- 所有的 js 资源 -->
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="https://unpkg.com/vue@2.6.10/dist/vue.js"></script>
+	<script src="https://unpkg.com/element-ui@2.8.2/lib/index.js"></script>
+	<script src="https://unpkg.com/jquery@3.4.1/dist/jquery.js"></script>
+	<script src="https://cdn.bootcss.com/layer/3.0.1/layer.min.js"></script>
+	<script src="../../static/kj/laydate/laydate.js"></script>
+	<script src="../../static/sa.js"></script>
+	<script src="../../sa-resources/country-level2-data.js"></script>
+
+
+	<style type="text/css">
+
+	</style>
+
+</head>
+<body>
+
+<!-- 防止margin向下击穿 -->
+<div style="margin-top: -1em;"><br></div>
+
+<div id="vue-box" style="display: none;" :style="'display: block;'">
+
+	<!-- 参数栏 -->
+	<div class="c-panel">
+		<div class="c-title">查找员工</div>
+		<el-form ref="form">
+
+			<div class="c-item">
+				<label class="c-label">员工编号：</label>
+				<el-input size="mini" v-model="p.username" placeholder="模糊搜索"></el-input>
+			</div>
+			<div class="c-item">
+				<label class="c-label">员工姓名：</label>
+				<el-input size="mini" v-model="p.username" placeholder="模糊搜索"></el-input>
+			</div>
+			<div class="c-item">
+				<label class="c-label">所属部门：</label>
+				<el-input size="mini" v-model="p.username" placeholder="模糊搜索"></el-input>
+			</div>
+			<div class="c-item">
+				<label class="c-label">员工性别：</label>
+				<el-select v-model="p.status" size="mini"  placeholder="请选择">
+					<el-option
+							v-for="item in sexOptions"
+							:key="item.value"
+							:label="item.label"
+							:value="item.value">
+					</el-option>
+				</el-select>
+			</div>
+
+			<div class="c-item">
+				<label class="c-label">员工状态：</label>
+				<el-select size="mini" v-model="p.create_type">
+					<el-option label="离职" :value="0"></el-option>
+					<el-option label="在职" :value="1"></el-option>
+				</el-select>
+			</div>
+
+			<div class="c-item" style="min-width: 0px;">
+				<el-button type="primary" icon="el-icon-search" size="mini"  @click="findfit">查询</el-button>
+				<el-button type="primary" icon="el-icon-plus" size="mini"  @click="handleAdd">添加员工</el-button>
+			</div>
+
+
+
+
+		</el-form>
+
+	</div>
+
+	<!-- 数据栏 -->
+	<div class="c-panel">
+		<div class="c-title">员工列表</div>
+		<el-table class="data-table" :data="employeeslist" size="mini"  style="width: 100%">
+
+			<el-table-column label="员工编号" prop="job_id" width="100px" sortable></el-table-column>
+			<el-table-column label="员工名称" prop="ename" sortable>
+				<template slot-scope="scope">
+					<el-button  type="text"  class="c-button" @click="showInfo(scope.row)"><b>{{scope.row.ename}}</b></el-button>
+				</template>
+			</el-table-column>
+			<el-table-column label="性别">
+				<template slot-scope="scope">
+					<span  v-if="scope.row.sex===1">{{scope.row.sex | sexFormat}}</span>
+					<span  v-if="scope.row.sex===0">{{scope.row.sex | sexFormat}}</span>
+				</template>
+			</el-table-column>
+			<el-table-column label="所属部门" prop="department" sortable> </el-table-column>
+
+			<el-table-column label="所在职位" prop="position_name" sortable></el-table-column>
+			<el-table-column label="状态">
+				<template slot-scope="scope">
+					<span style="color: green;" v-if="scope.row.workstate == 1">在职</span>
+					<span style="color: red;" v-if="scope.row.workstate == 0">离职</span>
+				</template>
+			</el-table-column>
+
+			<el-table-column prop="address" label="操作">
+				<template slot-scope="scope">
+					<el-button type="primary" class="c-button" icon="el-icon-edit" @click="dongjie(scope.row)" >修改</el-button>
+					<el-button type="danger" class="c-button" icon="el-icon-remove-outline" @click="quitwork(scope.row)" v-if="scope.row.workstate == 1">解雇</el-button>
+					<el-button type="warning" class="c-button" icon="el-icon-refresh-right" @click="entrywork(scope.row)" v-if="scope.row.workstate == 0">入职</el-button>
+
+				</template>
+			</el-table-column>
+		</el-table>
+
+		<!-- 添加 -->
+		<el-dialog title="员工添加" :visible.sync="addVisible" width="35%">
+			<el-form  name="temp" id="temp" ref="temp"  :model="temp" label-width="100px">
+
+				<el-form-item label="员工名称">
+					<el-input  id="tempename" name="tempename"  v-model="temp.ename" maxlength="30" placeholder="请输入员工名称" show-word-limit />
+				</el-form-item>
+
+				<el-form-item label="员工性别">
+					<el-select id="tempsex" name="tempsex"  v-model="temp.sex" style="width: 100%;" placeholder="请选择员工性别">
+						<el-option
+								v-for="item in sexOptions"
+								:key="item.value"
+								:label="item.label"
+								:value="item.value">
+						</el-option>
+					</el-select>
+				</el-form-item>
+
+				<el-form-item label="出生日期">
+					<el-date-picker
+							id="tempbirth"
+							name="tempbirth"
+							style="width: 100%;"
+							format="yyyy 年 MM 月 dd 日"
+							value-format="yyyy-MM-dd"
+							v-model="temp.birth"
+							type="date"
+							placeholder="选择出生日期">
+					</el-date-picker>
+				</el-form-item>
+
+				<el-form-item label="联系电话">
+					<el-input id="tempphone" name="tempphone" v-model="temp.phone" maxlength="11" placeholder="请输入联系电话" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')" />
+				</el-form-item>
+
+				<el-form-item label="身份证号">
+					<el-input id="tempidcard" name="tempidcard" v-model="temp.idcard" maxlength="18" placeholder="请输入身份证号码" show-word-limit  />
+				</el-form-item>
+
+				<el-form-item label="籍贯">
+					<el-cascader
+							id="temphometown"
+							name="temphometown"
+							style="width: 100%;"
+							:options="countryOptions"
+							@change="handlehome"
+							:separator="' '"
+					>
+					</el-cascader>
+				</el-form-item>
+
+				<el-form-item label="住址" >
+					<el-input id="tempaddress" name="tempaddress" v-model="temp.address" maxlength="50" placeholder="请输入现在住址" show-word-limit  />
+				</el-form-item>
+
+				<el-form-item label="民族">
+					<el-select id="tempnation" name="tempnation"  v-model="temp.nation" style="width: 100%;" placeholder="请选择民族" filterable>
+						<el-option
+								v-for="item in nationOptions"
+								:key="item.id"
+								:label="item.name"
+								:value="item.name">
+						</el-option>
+					</el-select>
+				</el-form-item>
+
+				<el-form-item label="学历">
+					<el-select id="tempeducation" name="tempeducation"  v-model="temp.education" style="width: 100%;" placeholder="请选择学历" filterable>
+						<el-option
+								v-for="item in educationOptions"
+								:key="item.id"
+								:label="item.name"
+								:value="item.name">
+						</el-option>
+					</el-select>
+				</el-form-item>
+
+				<el-form-item label="雇佣时间">
+					<el-date-picker
+							id="temphiredate"
+							name="temphiredate"
+							style="width: 100%;"
+							v-model="temp.hiredate"
+							format="yyyy 年 MM 月 dd 日"
+							value-format="yyyy-MM-dd"
+							type="date"
+							placeholder="选择雇佣日期">
+					</el-date-picker>
+				</el-form-item>
+
+				<el-form-item label="部门" >
+					<el-select id="tempdepartment" name="tempdepartment"  v-model="temp.department" style="width: 100%;" placeholder="请选择部门" filterable @change="getPosition">
+						<el-option
+								v-for="item in departmentsList"
+								:key="item.department_id"
+								:label="item.department"
+								:value="item.department_id">
+						</el-option>
+					</el-select>
+				</el-form-item>
+
+				<el-form-item label="职位">
+					<el-select id="tempposition_name" name="tempposition_name"  v-model="temp.position_name" style="width: 100%;" placeholder="请选择职位" filterable>
+						<el-option
+								v-for="item in positionsList"
+								:key="item.position_id"
+								:label="item.position_name"
+								:value="item.position_id">
+						</el-option>
+					</el-select>
+				</el-form-item>
+
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+            <el-button  @click="addVisible = false">取 消</el-button>
+            <el-button type="primary" @click="saveAdd()">确 定</el-button>
+          </span>
+		</el-dialog>
+
+		<!-- 查看 -->
+		<el-dialog title="员工信息" :visible.sync="showVisible" width="30%">
+			<el-form name="showform" id="showform"  ref="form"  :model="form" class="formFont">
+				<el-form-item>
+					<el-tag effect="dark">员工编号：</el-tag>
+					<el-divider direction="vertical"></el-divider>
+					{{form.job_id}}
+					<el-divider direction="vertical"></el-divider>
+				</el-form-item>
+				<el-form-item>
+					<el-tag effect="dark">基本信息：</el-tag>
+					<el-divider direction="vertical"></el-divider>
+					{{form.ename}}
+					<el-divider direction="vertical"></el-divider>
+					<span  v-if="form.sex===1">{{form.sex | sexFormat}}</span>
+					<span  v-if="form.sex===0">{{form.sex | sexFormat}}</span>
+					<el-divider direction="vertical"></el-divider>
+					{{form.nation}}
+					<el-divider direction="vertical"></el-divider>
+					{{form.birth}}
+					<el-divider direction="vertical"></el-divider>
+					{{form.education}}
+					<el-divider direction="vertical"></el-divider>
+				</el-form-item>
+
+				<el-form-item>
+					<el-tag effect="dark">籍贯|住址：</el-tag>
+					<el-divider direction="vertical"></el-divider>
+					{{form.hometown}}
+					<el-divider direction="vertical"></el-divider>
+					{{form.address}}
+					<el-divider direction="vertical"></el-divider>
+				</el-form-item>
+
+				<el-form-item>
+					<el-tag effect="dark">身份证号：</el-tag>
+					<el-divider direction="vertical"></el-divider>
+					{{form.idcard}}
+					<el-divider direction="vertical"></el-divider>
+				</el-form-item>
+
+				<el-form-item>
+					<el-tag effect="dark">电话号码：</el-tag>
+					<el-divider direction="vertical"></el-divider>
+					{{form.phone}}
+					<el-divider direction="vertical"></el-divider>
+				</el-form-item>
+
+				<el-form-item >
+					<el-tag effect="plain">在职情况：</el-tag>
+					<el-divider direction="vertical"></el-divider>
+					{{form.department}}
+					<el-divider direction="vertical"></el-divider>
+					{{form.position_name}}<el-divider direction="vertical"></el-divider>
+					雇佣时间:{{form.hiredate}}
+					<el-divider direction="vertical"></el-divider>
+					<span style="color: green;" v-if="form.workstate == 1">在职</span>
+					<span style="color: red;" v-if="form.workstate == 0">离职</span>
+					<el-divider direction="vertical"></el-divider>
+				</el-form-item>
+
+
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+            <el-button round @click="showVisible = false">关 闭</el-button>
+          </span>
+		</el-dialog>
+
+		<!-- 分页 -->
+		<div class="page-box">
+			<el-pagination background
+						   layout="total, prev, pager, next, sizes, jumper"
+						   :current-page.sync="page.pageNo"
+						   :page-size.sync="page.pageSize"
+						   :total="page.count"
+						   :page-sizes="[1, 10, 20, 30, 40, 50, 100]"
+						   @current-change="f5(true)"
+						   @size-change="f5(true)">
+			</el-pagination>
+		</div>
+
+	</div>
+
+	<br><br><br><br><br><br><br><br><br>
+
+
+</div>
+
+<script>
+	// 定义一个 Vue 全局的过滤器，名字叫做  sexFormat
+	Vue.filter('sexFormat', function (val) {
+		if(val===1){
+			return '男'
+		}else if(val===0){
+			return '女'
+		}
+	})
+
+	var app = new Vue({
+		el: '#vue-box',
+		data:{
+			p: {	// 查询参数
+				department_id: "",
+				department: "",
+				manager: "",
+				state: ""
+			},
+			page: {	// 分页信息
+				pageNo: 1,
+				pageSize: 10,
+				count: 30
+			},
+
+			employeeslist:[
+				{
+					address:"四川成都",
+					birth:915120000000,
+					department:"工程部",
+					education:"本科",
+					ename:"张一",
+					hiredate:1546272000000,
+					hometown:"四川",
+					idcard:"1212",
+					job_id:1,
+					nation:"汉",
+					phone:111,
+					position_name:"基层",
+					sex:1,
+					workstate:1
+				}
+			],
+			countryOptions: options,
+			educationOptions: [
+				{
+					id: '1',
+					name:'小学'
+				},
+				{
+					id: '2',
+					name:'初中'
+				},
+				{
+					id: '3',
+					name:'高中'
+				},
+				{
+					id: '4',
+					name:'中专'
+				},
+				{
+					id: '5',
+					name:'大专'
+				},
+				{
+					id: '6',
+					name:'本科'
+				},
+				{
+					id: '7',
+					name:'研究生'
+				},
+				{
+					id: '8',
+					name:'博士'
+				},
+				{
+					id: '9',
+					name:'硕士'
+				}
+
+			],
+			sexOptions:[
+				{
+					value: '1',
+					label:'男'
+				},
+				{
+					value: '0',
+					label:'女'
+				}
+			],
+			editVisible:false,
+			addVisible:false,
+			showVisible:false,
+			form:{
+				address:"四川成都",
+				birth:915120000000,
+				department:"工程部",
+				education:"本科",
+				ename:"张一",
+				hiredate:1546272000000,
+				hometown:"四川",
+				idcard:"1212",
+				job_id:1,
+				nation:"汉",
+				phone:111,
+				position_name:"基层",
+				sex:1,
+				workstate:1
+			},
+			temp:{
+				address:undefined,
+				birth:undefined,
+				department:undefined,
+				education:undefined,
+				ename:undefined,
+				hiredate:undefined,
+				hometown:undefined,
+				idcard:undefined,
+				nation:undefined,
+				phone:undefined,
+				position_name:undefined,
+				sex:undefined,
+			},
+			nationOptions:[
+				{
+					id: 1,
+					name: '汉族'
+				}, {
+					id: 2,
+					name: '蒙古族'
+				}, {
+					id: 3,
+					name: '回族'
+				}, {
+					id: 4,
+					name: '藏族'
+				}, {
+					id: 5,
+					name: '维吾尔族'
+				}, {
+					id: 6,
+					name: '苗族'
+				}, {
+					id: 7,
+					name: '彝族'
+				}, {
+					id: 8,
+					name: '壮族'
+				}, {
+					id: 9,
+					name: '布依族'
+				}, {
+					id: 10,
+					name: '朝鲜族'
+				}, {
+					id: 11,
+					name: '满族'
+				}, {
+					id: 12,
+					name: '侗族'
+				}, {
+					id: 13,
+					name: '瑶族'
+				}, {
+					id: 14,
+					name: '白族'
+				}, {
+					id: 15,
+					name: '土家族'
+				}, {
+					id: 16,
+					name: '哈尼族'
+				}, {
+					id: 17,
+					name: '哈萨克族'
+				}, {
+					id: 18,
+					name: '傣族'
+				}, {
+					id: 19,
+					name: '黎族'
+				}, {
+					id: 20,
+					name: '傈僳族'
+				}, {
+					id: 21,
+					name: '佤族'
+				}, {
+					id: 22,
+					name: '畲族'
+				}, {
+					id: 23,
+					name: '高山族'
+				}, {
+					id: 24,
+					name: '拉祜族'
+				}, {
+					id: 25,
+					name: '水族'
+				}, {
+					id: 26,
+					name: '东乡族'
+				}, {
+					id: 27,
+					name: '纳西族'
+				}, {
+					id: 28,
+					name: '景颇族'
+				}, {
+					id: 29,
+					name: '柯尔克孜族'
+				}, {
+					id: 30,
+					name: '土族'
+				}, {
+					id: 31,
+					name: '达翰尔族'
+				}, {
+					id: 32,
+					name: '么佬族'
+				}, {
+					id: 33,
+					name: '羌族'
+				}, {
+					id: 34,
+					name: '布朗族'
+				}, {
+					id: 35,
+					name: '撒拉族'
+				}, {
+					id: 36,
+					name: '毛南族'
+				}, {
+					id: 37,
+					name: '仡佬族'
+				}, {
+					id: 38,
+					name: '锡伯族'
+				}, {
+					id: 39,
+					name: '阿昌族'
+				}, {
+					id: 40,
+					name: '普米族'
+				}, {
+					id: 41,
+					name: '塔吉克族'
+				}, {
+					id: 42,
+					name: '怒族'
+				}, {
+					id: 43,
+					name: '乌孜别克族'
+				}, {
+					id: 44,
+					name: '俄罗斯族'
+				}, {
+					id: 45,
+					name: '鄂温克族'
+				}, {
+					id: 46,
+					name: '德昂族'
+				}, {
+					id: 47,
+					name: '保安族'
+				}, {
+					id: 48,
+					name: '裕固族'
+				}, {
+					id: 49,
+					name: '京族'
+				}, {
+					id: 50,
+					name: '塔塔尔族'
+				}, {
+					id: 51,
+					name: '独龙族'
+				}, {
+					id: 52,
+					name: '鄂伦春族'
+				}, {
+					id: 53,
+					name: '赫哲族'
+				}, {
+					id: 54,
+					name: '门巴族'
+				}, {
+					id: 55,
+					name: '珞巴族'
+				}, {
+					id: 56,
+					name: '基诺族'
+				}
+			],
+			departmentsList:[],
+			positionsList:[],
+			hometownflag:false
+		},
+
+
+
+		created: function () {
+			this.getData();
+			this.getDepartment();
+		},
+
+
+		methods: {
+			handlehome:function(data){
+				if(data[1]==undefined){
+					this.temp.hometown=data[0]
+				}else{
+					this.temp.hometown=data[0]+data[1];
+					this.hometownflag=true;
+					console.log(this.temp.hometown);
+					console.log(data);
+					console.log(this.hometownflag);
+				}
+			},
+
+			getDepartment:function(){
+				var that = this
+				axios.post('http://localhost:9900/getallDepartment').then(function (res) {
+
+					//把从json获取的数据赋值给数组
+					var data = res.data.alldepartmentslist
+					that.departmentsList = data
+				}).catch(function () {
+					console.log('失败')
+				})
+			},
+
+
+			getPosition:function(){
+				var that = this
+				$.ajax({
+					url: "http://localhost:9900/getPositionByDepartmentId",
+					type: "post",
+					data: {
+						department_id: that.temp.department
+					},
+					success: function (data) {
+						that.positionsList = data
+					}
+				})
+			},
+
+			handleEdit:function(row){
+				this.form = {
+					department_id:row.department_id,
+					department:row.department,
+					employee_count:row.employee_count,
+					manager:row.manager,
+					state:row.state
+				}
+				this.editVisible = true
+			},
+
+			handleAdd:function(row){
+				this.addVisible = true
+			},
+
+			//显示信息
+			showInfo:function(row){
+				this.form = {
+					job_id:row.job_id,
+					ename:row.ename,
+					sex:row.sex,
+					nation:row.nation,
+					address:row.address,
+					hometown:row.hometown,
+					idcard:row.idcard,
+					phone:row.phone,
+					birth:row.birth,
+					education:row.education,
+					department:row.department,
+					position_name:row.position_name,
+					hiredate:row.hiredate,
+					workstate:row.workstate
+				}
+				this.showVisible = true
+			},
+
+			// 保存编辑，更新部门信息
+			saveEdit:function() {
+				var that = this
+				if (form.department_name.value=="")
+				{
+					layer.tips('请输入部门名称',$("#department_name"));
+					form.department_name.focus();
+					return false;
+				}else if (form.department_manager.value=="")
+				{
+					layer.tips('请输入经理名称',$("#department_manager"));
+					form.department_manager.focus();
+					return false;
+				}else {
+					$.ajax({
+						url: "http://localhost:9900/updateDepartment",
+						type: "post",
+						data: {
+							department_id: that.form.department_id,
+							department_name: that.form.department,
+							manager: that.form.manager
+						},
+						success: function () {
+							layer.alert('修改成功', {
+								skin: 'layui-layer-molv'
+								, closeBtn: 0
+								, anim: 4
+							});
+
+							that.getData()
+						}
+					})
+					that.editVisible = false
+				}
+			},
+
+			//添加部门
+			saveAdd:function() {
+				var that = this
+				if (temp.tempename.value=="")
+				{
+					layer.tips('请输入员工名称',$("#tempename"));
+					temp.tempename.focus();
+					return false;
+				}else if (temp.tempsex.value=="")
+				{
+					layer.tips('请选择员工性别',$("#tempsex"));
+					temp.tempsex.focus();
+					return false;
+				}else if (temp.tempbirth.value=="")
+				{
+					layer.tips('请选择出生日期',$("#tempbirth"));
+
+					temp.tempbirth.focus();
+					return false;
+				}else if (temp.tempphone.value=="" || temp.tempphone.value.length!=11)
+				{
+					layer.tips('请正确输入员工联系电话',$("#tempphone"));
+					temp.tempphone.focus();
+					return false;
+				}else if (temp.tempidcard.value=="" || temp.tempidcard.value.length!=18)
+				{
+					layer.tips('请正确输入员工身份证号',$("#tempidcard"));
+					temp.tempidcard.focus();
+					return false;
+				}else if (this.hometownflag==false)
+				{
+					console.log("111 "+this.hometownflag)
+					layer.tips('请选择员工籍贯',$("#temphometown"));
+					return false;
+				}else if (temp.tempaddress.value=="")
+				{
+					layer.tips('请选择员工现在居住地址',$("#tempaddress"));
+					temp.tempaddress.focus();
+					return false;
+				}else if (temp.tempnation.value=="")
+				{
+					layer.tips('请选择员工民族',$("#tempnation"));
+					temp.tempnation.focus();
+					return false;
+				}else if (temp.tempeducation.value=="")
+				{
+					layer.tips('请选择员工学历',$("#tempeducation"));
+					temp.tempeducation.focus();
+					return false;
+				}else if (temp.temphiredate.value=="")
+				{
+					layer.tips('请选择员工雇佣时间',$("#temphiredate"));
+					temp.temphiredate.focus();
+					return false;
+				}else if (temp.tempdepartment.value=="")
+				{
+					layer.tips('请选择员工部门',$("#tempdepartment"));
+					temp.tempdepartment.focus();
+					return false;
+				}else if (temp.tempposition_name.value=="")
+				{
+					layer.tips('请选择员工职位',$("#tempposition_name"));
+					temp.tempposition_name.focus();
+					return false;
+				}else{
+					$.ajax({
+						url: "http://localhost:9900/addEmployee",
+						type: "post",
+						data:{
+							ename:that.temp.ename,
+							sex:that.temp.sex,
+							nation:that.temp.nation,
+							address:that.temp.address,
+							hometown:that.temp.hometown,
+							idcard:that.temp.idcard,
+							phone:that.temp.phone,
+							birth:that.temp.birth,
+							education:that.temp.education,
+							department:that.temp.department,
+							position_name:that.temp.position_name,
+							hiredate:that.temp.hiredate,
+
+						},
+						success:function(){
+							layer.alert('添加成功', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+							that.getData()
+						}
+					})
+					that.addVisible = false
+				}
+			},
+
+			//刷新数据
+			getData:function(){
+				var that = this
+				axios.post('http://localhost:9900/getallEmployee').then(function (res) {
+
+					//把从json获取的数据赋值给数组
+					var data = res.data.allemployeeslist
+					that.employeeslist = data
+					console.log(that.employeeslist)
+
+				}).catch(function () {
+					console.log('失败')
+				})
+			},
+
+			// 分页刷新
+			pageNo_f5: function(pageNo) {
+				this.$message('切换当前页：' + pageNo);
+				this.f5();
+			},
+			pageSize_f5: function(pageSize) {
+				this.$message('切换页大小：' + pageSize);
+				this.f5();
+			},
+
+			// 员工离职
+			quitwork: function(data) {
+				var that = this
+				layer.confirm('确定解雇此员工？', {icon: 3, title:'提示'}, function(index){
+					$.ajax({
+						type: 'POST',
+						url: 'http://localhost:9900/dismissEmployee',
+						data: {job_id:data.job_id},
+						success: function(){
+
+							layer.alert('解雇成功', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+							that.getData()
+						},
+						error: function(){
+							layer.alert('解雇失败', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+						}
+					});
+				});
+
+			},
+
+			// 员工入职
+			entrywork: function(data) {
+				var that = this
+				layer.confirm('确定雇佣此员工？', {icon: 3, title:'提示'}, function(index){
+					$.ajax({
+						type: 'POST',
+						url: 'http://localhost:9900/recoverEmployee',
+						data: {job_id:data.job_id},
+						success: function(){
+
+							layer.alert('雇佣成功', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+							that.getData()
+						},
+						error: function(){
+							layer.alert('雇佣失败', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+						}
+					});
+				});
+			},
+			// 部门模糊查询
+			findfit: function() {
+
+				var that = this
+
+				$.ajax({
+					type: 'POST',
+					url: 'http://localhost:9900/getfitDepartment',
+					data: {
+						department_id:that.p.department_id,
+						department_name:that.p.department,
+						department_manager:that.p.manager,
+						department_state:that.p.state
+					},
+					success: function(res){
+
+						layer.alert('查询成功', {
+							skin: 'layui-layer-molv'
+							,closeBtn: 0
+							,anim: 4
+						});
+						console.log(res)
+						that.departmentslist=res
+					},
+					error: function(){
+						layer.alert('查询失败', {
+							skin: 'layui-layer-molv'
+							,closeBtn: 0
+							,anim: 4
+						});
+					}
+				});
+
+			}
+		}
+	})
+</script>
+
+
+
+</body>
+</html>

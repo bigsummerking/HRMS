@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.king.hrmsdev.mapper.DepartmentMapper">
+        <!--查询所有部门 -->
+        <select id="findall" resultType="com.king.hrmsdev.entity.Department">
+            SELECT * FROM department
+        </select>
+        <!--根据部门编号查询部门 -->
+        <select id="findByid" parameterType="int"  resultType="com.king.hrmsdev.entity.Department">
+            SELECT * FROM department WHERE department_id = #{id}
+        </select>
+        <!--模糊条件查询部门 -->
+        <select id="findBycondition" parameterType="com.king.hrmsdev.entity.Department" resultType="com.king.hrmsdev.entity.Department">
+                select * from department
+                <where>
+                        <if test="department_id != null and department_id != 0">
+                                 department_id  = #{department_id}
+                        </if>
+                        <if test="department != null">
+                                AND department  LIKE  CONCAT('%',#{department},'%')
+                        </if>
+                        <if test="manager !=null">
+                                AND manager LIKE CONCAT('%',#{manager},'%')
+                        </if>
+                        <if test="state !=null and state != 404">
+                                AND state = #{state}
+                        </if>
+                </where>
+        </select>
+        <!--撤销部门 -->
+        <update id="dismissdepart" parameterType="int" >
+            UPDATE department set state=0 WHERE department_id= #{id}
+        </update>
+        <!--恢复部门 -->
+        <update id="recoverdepart" parameterType="int" >
+            UPDATE department set state=1 WHERE department_id= #{id}
+        </update>
+        <!--更新部门信息 -->
+        <update id="updatedepartment" parameterType="com.king.hrmsdev.entity.Department">
+            UPDATE department set department=#{department},manager=#{manager} WHERE department_id=#{department_id}
+        </update>
+        <!--添加一个部门信息 -->
+        <insert id="adddepartment" parameterType="com.king.hrmsdev.entity.Department">
+            INSERT INTO department(department,employee_count,manager,state) VALUES(#{department},0,#{manager},1)
+        </insert>
+        <!--更新部门人数-->
+        <update id="updateemployeecount" parameterType="com.king.hrmsdev.pojo.Peoplecountindepart" >
+            UPDATE department set employee_count=#{department_count} WHERE department_id=#{department_id}
+        </update>
+        <!--获得部门人数-->
+        <select id="getpeoplecountindepart" resultType="com.king.hrmsdev.pojo.Peoplecountindepart">
+            SELECT   department_id,COUNT( job_id ) department_count from employees WHERE employees.department_id
+            group by department_id
+        </select>
+</mapper>

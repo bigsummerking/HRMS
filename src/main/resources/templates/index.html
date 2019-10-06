@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" href="sa-resources/login.css">
+</head>
+<body>
+<div style="height: 80px;"></div>
+<h1 class="page-title"></h1>
+<div style="height: 50px;"></div>
+<div class="login">
+	<div class="header">
+		<div class="switch" id="switch"><a class="switch_btn_focus" id="switch_qlogin" href="javascript:void(0);" tabindex="7">账号登录</a>
+			<a class="switch_btn two-title" id="switch_login" href="javascript:void(0);" tabindex="8"></a>
+			<div class="switch_bottom" id="switch_bottom" style="position: absolute; width: 64px; left: 0px;"></div>
+		</div>
+	</div>
+	<div class="web_qr_login" id="web_qr_login" style="display: block; height: 235px;">
+
+		<div class="web_login" id="web_login">
+			<div class="login-box">
+				<div class="login_form">
+					<form name="loginform" accept-charset="utf-8" id="login_form" class="loginForm"  method="post">
+						<input type="hidden" name="did" value="0" />
+						<input type="hidden" name="to" value="log" />
+						<div class="uinArea" id="uinArea">
+							<label class="input-tips" for="username">帐号：</label>
+							<div class="inputOuter" id="uArea">
+								<input type="text" id="username"  name="username" class="inputstyle" required="required" />
+							</div>
+						</div>
+						<div class="pwdArea" id="pwdArea">
+							<label class="input-tips" for="password">密码：</label>
+							<div class="inputOuter" id="pArea">
+								<input type="password" id="password"  name="password" class="inputstyle" required="required"/>
+							</div>
+						</div>
+						<div style="padding-left:50px;margin-top:20px;">
+							<input type="button" value="登 录" style="width: 208px;" class="button_blue login-btn" />
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="qlogin" id="qlogin" style="display: none; height: 235px;">
+		<div class="web_login tow-content" id="guanyu" style="padding: 2em 2em; color: #666; font-size: 14px; line-height: 24px;">
+
+		</div>
+	</div>
+
+</div>
+<script src="https://unpkg.com/jquery@3.4.1/dist/jquery.js"></script>
+<script src="https://cdn.bootcss.com/layer/3.0.1/layer.min.js"></script>
+<script type="text/javascript">
+
+	// 你所有要改的代码全在这里   ↓↓↓↓↓
+
+	var page_title = '人事考勤管理平台-登录';		// 页面标题
+	var two_title = '操作帮助';			// 第二个卡片的标题(最好四个字)
+	// 第二个模板的内容
+	// var tow_content = '输入账号和密码，点击按钮登录即可';
+	var tow_content = '本系统账号仅由超级管理员添加 <br></br>无注册功能，请谅解';
+
+	var loginflag;	//登录标记
+	// var username;
+	// var password;
+
+	$('.login-btn').click(function() {
+
+		var p = {
+			// username: $('[name=username]').val(),
+			// password: $('[name=password]').val()
+			username:document.getElementById('username').value,
+			password:document.getElementById('password').value
+		}
+
+		if (!(p.username == '' || p.password == '' || p.username == null || p.password == null)) {
+
+			$.ajax({
+				url: "http://localhost:9900/login",
+				type: "POST",
+				async: true,
+				datatype: "text", //设置成json后，与后台返回的值不对应导致跳error故改为text
+				data: {"username": p.username, "password": p.password},
+			}).then(function (res) {
+
+				console.log("username----->" + p.username);
+				console.log("password----->" + p.password);
+
+				loginflag = res;
+
+				console.log("res----->" + res);
+				if (loginflag == 'nouser') {
+					return layer.msg('该用户名(' + p.username + ')不存在');
+				} else if (loginflag == 'errorpass') {
+					return layer.msg('密码错误，重新输入');
+				} else if (loginflag == 'getpass') {
+
+					sessionStorage.setItem("username",p.username);
+
+					setTimeout(function() {
+						if (parent == window) {
+							location.href = "mainPage.html";
+						} else {
+							parent.layer.closeAll('iframe');
+							parent.location.reload();
+						}
+					}, 800);
+
+					return layer.msg("欢迎你，" + p.username);
+
+				}
+
+			}).fail(function () {
+				console.log('失败');
+			});
+
+		} else {
+			return layer.msg('请输入账号和密码');
+		}
+	})
+
+	// 你所有要改的代码全在这里   ↑↑↑↑↑
+
+
+
+
+	// 替换属性
+	$('.page-title').html(page_title);
+	$('title').html(page_title);
+	// $('[name=username]').val(username);
+	// $('[name=password]').val(password);
+	$('.two-title').html(two_title);
+	$('.tow-content').html(tow_content);
+
+	$('#p').bind('keypress',function(event){
+		if(event.keyCode == "13") {
+			$('.login-btn').click();
+		}
+	})
+
+
+</script>
+<!-- 卡片切换特效 -->
+<script type="text/javascript">
+	$(function () {
+		$('#switch_qlogin').click(function () {
+			$('#switch_login').removeClass("switch_btn_focus").addClass('switch_btn');
+			$('#switch_qlogin').removeClass("switch_btn").addClass('switch_btn_focus');
+			$('#switch_bottom').animate({
+				left: '0px',
+				width: '70px'
+			});
+			$('#qlogin').css('display', 'none');
+			$('#web_qr_login').css('display', 'block');
+		});
+		$('#switch_login').click(function () {
+			$('#switch_login').removeClass("switch_btn").addClass('switch_btn_focus');
+			$('#switch_qlogin').removeClass("switch_btn_focus").addClass('switch_btn');
+			$('#switch_bottom').animate({
+				left: '154px',
+				width: '70px'
+			});
+			$('#qlogin').css('display', 'block');
+			$('#web_qr_login').css('display', 'none');
+		});
+	});
+
+</script>
+
+</body>
+</html>

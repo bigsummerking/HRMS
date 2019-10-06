@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.king.hrmsdev.mapper.EmployeeMapper">
+
+    <select id="findall" resultType="com.king.hrmsdev.pojo.Vemployee">
+       select job_id,ename,sex,phone,birth,idcard,hometown,nation,education,address,hiredate,workstate,icon,department.department,position.position_name from employees,position,department WHERE employees.department_id=department.department_id and employees.position_id = position.position_id
+    </select>
+
+    <select id="findByid"  parameterType="int" resultType="com.king.hrmsdev.entity.Employee">
+      select * from employees where job_id=#{id}
+    </select>
+
+    <select id="findBycondition" parameterType="com.king.hrmsdev.entity.Employee" resultType="com.king.hrmsdev.entity.Employee">
+        select * from employees
+        <where>
+            <if test="job_id != null">
+                 job_id = #{job_id}
+            </if>
+            <if test="ename != null">
+                AND ename  LIKE  CONCAT('%','${ename}','%')
+            </if>
+            <if test="sex !=null">
+                AND sex = #{sex}
+            </if>
+            <if test="department_id !=null">
+                AND department_id = #{department_id}
+            </if>
+            <if test="position_id !=null">
+                AND position_id = #{position_id}
+            </if>
+            <if test="workstate !=null">
+                AND workstate LIKE CONCAT('%','${workstate}','%')
+            </if>
+        </where>
+    </select>
+
+    <update id="updateEmployee" parameterType="com.king.hrmsdev.entity.Employee">
+        update employees set ename=#{ename},sex=#{sex},phone=#{phone},birth=#{birth},idcard=#{idcard},hometown=#{hometown},nation =#{nation},education=#{education},
+         address=#{address},hiredate=#{hiredate},department_id=#{department_id},position_id =#{position_id},workstate =#{workstate},icon=#{icon} WHERE job_id=#{job_id}
+    </update>
+
+    <insert id="addEmployee" parameterType="com.king.hrmsdev.entity.Employee">
+         insert into employees (ename,sex,phone,birth,idcard,hometown,nation,education,address,hiredate,department_id,position_id,workstate,icon)
+         values(#{ename},#{sex},#{phone},#{birth},#{idcard},#{hometown},#{nation},#{education},#{address},#{hiredate},#{department_id},#{position_id},1,null)
+    </insert>
+
+    <update id="dismissEmployee" parameterType="int">
+         update employees set workstate = 0 WHERE job_id=#{id}
+    </update>
+
+    <update id="recoverEmployee" parameterType="int">
+         update employees set workstate = 1 WHERE job_id=#{id}
+    </update>
+
+
+
+
+</mapper>
