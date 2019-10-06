@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>用户列表</title>
+		<title>请假管理</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		
@@ -35,14 +35,30 @@
 			<div class="c-panel">
 				<div class="c-title">检索参数</div>
 				<el-form ref="form">
-	
+
 					<div class="c-item">
-						<label class="c-label">昵称：</label>
+						<label class="c-label">工号：</label>
 						<el-input size="mini" v-model="p.username" placeholder="模糊搜索" @keyup.enter="f5"></el-input>
 					</div>
+					<div class="c-item">
+						<label class="c-label">请假编号：</label>
+						<el-input size="mini" v-model="p.username" placeholder="模糊搜索" @keyup.enter="f5"></el-input>
+					</div>
+					<div class="c-item">
+						<label class="c-label">部门：</label>
+						<el-select v-model="p.status" placeholder="请选择">
+							<el-option
+									v-for="item in statusOptions"
+									:key="item.value"
+									:label="item.label"
+									:value="item.value">
+							</el-option>
+						</el-select>
+					</div>
+					<br />
 					
 					<div class="c-item">
-						<label class="c-label">注册日期：</label>
+						<label class="c-label">请假日期：</label>
 						<el-input size="mini" v-model="p.start_time" class="start_time"></el-input>
 						&nbsp;至&nbsp;
 						<el-input size="mini" v-model="p.end_time" class="end_time"></el-input>
@@ -51,7 +67,11 @@
 					<div class="c-item" style="min-width: 0px;">
 						<el-button type="primary" icon="el-icon-search" size="mini" @click="f5">查询</el-button>
 					</div>
-					
+					<div class="c-item" style="min-width: 0px;">
+						<el-button type="primary" icon="el-icon-plus" size="mini" @click="f5">添加</el-button>
+					</div>
+
+
 					<!-- <br />
 					<div class="c-item">
 						<label class="c-label">注册方式：</label>
@@ -65,13 +85,12 @@
 					 -->
 					<br />
 					<div class="c-item">
-						<label class="c-label">排序：</label>
+						<label class="c-label">快速检索：</label>
 						<el-radio-group v-model="p.sort_type">
-							<el-radio :label="1">注册时间</el-radio>
-							<el-radio :label="2">最近登录</el-radio>
-							<el-radio :label="3">登陆次数</el-radio>
-							<el-radio :label="4">最近签到</el-radio>
-							<el-radio :label="5">签到次数</el-radio>
+							<el-radio :label="1">所有</el-radio>
+							<el-radio :label="2">批准</el-radio>
+							<el-radio :label="3">拒绝</el-radio>
+							<el-radio :label="4">未处理</el-radio>
 						</el-radio-group>
 					</div>
 
@@ -84,38 +103,45 @@
 				<div class="c-title">列表</div>
 				<el-table class="data-table" :data="dataList" size="mini"  style="width: 100%">
 					
-					<el-table-column label="编号" prop="id" width="70px" > </el-table-column>
-					<el-table-column label="昵称" prop="username" width="200px">
+					<el-table-column label="考勤ID" prop="id" width="70px" > </el-table-column>
+					<el-table-column label="工号ID" prop="id" width="70px" > </el-table-column>
+					<el-table-column label="员工姓名" prop="username" width="200px">
 						<template slot-scope="scope">
 							<img :src="scope.row.avatar" style="width: 3em; height: 3em; float: left; margin-right: 1em; border-radius: 50%;" >
 							<div style="float: left; width: 130px; line-height: 20px;">
 								<b>{{scope.row.username}}</b>
-								<p>{{scope.row.tell}}</p>
+<!--								<p>{{scope.row.tell}}</p>-->
 							</div>
 						</template>
 					</el-table-column>
-					<el-table-column label="个人相册">
-						<template slot-scope="scope">
-							<img :src="scope.row.photo_list[0]" style="width: 40px; height: 40px; cursor: pointer;" @click="pre_img(scope.row)" >
-							共{{scope.row.photo_list.length}}张, 点击预览
-						</template>
-					</el-table-column>
+
 					<el-table-column label="性别" prop="sex"> </el-table-column>
 
-					<el-table-column label="注册方式" prop="create_type"></el-table-column>
-					<el-table-column label="注册于" prop="create_time"></el-table-column>
-					<el-table-column label="状态">
+
+
+
+					<el-table-column label="开始时间" prop="create_time"></el-table-column>
+					<el-table-column label="结束时间" prop="create_time"></el-table-column>
+					<el-table-column label="请假理由">
+						<!--						<template slot-scope="scope">-->
+						<!--							<img :src="scope.row.photo_list[0]" style="width: 40px; height: 40px; cursor: pointer;" @click="pre_img(scope.row)" >-->
+						<!--							共{{scope.row.photo_list.length}}张, 点击预览-->
+						<!--						</template>-->
+					</el-table-column>
+
+					<el-table-column label="批准状态">
 						<template slot-scope="scope">
-							<span style="color: green;" v-if="scope.row.status == 1">正常</span>
-							<span style="color: red;" v-if="scope.row.status == 2">禁用</span>
+							<span style="color: green;" v-if="scope.row.status == 1">同意</span>
+							<span style="color: red;" v-if="scope.row.status == 2">拒绝</span>
+							<span style="color: red;" v-if="scope.row.status == 3">未处理</span>
 						</template>
 					</el-table-column>
 
 					<el-table-column prop="address" label="操作">
 						<template slot-scope="scope">
-							<el-button type="primary" class="c-button" icon="el-icon-edit" @click="dongjie(scope.row)" v-if="scope.row.status == 1">禁用</el-button>
-							<el-button type="primary" class="c-button" icon="el-icon-edit" @click="jiejin(scope.row)" v-if="scope.row.status == 2">解禁</el-button>
-							<el-button type="danger" class="c-button" icon="el-icon-delete" @click="del(scope.row)">删除</el-button>
+							<el-button type="primary" class="c-button" icon="el-icon-edit" @click="dongjie(scope.row)">同意</el-button>
+
+							<el-button type="danger" class="c-button" icon="el-icon-delete" @click="del(scope.row)">拒绝</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
