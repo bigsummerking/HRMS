@@ -10,14 +10,13 @@
 		<link rel="stylesheet" href="../../static/sa.css"> 
 		
 		<!-- 所有的 js 资源 -->
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 		<script src="https://unpkg.com/vue@2.6.10/dist/vue.js"></script>
 		<script src="https://unpkg.com/element-ui@2.8.2/lib/index.js"></script>
-		
 		<script src="https://unpkg.com/jquery@3.4.1/dist/jquery.js"></script>
 		<script src="https://cdn.bootcss.com/layer/3.0.1/layer.min.js"></script>
 		<script src="../../static/kj/laydate/laydate.js"></script>
 		<script src="../../static/sa.js"></script>
-		<script src="data-list.js"></script>
 		
 		<style type="text/css">
 			
@@ -35,24 +34,23 @@
 			<div class="c-panel">
 				<div class="c-title">检索参数</div>
 				<el-form ref="form">
-	
 					<div class="c-item">
 						<label class="c-label">工号：</label>
-						<el-input size="mini" v-model="p.username" placeholder="模糊搜索" @keyup.enter="f5"></el-input>
+						<el-input size="mini" v-model="p.job_id" placeholder="工号"></el-input>
 					</div>
 
 					<div class="c-item">
-						<label class="c-label">奖惩ID：</label>
-						<el-input size="mini" v-model="p.username" placeholder="模糊搜索" @keyup.enter="f5"></el-input>
+						<label class="c-label">奖惩编号：</label>
+						<el-input size="mini" v-model="p.reward_id" placeholder="奖惩编号"></el-input>
 					</div>
 
 
 
 					<div class="c-item">
 						<label class="c-label">考勤日期：</label>
-						<el-input size="mini" v-model="p.start_time" class="start_time"></el-input>
+						<el-input size="mini" v-model="p.beginDate" class="beginDate"></el-input>
 						&nbsp;至&nbsp;
-						<el-input size="mini" v-model="p.end_time" class="end_time"></el-input>
+						<el-input size="mini" v-model="p.endDate" class="endDate"></el-input>
 					</div>
 					
 					<div class="c-item" style="min-width: 0px;">
@@ -63,28 +61,19 @@
 						<el-button type="primary" icon="el-icon-plus" size="mini" @click="f5">添加</el-button>
 					</div>
 					
-					<!-- <br />
-					<div class="c-item">
-						<label class="c-label">注册方式：</label>
-						<el-select size="mini" v-model="p.create_type">
-							<el-option label="全部" :value="0"></el-option>
-							<el-option label="账号注册" :value="1"></el-option>
-							<el-option label="手机号注册" :value="2"></el-option>
-							<el-option label="邮箱注册" :value="3"></el-option>
-						</el-select>
-					</div>
-					 -->
 
-					<div class="c-item">
-						<label class="c-label">快速检索：</label>
-						<el-radio-group v-model="p.sort_type">
-							<el-radio :label="1">全勤员工</el-radio>
-							<el-radio :label="2">迟到次数</el-radio>
-							<el-radio :label="3">早退次数</el-radio>
-							<el-radio :label="4">请假次数</el-radio>
-							<el-radio :label="5">旷工次数</el-radio>
-						</el-radio-group>
-					</div>
+
+<!--					<div class="c-item">-->
+<!--						<label class="c-label">快速检索：</label>-->
+<!--						<el-radio-group v-model="p.sort_type">-->
+<!--							<el-radio :label="1">全勤员工</el-radio>-->
+<!--							<el-radio :label="2">迟到次数</el-radio>-->
+<!--							<el-radio :label="3">早退次数</el-radio>-->
+<!--							<el-radio :label="4">请假次数</el-radio>-->
+<!--							<el-radio :label="5">旷工次数</el-radio>-->
+<!--						</el-radio-group>-->
+<!--					</div>-->
+
 				</el-form>
 
 			</div>
@@ -94,43 +83,85 @@
 				<div class="c-title">列表</div>
 				<el-table class="data-table" :data="dataList" size="mini"  style="width: 100%">
 					
-					<el-table-column label="奖惩编号" prop="id" width="70px" > </el-table-column>
-					<el-table-column label="工号ID" prop="id" width="70px" > </el-table-column>
+					<el-table-column label="奖惩编号" prop="reward_id" width="70px" sortable> </el-table-column>
+					<el-table-column label="工号" prop="job_id" width="70px" sortable> </el-table-column>
 					<el-table-column label="员工姓名" prop="username" width="100px">
 						<template slot-scope="scope">
-<!--							<img :src="scope.row.avatar" style="width: 3em; height: 3em; float: left; margin-right: 1em; border-radius: 50%;" >-->
 							<div style="float: left; width: 130px; line-height: 20px;">
 								<b>{{scope.row.username}}</b>
-<!--								<p>{{scope.row.tell}}</p>-->
-							</div>
+						</div>
 						</template>
 					</el-table-column>
-<!--					<el-table-column label="个人相册">-->
-<!--						<template slot-scope="scope">-->
-<!--							<img :src="scope.row.photo_list[0]" style="width: 40px; height: 40px; cursor: pointer;" @click="pre_img(scope.row)" >-->
-<!--							共{{scope.row.photo_list.length}}张, 点击预览-->
-<!--						</template>-->
-<!--					</el-table-column>-->
-					<el-table-column label="性别" prop="sex"> </el-table-column>
-					<el-table-column label="加班小时" prop=""></el-table-column>
-					<el-table-column label="迟到次数" prop=""></el-table-column>
-					<el-table-column label="早退次数" prop=""></el-table-column>
-					<el-table-column label="请假次数" prop=""></el-table-column>
-					<el-table-column label="旷工次数" prop=""></el-table-column>
-					<el-table-column label="时间">
-<!--						<template slot-scope="scope">-->
-<!--							<span style="color: green;" v-if="scope.row.status == 1">正常</span>-->
-<!--							<span style="color: red;" v-if="scope.row.status == 2">禁用</span>-->
-<!--						</template>-->
+
+					<el-table-column label="性别">
+						<template slot-scope="scope">
+							<span  v-if="scope.row.sex===1">{{scope.row.sex | sexFormat}}</span>
+							<span  v-if="scope.row.sex===0">{{scope.row.sex | sexFormat}}</span>
+						</template>
 					</el-table-column>
+
+					<el-table-column label="加班小时" prop="overtime" sortable></el-table-column>
+					<el-table-column label="迟到次数" prop="late" sortable></el-table-column>
+					<el-table-column label="早退次数" prop="leaveearly" sortable></el-table-column>
+					<el-table-column label="请假次数" prop="aleave" sortable></el-table-column>
+					<el-table-column label="旷工次数" prop="absenteeism" sortable></el-table-column>
+					<el-table-column label="时间" prop="checktime" sortable></el-table-column>
 
 					<el-table-column prop="address" label="操作">
 						<template slot-scope="scope">
-							<el-button type="primary" class="c-button" icon="el-icon-edit" @click="update(scope.row)" >修改</el-button>
+							<el-button type="primary" class="c-button" icon="el-icon-edit" @click="update()" >修改</el-button>
 							<el-button type="danger" class="c-button" icon="el-icon-delete" @click="del(scope.row)">删除</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
+
+<!--奖惩添加-->
+				<el-dialog title="奖惩添加" :visible.sync="addVisible" width="35%">
+
+					<el-form  name="temp" id="temp" ref="temp"  :model="temp" label-width="100px">
+
+						<el-form-item label="工号">
+							<el-input  id="tempejob_id" name="tempejob_id"  v-model="temp.job_id" maxlength="6" placeholder="请输入员工工号" show-word-limit />
+						</el-form-item>
+
+						<el-form-item label="迟到次数">
+							<el-input id="template" name="template" v-model="temp.late" maxlength="3" placeholder="请输入迟到次数" show-word-limit  />
+						</el-form-item>
+
+						<el-form-item label="早退次数">
+							<el-input id="templeaveearly" name="templeaveearly" v-model="temp.leaveearly" maxlength="3" placeholder="请输入早退次数" show-word-limit  />
+						</el-form-item>
+
+						<el-form-item label="请假次数">
+							<el-input id="tempaleave" name="tempaleave" v-model="temp.aleave" maxlength="3" placeholder="请输入请假次数" show-word-limit  />
+						</el-form-item>
+
+						<el-form-item label="旷工次数">
+							<el-input id="tempabsenteeism" name="tempabsenteeism" v-model="temp.absenteeism" maxlength="3" placeholder="请输入旷工次数" show-word-limit  />
+						</el-form-item>
+
+						<el-form-item label="考勤时间">
+							<el-date-picker
+									id="tempchecktime"
+									name="tempchecktime"
+									style="width: 100%;"
+									v-model="temp.checktime"
+									format="yyyy 年 MM 月 dd 日"
+									value-format="yyyy-MM-dd"
+									type="date"
+									placeholder="选择考勤时间">
+							</el-date-picker>
+						</el-form-item>
+
+
+					</el-form>
+					<span slot="footer" class="dialog-footer">
+            <el-button  @click="addVisible = false">取 消</el-button>
+            <el-button type="primary" @click="saveAdd()">确 定</el-button>
+          </span>
+				</el-dialog>
+
+
 		
 				<!-- 分页 -->
 				<div class="page-box">
@@ -147,120 +178,278 @@
 
 			</div>
 			
-			
-			<div class="c-panel" style="background-color: rgba(0,0,0,0);">
-				layer：<el-link type="primary" href="http://layer.layui.com/" target="_blank">
-					一个可以让你想到即可做到的JavaScript弹窗（层）解决方案
-				</el-link> <br>
-				laydate：<el-link type="primary" href="https://www.layui.com/laydate/" target="_blank">
-					世界上最好用的日期选择插件 
-				</el-link> <br>
-				
-			</div>
+
 			
 			<br><br><br><br><br><br><br><br><br>
 
 			
 		</div>
-		
-		<script type="text/javascript">
-			//重点看这里：
-			function myfun() {
 
+		<script>
+			// 定义一个 Vue 全局的过滤器，名字叫做  sexFormat
+			Vue.filter('sexFormat', function (val) {
+				if(val===1){
+					return '男'
+				}else if(val===0){
+					return '女'
+				}
+			})
 
-				//写你的代码
-
-
-
-				var da1 = getDateRange(sltYear, sltWeek - 1);
-				$.loading(true, "数据加载中，请稍候...");
-				$.ajax({
-					url: "/Findallreward",
-					type: "POST",
-					success: function(data){
-						result = eval('('+ data +')');
-					}
-				});
-
-
-				//你的代码（大部分都会在这里写调用）
-
-
-			}
-
-
-			/*用window.onload调用myfun()*/
-			window.onload = myfun;//不要括号
-
-
-			function update(){
-				var d = {};
-				d.userId = 30;
-				d.username = "Sunpeng.Guo";
-				$.ajax({
-					url: "update",
-					data: JSON.stringify(d),
-					//type、contentType必填,指明传参方式
-					type: "POST",
-					contentType: "application/json;charset=utf-8",
-					success: function(response){
-						//前端调用成功后，可以处理后端传回的json格式数据。
-						if(response.success){
-							alert(response.message);
-						}
-					}
-				});
-			}
-			
-			
-			// 渲染日期选择插件 
-			function init_laydate() {
-				// 开始日期
-				laydate.render({
-					elem: '.start_time input',
-					type: 'date',
-					done: function(value, date){
-						app.p.start_time = value;
-					}
-				});
-				// 结束日期
-				laydate.render({
-					elem: '.end_time input',
-					type: 'date',
-					done: function(value, date){
-						app.p.end_time = value;
-					}
-				});
-			}
-			
-			
-			
 			var app = new Vue({
-				el: '.vue-box',
-				data: {
-					p: {	// 查询参数 
-						username: '',
-						create_type: 0,
-						sort_type: 1,
-						start_time: sa.$util.forDate(new Date(new Date().getFullYear(), new Date().getMonth(), 1)), 	// 本月一号 
-						end_time: sa.$util.forDate(new Date()),
+				el: '#vue-box',
+				data:{
+					p: {	// 查询参数
+						job_id: undefined,
+						reward_id: undefined,
+						beginDate: "",
+						endDate: ""
 					},
 					page: {	// 分页信息
 						pageNo: 1,
 						pageSize: 10,
-						count: 1422
+						count: 30
 					},
-					dataList: dataList
+					rewaedinfolist:[
+						{
+							reward_id:1,
+							job_id:200001,
+							checktime:1546272000000,
+							overtime:0,
+							late:2,
+							leaveearly:2,
+							aleave:2,
+							absenteeism:0,
+							ename:"张一",
+							sex:1,
+
+						}
+					],
+					sexOptions:[
+						{
+							value: '1',
+							label:'男'
+						},
+						{
+							value: '0',
+							label:'女'
+						}
+					],
+					editVisible:false,
+					addVisible:false,
+					showVisible:false,
+
+					form:{
+						reward_id:1,
+						job_id:200001,
+						checktime:1546272000000,
+						overtime:0,
+						late:2,
+						leaveearly:2,
+						aleave:2,
+						absenteeism:0,
+						ename:"张一",
+						sex:1,
+					},
+					temp:{
+						job_id:undefined,
+						late:undefined,
+						leaveearly:undefined,
+						aleave:undefined,
+						absenteeism:undefined,
+						checktime:undefined,
+					},
+
+
+				created: function () {
+					this.getData();
 				},
+
+
 				methods: {
-					// 数据刷新
-					f5: function() {
-						sa.ajax2('/Findallreward', this.p, function(res){
-							this.dataList = res.data;	// 数据
-							this.page = res.page;		// 分页
-							this.$message('查询：' + JSON.stringify(this.p));
-						}.bind(this));
+
+					handleEdit:function(row){
+						this.form = {
+							department_id:row.department_id,
+							department:row.department,
+							employee_count:row.employee_count,
+							manager:row.manager,
+							state:row.state
+						}
+						this.editVisible = true
 					},
+
+					handleAdd:function(row){
+						this.addVisible = true
+					},
+
+					//显示信息
+					showInfo:function(row){
+						this.form = {
+							job_id:row.job_id,
+							ename:row.ename,
+							sex:row.sex,
+							nation:row.nation,
+							address:row.address,
+							hometown:row.hometown,
+							idcard:row.idcard,
+							phone:row.phone,
+							birth:row.birth,
+							education:row.education,
+							department:row.department,
+							position_name:row.position_name,
+							hiredate:row.hiredate,
+							workstate:row.workstate
+						}
+						this.showVisible = true
+					},
+
+					// 保存编辑，更新部门信息
+					saveEdit:function() {
+						var that = this
+						if (form.department_name.value=="")
+						{
+							layer.tips('请输入部门名称',$("#department_name"));
+							form.department_name.focus();
+							return false;
+						}else if (form.department_manager.value=="")
+						{
+							layer.tips('请输入经理名称',$("#department_manager"));
+							form.department_manager.focus();
+							return false;
+						}else {
+							$.ajax({
+								url: "http://localhost:9900/updateDepartment",
+								type: "post",
+								data: {
+									department_id: that.form.department_id,
+									department_name: that.form.department,
+									manager: that.form.manager
+								},
+								success: function () {
+									layer.alert('修改成功', {
+										skin: 'layui-layer-molv'
+										, closeBtn: 0
+										, anim: 4
+									});
+
+									that.getData()
+								}
+							})
+							that.editVisible = false
+						}
+					},
+
+					//添加部门
+					saveAdd:function() {
+						var that = this
+						if (temp.tempename.value=="")
+						{
+							layer.tips('请输入员工名称',$("#tempename"));
+							temp.tempename.focus();
+							return false;
+						}else if (temp.tempsex.value=="")
+						{
+							layer.tips('请选择员工性别',$("#tempsex"));
+							temp.tempsex.focus();
+							return false;
+						}else if (temp.tempbirth.value=="")
+						{
+							layer.tips('请选择出生日期',$("#tempbirth"));
+
+							temp.tempbirth.focus();
+							return false;
+						}else if (temp.tempphone.value=="" || temp.tempphone.value.length!=11)
+						{
+							layer.tips('请正确输入员工联系电话',$("#tempphone"));
+							temp.tempphone.focus();
+							return false;
+						}else if (temp.tempidcard.value=="" || temp.tempidcard.value.length!=18)
+						{
+							layer.tips('请正确输入员工身份证号',$("#tempidcard"));
+							temp.tempidcard.focus();
+							return false;
+						}else if (this.hometownflag==false)
+						{
+							console.log("111 "+this.hometownflag)
+							layer.tips('请选择员工籍贯',$("#temphometown"));
+							return false;
+						}else if (temp.tempaddress.value=="")
+						{
+							layer.tips('请选择员工现在居住地址',$("#tempaddress"));
+							temp.tempaddress.focus();
+							return false;
+						}else if (temp.tempnation.value=="")
+						{
+							layer.tips('请选择员工民族',$("#tempnation"));
+							temp.tempnation.focus();
+							return false;
+						}else if (temp.tempeducation.value=="")
+						{
+							layer.tips('请选择员工学历',$("#tempeducation"));
+							temp.tempeducation.focus();
+							return false;
+						}else if (temp.temphiredate.value=="")
+						{
+							layer.tips('请选择员工雇佣时间',$("#temphiredate"));
+							temp.temphiredate.focus();
+							return false;
+						}else if (temp.tempdepartment.value=="")
+						{
+							layer.tips('请选择员工部门',$("#tempdepartment"));
+							temp.tempdepartment.focus();
+							return false;
+						}else if (temp.tempposition_name.value=="")
+						{
+							layer.tips('请选择员工职位',$("#tempposition_name"));
+							temp.tempposition_name.focus();
+							return false;
+						}else{
+							$.ajax({
+								url: "http://localhost:9900/addEmployee",
+								type: "post",
+								data:{
+									ename:that.temp.ename,
+									sex:that.temp.sex,
+									nation:that.temp.nation,
+									address:that.temp.address,
+									hometown:that.temp.hometown,
+									idcard:that.temp.idcard,
+									phone:that.temp.phone,
+									birth:that.temp.birth,
+									education:that.temp.education,
+									department:that.temp.department,
+									position_name:that.temp.position_name,
+									hiredate:that.temp.hiredate,
+
+								},
+								success:function(){
+									layer.alert('添加成功', {
+										skin: 'layui-layer-molv'
+										,closeBtn: 0
+										,anim: 4
+									});
+									that.getData()
+								}
+							})
+							that.addVisible = false
+						}
+					},
+
+					//刷新数据
+					getData:function(){
+						var that = this
+						axios.post('http://localhost:9900/Findallreward').then(function (res) {
+
+							//把从json获取的数据赋值给数组
+							var data = res.data.allrewardinfolist
+							that.rewardinfolist = data
+							console.log(that.rewardinfolist)
+
+						}).catch(function () {
+							console.log('失败')
+						})
+					},
+
 					// 分页刷新
 					pageNo_f5: function(pageNo) {
 						this.$message('切换当前页：' + pageNo);
@@ -270,53 +459,73 @@
 						this.$message('切换页大小：' + pageSize);
 						this.f5();
 					},
-					// 预览图片
-					pre_img: function(data) {
-						var list = data.photo_list;
-						var arr_list = [];
-						list.forEach(function(item) {
-							arr_list.push({
-								alt: '左右键切换',
-								pid: 1,
-								src: item,
-								thumb: item
-							})
-						})
-						layer.photos({
-							photos: {
-								title: data.username + '的个人相册',
-								id: data.id,
-								start: 0,
-								data: arr_list
-							}
-							,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+
+					// 奖惩删除
+					quitwork: function(data) {
+						var that = this
+						layer.confirm('确定删除此员工？', {icon: 3, title:'提示'}, function(index){
+							$.ajax({
+								type: 'POST',
+								url: 'http://localhost:9900/deletereward',
+								data: {reward_id:data.reward_id},
+								success: function(){
+
+									layer.alert('解雇成功', {
+										skin: 'layui-layer-molv'
+										,closeBtn: 0
+										,anim: 4
+									});
+									that.getData()
+								},
+								error: function(){
+									layer.alert('解雇失败', {
+										skin: 'layui-layer-molv'
+										,closeBtn: 0
+										,anim: 4
+									});
+								}
+							});
 						});
 
 					},
-					// 删除奖惩信息
-					del: function(data) {
-						layer.confirm('是否删除，此操作不可撤销', {}, function() {
-							sa.ajax2('url', {}, function(res) {
-								sa.$util.arrayDelete(this.dataList, data);
-								layer.msg('删除成功');
-							}.bind(this))
-						}.bind(this));
-					},
-					// 修改奖惩信息
-					update: function(data) {
-						layer.confirm('修改此用户？', {}, function() {
-							sa.ajax2('url', {}, function(res) {
-								data.status = 2;
-								layer.msg('修改成功');
-							}.bind(this))
-						}.bind(this));
-					},
-				},
-				mounted:function(){
-					init_laydate();
+
+
+					// 奖惩模糊查询
+					findfit: function() {
+
+						var that = this
+
+						$.ajax({
+							type: 'POST',
+							url: 'http://localhost:9900/RewardFuzzyreward',
+							data: {
+								job_id:that.p.job_id,
+								reward_id:that.p.reward_id,
+								beginDate:that.p.beginDate,
+								endDate:that.p.endDate
+							},
+							success: function(res){
+
+								layer.alert('查询成功', {
+									skin: 'layui-layer-molv'
+									,closeBtn: 0
+									,anim: 4
+								});
+								console.log(res)
+								that.departmentslist=res
+							},
+							error: function(){
+								layer.alert('查询失败', {
+									skin: 'layui-layer-molv'
+									,closeBtn: 0
+									,anim: 4
+								});
+							}
+						});
+
+					}
 				}
 			})
-			
 		</script>
 		
 		
