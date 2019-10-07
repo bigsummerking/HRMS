@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.king.hrmsdev.mapper.SlaryMapper">
+    <select id="QuaryRewordByID"  parameterType="int" resultType="com.king.hrmsdev.entity.EmployReword">
+         select reward.* from reward,employees where reward.job_id=employees.job_id AND employees.job_id=#{job_id};
+  </select>
+    <select id="QuaryPositionByJobID"  parameterType="int" resultType="com.king.hrmsdev.entity.Position">
+         select position.* from position,employees where position.position_id=employees.position_id AND  employees.job_id=#{job_id};
+  </select>
+    <select id="QuaryDepartmentByJobID"  parameterType="int" resultType="String">
+         select department.department from department,employees where department.department_id=employees.department_id  and employees.job_id=#{job_id} ;
+  </select>
+    <select id="QuaryALL"  parameterType="int" resultType="com.king.hrmsdev.entity.Employees">
+                select * from employees where job_id=#{job_id}
+  </select>
+    <insert id="AddSalary" parameterType="com.king.hrmsdev.entity.Salary"  >
+        insert into salary values (null,#{job_id},#{finasalary},#{payday});
+    </insert>
+
+</mapper>

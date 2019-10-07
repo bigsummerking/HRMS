@@ -12,6 +12,27 @@ public class Department {
     private int employee_count;
     private String manager;
     private int state;
+    private String departmentName;
+    private  int count;
+    public Department(String departmentName, int count) {
+        this.departmentName = departmentName;
+        this.count = count;
+    }
+    public String getDepartmentName() {
+        return departmentName;
+    }
+
+    public void setDepartmentName(String departmentName) {
+        this.departmentName = departmentName;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
 
     public int getDepartment_id() {
         return department_id;
