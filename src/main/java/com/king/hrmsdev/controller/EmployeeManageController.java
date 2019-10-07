@@ -41,32 +41,51 @@ public class EmployeeManageController {
     }
 
     @RequestMapping(value = "/getfitEmployee", method = RequestMethod.POST)
-    public List<Employee> findEmployeeBycondition(@RequestParam(value="job_id") String job_id,
-                                                  @RequestParam(value="ename") String  ename,
-                                                  @RequestParam(value="sex") String sex,
-                                                  @RequestParam(value="department_id") String department_id,
-                                                  @RequestParam(value="workstate") String workstate){
+    public List<Vemployee> findEmployeeBycondition(@RequestParam(value="job_id") String job_id,
+                                                   @RequestParam(value="ename") String  ename,
+                                                   @RequestParam(value="sex") String sex,
+                                                   @RequestParam(value="department_id") String department_id,
+                                                   @RequestParam(value="workstate") String workstate){
+        System.out.println("******");
+        System.out.println("department_id--->"+department_id);
+        System.out.println("job_id--->"+job_id);
+        System.out.println("ename--->"+ename);
+        System.out.println("department_id--->"+department_id);
+        System.out.println("workstate--->"+workstate);
+        System.out.println("******");
         Employee employee = new Employee();
         employee.setEname(ename);
-
         if(!(job_id.equals("") ||job_id.equals(null))){
             int id = Integer.valueOf(job_id);
             employee.setJob_id(id);
+        }else {
+            //如果工号未接收，默认状态-1不存在
+            employee.setJob_id(-1);
         }
         if(!(sex.equals("") ||sex.equals(null))){
             int esex = Integer.valueOf(sex);
             employee.setSex(esex);
+        }else{
+            //如果性别未接收，默认状态404不存在
+            employee.setSex(404);
         }
         if(!(department_id.equals("") ||department_id.equals(null))){
             int id = Integer.valueOf(department_id);
             employee.setDepartment_id(id);
+        }else{
+            //如果部门号未接收，默认状态404不存在
+            employee.setDepartment_id(404);
         }
         if(!(workstate.equals("") ||workstate.equals(null))){
-            int eworkstate = Integer.valueOf(workstate);
-            employee.setWorkstate(eworkstate);
+            int state = Integer.valueOf(workstate);
+            employee.setWorkstate(state);
+        }else{
+            //如果状态未接收，默认状态404不存在
+            employee.setWorkstate(404);
         }
+        System.out.println(employee.toString());
 
-        List<Employee> fitemployeeslist = employeeService.findEmployeeBycondition(employee);
+        List<Vemployee> fitemployeeslist = employeeService.findEmployeeBycondition(employee);
 
         return fitemployeeslist;
     }
@@ -121,35 +140,61 @@ public class EmployeeManageController {
         return flag;
     }
 
+
+    @ResponseBody
     @RequestMapping(value = "/getAllJobChange", method = RequestMethod.POST)
-    public List<Vjobchange> getAllJobChange(){
+    public JSONObject getAllJobChange(){
         List<Vjobchange> alljobChangeslist = employeeService.getAllJobChange();
-        return  alljobChangeslist;
+        JSONObject result = new JSONObject();
+        result.put("msg", "ok");
+        result.put("method", "getAllJobChange");
+        result.put("alljobChangeslist", alljobChangeslist);
+
+        System.out.println("******");
+        System.out.println(result.toJSONString());
+        System.out.println("******");
+
+        return result;
     }
 
     @RequestMapping(value = "/getfitJobChange", method = RequestMethod.POST)
-    public List<JobChange> findJobChangeBycondition(@RequestParam(value="change_id") String change_id,
-                                                  @RequestParam(value="job_id") String  job_id,
-                                                  @RequestParam(value="beforedp_id") String beforedp_id,
-                                                  @RequestParam(value="changetime") Date changetime) throws ParseException {
+    public List<Vjobchange> findJobChangeBycondition(@RequestParam(value="change_id") String change_id,
+                                                     @RequestParam(value="job_id") String  job_id,
+                                                     @RequestParam(value="beforedp_id") String beforedp_id,
+                                                     @RequestParam(value="afterdp_id") String afterdp_id,
+                                                     @RequestParam(value="changetime") String changetime){
         JobChange jobChange = new JobChange();
-
 
         if(!(change_id.equals("") ||change_id.equals(null))){
             int id = Integer.valueOf(change_id);
             jobChange.setChange_id(id);
+        }else{
+            jobChange.setChange_id(-1);
         }
         if(!(job_id.equals("") ||job_id.equals(null))){
             int id = Integer.valueOf(job_id);
             jobChange.setJob_id(id);
+        }else{
+            jobChange.setJob_id(-1);
         }
         if(!(beforedp_id.equals("") ||beforedp_id.equals(null))){
             int id = Integer.valueOf(beforedp_id);
             jobChange.setBeforedp_id(id);
+        }else{
+            jobChange.setBeforedp_id(-1);
         }
-        jobChange.setChangetime(changetime);
+        if(!(afterdp_id.equals("") ||afterdp_id.equals(null))){
+            int id = Integer.valueOf(afterdp_id);
+            jobChange.setAfterdp_id(id);
+        }else{
+            jobChange.setAfterdp_id(-1);
+        }
+        if(!(changetime.equals("") ||changetime.equals(null))){
+            jobChange.setChangetime(Date.valueOf(changetime));
+        }
 
-        List<JobChange> fitjobChangeslist = employeeService.findJobChangeBycondition(jobChange);
+        System.out.println(jobChange);
+        List<Vjobchange> fitjobChangeslist = employeeService.findJobChangeBycondition(jobChange);
 
         return fitjobChangeslist;
     }
@@ -165,9 +210,26 @@ public class EmployeeManageController {
         return flag;
     }
     @RequestMapping(value = "/addjobchange", method = RequestMethod.POST)
-    public int addjobchange(JobChange jobChange){
-        int flag = employeeService.addjobchange(jobChange);
-        return flag;
+    public int addjobchange(@RequestParam(value="job_id") String job_id,
+                            @RequestParam(value="afterdp_id") String  afterdp_id,
+                            @RequestParam(value="position_id") String  position_id,
+                            @RequestParam(value="changetime") String changetime){
+        JobChange jobChange = new JobChange();
+        System.out.println("job_id--->"+job_id);
+        System.out.println("afterdp_id--->"+afterdp_id);
+        System.out.println("changetime--->"+changetime);
+
+        int beforedp_id = employeeService.findByid(Integer.parseInt(job_id)).getDepartment_id();
+        int flag = employeeService.updateEmployeefordepartment(Integer.parseInt(afterdp_id), Integer.parseInt(job_id), Integer.parseInt(position_id));
+
+        jobChange.setJob_id(Integer.parseInt(job_id));
+        jobChange.setBeforedp_id(beforedp_id);
+        jobChange.setAfterdp_id(Integer.parseInt(afterdp_id));
+        jobChange.setChangetime(Date.valueOf(changetime));
+        jobChange.toString();
+
+        int endflag = employeeService.addjobchange(jobChange);
+        return endflag;
     }
 
 

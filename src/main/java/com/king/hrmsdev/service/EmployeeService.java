@@ -9,6 +9,7 @@ import com.king.hrmsdev.pojo.Vjobchange;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -29,8 +30,13 @@ public class EmployeeService {
         return allemployeeslist;
     }
 
-    public List<Employee> findEmployeeBycondition(Employee employee){
-        List<Employee> fitemployeeslist = employeeMapper.findBycondition(employee);
+    public  Employee findByid(int id){
+        Employee employee = employeeMapper.findByid(id);
+        return employee;
+    }
+
+    public List<Vemployee> findEmployeeBycondition(Employee employee){
+        List<Vemployee> fitemployeeslist = employeeMapper.findBycondition(employee);
         return fitemployeeslist;
     }
     public int updateEmployee(Employee employee){
@@ -56,8 +62,8 @@ public class EmployeeService {
         return alljobChangeslist;
     }
 
-    public List<JobChange> findJobChangeBycondition(JobChange jobChange){
-        List<JobChange> fitjobChangeslist = jobChangeMapper.findBycondition(jobChange);
+    public List<Vjobchange> findJobChangeBycondition(JobChange jobChange){
+        List<Vjobchange> fitjobChangeslist = jobChangeMapper.findBycondition(jobChange);
         return fitjobChangeslist;
     }
 
@@ -72,6 +78,15 @@ public class EmployeeService {
     }
     public int addjobchange(JobChange jobChange){
         int flag = jobChangeMapper.addjobchange(jobChange);
+        return flag;
+    }
+    public int updateEmployeefordepartment(int id,int jobid,int position_id){
+        HashMap<Object,Object> map = new HashMap<>();
+        map.put("department_id",id );
+        map.put("job_id", jobid);
+        map.put("position_id", position_id);
+        System.out.println(map.toString());
+        int flag = employeeMapper.updateEmployeefordepartment(map);
         return flag;
     }
 

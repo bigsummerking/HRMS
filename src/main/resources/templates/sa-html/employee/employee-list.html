@@ -39,19 +39,26 @@
 
 			<div class="c-item">
 				<label class="c-label">员工编号：</label>
-				<el-input size="mini" v-model="p.username" placeholder="模糊搜索"></el-input>
+				<el-input size="mini" v-model="p.job_id" placeholder="模糊搜索"></el-input>
 			</div>
 			<div class="c-item">
 				<label class="c-label">员工姓名：</label>
-				<el-input size="mini" v-model="p.username" placeholder="模糊搜索"></el-input>
+				<el-input size="mini" v-model="p.ename" placeholder="模糊搜索"></el-input>
 			</div>
 			<div class="c-item">
 				<label class="c-label">所属部门：</label>
-				<el-input size="mini" v-model="p.username" placeholder="模糊搜索"></el-input>
+				<el-select  v-model="p.department" size="mini"  placeholder="模糊搜索" filterable clearable>
+					<el-option
+							v-for="item in departmentsList"
+							:key="item.department_id"
+							:label="item.department"
+							:value="item.department_id">
+					</el-option>
+				</el-select>
 			</div>
 			<div class="c-item">
 				<label class="c-label">员工性别：</label>
-				<el-select v-model="p.status" size="mini"  placeholder="请选择">
+				<el-select v-model="p.sex" size="mini"  placeholder="请选择" clearable>
 					<el-option
 							v-for="item in sexOptions"
 							:key="item.value"
@@ -63,7 +70,7 @@
 
 			<div class="c-item">
 				<label class="c-label">员工状态：</label>
-				<el-select size="mini" v-model="p.create_type">
+				<el-select size="mini" v-model="p.workstate" clearable>
 					<el-option label="离职" :value="0"></el-option>
 					<el-option label="在职" :value="1"></el-option>
 				</el-select>
@@ -110,13 +117,60 @@
 
 			<el-table-column prop="address" label="操作">
 				<template slot-scope="scope">
-					<el-button type="primary" class="c-button" icon="el-icon-edit" @click="dongjie(scope.row)" >修改</el-button>
+					<el-button type="primary" class="c-button" icon="el-icon-edit" @click="" >修改</el-button>
+					<el-button type="success" class="c-button" icon="el-icon-thumb" @click="handlechange(scope.row)" >调动</el-button>
 					<el-button type="danger" class="c-button" icon="el-icon-remove-outline" @click="quitwork(scope.row)" v-if="scope.row.workstate == 1">解雇</el-button>
 					<el-button type="warning" class="c-button" icon="el-icon-refresh-right" @click="entrywork(scope.row)" v-if="scope.row.workstate == 0">入职</el-button>
 
 				</template>
 			</el-table-column>
 		</el-table>
+
+		<!-- 调动 -->
+		<el-dialog title="员工职位调动" :visible.sync="changeVisible" width="30%">
+			<el-form  name="changejob" id="changejob" ref="changejob"  style="width: 100%" :model="changejob" label-width="100px">
+				<el-form-item label="工号-姓名">
+					{{changejob.job_id}}-{{changejob.ename}}
+				</el-form-item>
+				<el-form-item label="调动部门">
+					<el-select  name="afterdp_id" id="afterdp_id" v-model="changejob.afterdp_id" size="mini"  style="width: 100%" placeholder="请选择部门" filterable  @change="getPositionforchange">
+						<el-option
+								v-for="item in departmentsList"
+								:key="item.department_id"
+								:label="item.department"
+								:value="item.department_id">
+						</el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="调动职位">
+					<el-select id="changejobposition" name="changejobposition"  v-model="changejob.position_id"  size="mini" style="width: 100%;" placeholder="请选择职位" filterable>
+						<el-option
+								v-for="item in positionsList"
+								:key="item.position_id"
+								:label="item.position_name"
+								:value="item.position_id">
+						</el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="调动时间">
+					<el-date-picker
+							name="changetime"
+							id="changetime"
+							size="mini"
+							style="width: 100%"
+							v-model="changejob.changetime"
+							type="date"
+							value-format="yyyy-MM-dd"
+							placeholder="选择日期">
+					</el-date-picker>
+				</el-form-item>
+
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+            <el-button  @click="changeVisible = false">取 消</el-button>
+            <el-button type="primary" @click="jobchange()">确 定</el-button>
+          </span>
+		</el-dialog>
 
 		<!-- 添加 -->
 		<el-dialog title="员工添加" :visible.sync="addVisible" width="35%">
@@ -338,121 +392,124 @@
 
 	var app = new Vue({
 		el: '#vue-box',
-		data:{
+		data: {
 			p: {	// 查询参数
-				department_id: "",
+				job_id: "",
+				ename: "",
 				department: "",
-				manager: "",
-				state: ""
+				workstate: "",
+				sex: ""
 			},
 			page: {	// 分页信息
 				pageNo: 1,
 				pageSize: 10,
 				count: 30
 			},
-
-			employeeslist:[
+			departmentsList:[],
+			positionsList:[],
+			employeeslist: [
 				{
-					address:"四川成都",
-					birth:915120000000,
-					department:"工程部",
-					education:"本科",
-					ename:"张一",
-					hiredate:1546272000000,
-					hometown:"四川",
-					idcard:"1212",
-					job_id:1,
-					nation:"汉",
-					phone:111,
-					position_name:"基层",
-					sex:1,
-					workstate:1
+					address: "四川成都",
+					birth: 915120000000,
+					department: "工程部",
+					education: "本科",
+					ename: "张一",
+					hiredate: 1546272000000,
+					hometown: "四川",
+					idcard: "1212",
+					job_id: 1,
+					nation: "汉",
+					phone: 111,
+					position_name: "基层",
+					sex: 1,
+					workstate: 1
 				}
 			],
 			countryOptions: options,
 			educationOptions: [
 				{
 					id: '1',
-					name:'小学'
+					name: '小学'
 				},
 				{
 					id: '2',
-					name:'初中'
+					name: '初中'
 				},
 				{
 					id: '3',
-					name:'高中'
+					name: '高中'
 				},
 				{
 					id: '4',
-					name:'中专'
+					name: '中专'
 				},
 				{
 					id: '5',
-					name:'大专'
+					name: '大专'
 				},
 				{
 					id: '6',
-					name:'本科'
+					name: '本科'
 				},
 				{
 					id: '7',
-					name:'研究生'
+					name: '研究生'
 				},
 				{
 					id: '8',
-					name:'博士'
+					name: '博士'
 				},
 				{
 					id: '9',
-					name:'硕士'
+					name: '硕士'
 				}
 
 			],
-			sexOptions:[
+			sexOptions: [
 				{
 					value: '1',
-					label:'男'
+					label: '男'
 				},
 				{
 					value: '0',
-					label:'女'
+					label: '女'
 				}
 			],
-			editVisible:false,
-			addVisible:false,
-			showVisible:false,
-			form:{
-				address:"四川成都",
-				birth:915120000000,
-				department:"工程部",
-				education:"本科",
-				ename:"张一",
-				hiredate:1546272000000,
-				hometown:"四川",
-				idcard:"1212",
-				job_id:1,
-				nation:"汉",
-				phone:111,
-				position_name:"基层",
-				sex:1,
-				workstate:1
+			editVisible: false,
+			addVisible: false,
+			changeVisible: false,
+			showVisible: false,
+			form: {
+				address: "四川成都",
+				birth: 915120000000,
+				department: "工程部",
+				education: "本科",
+				ename: "张一",
+				hiredate: 1546272000000,
+				hometown: "四川",
+				idcard: "1212",
+				job_id: 1,
+				nation: "汉",
+				phone: 111,
+				position_name: "基层",
+				sex: 1,
+				workstate: 1
 			},
-			temp:{
-				address:undefined,
-				birth:undefined,
-				department:undefined,
-				education:undefined,
-				ename:undefined,
-				hiredate:undefined,
-				hometown:undefined,
-				idcard:undefined,
-				nation:undefined,
-				phone:undefined,
-				position_name:undefined,
-				sex:undefined,
+			temp: {
+				address: undefined,
+				birth: undefined,
+				department: undefined,
+				education: undefined,
+				ename: undefined,
+				hiredate: undefined,
+				hometown: undefined,
+				idcard: undefined,
+				nation: undefined,
+				phone: undefined,
+				position_name: undefined,
+				sex: undefined,
 			},
-			nationOptions:[
+			nationOptions: [
 				{
 					id: 1,
 					name: '汉族'
@@ -623,9 +680,17 @@
 					name: '基诺族'
 				}
 			],
-			departmentsList:[],
-			positionsList:[],
-			hometownflag:false
+			changejob: {
+
+				job_id: undefined,
+				ename: undefined,
+				department: undefined,
+				beforedp_id: undefined,
+				afterdp_id: undefined,
+				position_id: undefined,
+				changetime: undefined
+			}
+
 		},
 
 
@@ -676,6 +741,20 @@
 				})
 			},
 
+			getPositionforchange:function(){
+				var that = this
+				$.ajax({
+					url: "http://localhost:9900/getPositionByDepartmentId",
+					type: "post",
+					data: {
+						department_id: that.changejob.afterdp_id
+					},
+					success: function (data) {
+						that.positionsList = data
+					}
+				})
+			},
+
 			handleEdit:function(row){
 				this.form = {
 					department_id:row.department_id,
@@ -685,6 +764,15 @@
 					state:row.state
 				}
 				this.editVisible = true
+			},
+
+			handlechange:function(row){
+				this.changejob = {
+					job_id:row.job_id,
+					ename:row.ename
+
+				}
+				this.changeVisible = true
 			},
 
 			handleAdd:function(row){
@@ -745,6 +833,54 @@
 						}
 					})
 					that.editVisible = false
+				}
+			},
+
+			//职位调动
+			jobchange:function(){
+				var that = this
+				if (changejob.afterdp_id.value=="")
+				{
+					layer.tips('请选择调动部门',$("#afterdp_id"));
+					changejob.afterdp_id.focus();
+					return false;
+				}else if (changejob.afterdp_id==changejob.beforedp_id)
+				{
+					layer.tips('该员工已在此部门',$("#afterdp_id"));
+					return false;
+				}
+				else if (changejob.changetime.value=="")
+				{
+					layer.tips('请选择调动时间',$("#changetime"));
+					changejob.changetime.focus();
+					return false;
+				}
+				else if (changejob.changejobposition.value=="")
+				{
+					layer.tips('请选择调动职位',$("#changejobposition"));
+					changejob.changejobposition.focus();
+					return false;
+				}else {
+					$.ajax({
+						url: "http://localhost:9900/addjobchange",
+						type: "post",
+						data: {
+							job_id: that.changejob.job_id,
+							afterdp_id: that.changejob.afterdp_id,
+							position_id: that.changejob.position_id,
+							changetime: that.changejob.changetime
+						},
+						success: function () {
+							layer.alert('调动成功', {
+								skin: 'layui-layer-molv'
+								, closeBtn: 0
+								, anim: 4
+							});
+
+							that.getData()
+						}
+					})
+					that.changeVisible = false
 				}
 			},
 
@@ -932,12 +1068,13 @@
 
 				$.ajax({
 					type: 'POST',
-					url: 'http://localhost:9900/getfitDepartment',
+					url: 'http://localhost:9900/getfitEmployee',
 					data: {
-						department_id:that.p.department_id,
-						department_name:that.p.department,
-						department_manager:that.p.manager,
-						department_state:that.p.state
+						job_id:that.p.job_id,
+						ename:that.p.ename,
+						department_id:that.p.department,
+						workstate:that.p.workstate,
+						sex:that.p.sex
 					},
 					success: function(res){
 
@@ -947,7 +1084,7 @@
 							,anim: 4
 						});
 						console.log(res)
-						that.departmentslist=res
+						that.employeeslist=res
 					},
 					error: function(){
 						layer.alert('查询失败', {

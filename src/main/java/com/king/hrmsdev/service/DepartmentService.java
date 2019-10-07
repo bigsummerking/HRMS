@@ -83,13 +83,20 @@ public class DepartmentService {
     }
 
 
+//    public int deleteposition(int id){
+//        int flag=0;
+//        Vposition vposition=dpRelationMapper.findbyid(id);
+//        dpRelationMapper.deletebyid(id);
+//        if(dpRelationMapper.findbyposition(vposition.getPosition_id()).isEmpty()){
+//            flag = positionMapper.deleteposition(id);
+//        }
+//        return flag;
+//    }
+
     public int deleteposition(int id){
-        int flag=0;
-        Vposition vposition=dpRelationMapper.findbyid(id);
-        dpRelationMapper.deletebyid(id);
-        if(dpRelationMapper.findbyposition(vposition.getPosition_id()).isEmpty()){
-            flag = positionMapper.deleteposition(id);
-        }
+
+        int flag = positionMapper.deleteposition(id);
+
         return flag;
     }
 
@@ -113,6 +120,8 @@ public class DepartmentService {
         return flag;
     }
 
-
-
+    public int finglastid(){
+        int id = positionMapper.finglastid();
+        return id;
+    }
 }

@@ -152,29 +152,31 @@ public class DepartmentManageController {
         return positionslist;
     }
 
+//    @RequestMapping(value = "/deleteposition", method = RequestMethod.POST)
+//    public int deleteposition(@RequestParam(value="relationship_id") int relationship_id){
+//        int flag = departmentService.deleteposition(relationship_id);
+//        return flag;
+//    }
+
     @RequestMapping(value = "/deleteposition", method = RequestMethod.POST)
-    public int deleteposition(@RequestParam(value="relationship_id") int relationship_id){
-        int flag = departmentService.deleteposition(relationship_id);
+    public int deleteposition(@RequestParam(value="position_id") int position_id){
+        int flag = departmentService.deleteposition(position_id);
         return flag;
     }
 
     @RequestMapping(value = "/addposition", method = RequestMethod.POST)
     public int addposition(@RequestParam(value="position_name") String position_name,
-                           @RequestParam(value="salary") String salary){
+                           @RequestParam(value="salary") String salary,
+                           @RequestParam(value="department_id") int department_id){
 
         BigDecimal position_alary =new BigDecimal(salary);
 
         Position position =new Position();
         position.setPosition(position_name);
         position.setSalary(position_alary);
-        int flag = departmentService.addposition(position);
-        return flag;
-    }
-
-    @RequestMapping(value = "/addDPRelation", method = RequestMethod.POST)
-    public int addDPRelation(@RequestParam(value="position_id") int position_id,
-                           @RequestParam(value="department_id") int department_id){
-
+        departmentService.addposition(position);
+        int position_id = departmentService.finglastid();
+        System.out.println("position_id:"+position_id);
 
         DPRelation dpRelation =new DPRelation();
         dpRelation.setPosition_id(position_id);
@@ -185,7 +187,7 @@ public class DepartmentManageController {
 
     @RequestMapping(value = "/updateposition", method = RequestMethod.POST)
     public int updateposition(@RequestParam(value="relationship_id") int relationship_id,
-                              @RequestParam(value="position_id") int position_id,
+                              @RequestParam(value="position_name") String position_name,
                               @RequestParam(value="department_id") int department_id,
                               @RequestParam(value="salary") String salary){
 
@@ -193,7 +195,7 @@ public class DepartmentManageController {
 
         Vposition vposition =new Vposition();
         vposition.setRelationship_id(relationship_id);
-        vposition.setPosition_id(position_id);
+        vposition.setPosition_name(position_name);
         vposition.setDepartment_id(department_id);
         vposition.setSalary(position_alary);
 
@@ -202,13 +204,22 @@ public class DepartmentManageController {
         return flag;
     }
 
-    @RequestMapping(value = "/getallPosition", method = RequestMethod.POST)
-    public List<Vposition> getAllVposition(){
+    @ResponseBody
+    @RequestMapping(value = "/getallPosition", method = RequestMethod.POST,produces = "application/json;charset=UTF-8")
+    public JSONObject  getAllVposition(){
         List<Vposition> allvpositionslist = departmentService.getAllVposition();
-        return allvpositionslist;
+
+        JSONObject result = new JSONObject();
+        result.put("msg", "ok");
+        result.put("method", "getAllVposition");
+        result.put("allvpositionslist", allvpositionslist);
+
+        System.out.println("******");
+        System.out.println(result.toJSONString());
+        System.out.println("******");
+
+        return result;
     }
-
-
 
 
 

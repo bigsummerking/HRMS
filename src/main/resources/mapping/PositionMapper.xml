@@ -40,15 +40,20 @@
                 AND dp_position.department_id =  #{department_id}
     </select>
 
+    <!--&lt;!&ndash;删除职位 &ndash;&gt;-->
+    <!--<delete id="deleteposition" parameterType="int">-->
+        <!--DELETE from position  WHERE position_id=#{id}-->
+    <!--</delete>-->
+
     <!--删除职位 -->
-    <delete id="deleteposition" parameterType="int">
-        DELETE from position  WHERE position_id=#{id}
-    </delete>
+    <update id="deleteposition" parameterType="int">
+        UPDATE position set salary=0 WHERE position_id= #{id}
+    </update>
     <!-- 添加职位-->
-    <insert id="addposition" parameterType="com.king.hrmsdev.entity.Position">
-        insert into position (position_name,salary) values(#{position_name},#{salary})
+    <insert id="addposition" parameterType="com.king.hrmsdev.entity.Position" >
+       insert into position (position_name,salary) values(#{position_name},#{salary})
     </insert>
-
-
-
+    <select id="finglastid" resultType="int">
+       SELECT LAST_INSERT_ID() last_id
+    </select>
 </mapper>

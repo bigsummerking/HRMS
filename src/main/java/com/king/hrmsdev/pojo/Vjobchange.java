@@ -11,8 +11,10 @@ import java.sql.Date;
 public class Vjobchange {
     private int change_id;
     private String job_id;
-    private String beforedp_id;
-    private String afterdp_id;
+    private String beforedp_name;
+    private String afterdp_name;
+    private int beforedp_id;
+    private int afterdp_id;
     private Date changetime;
 
     public int getChange_id() {
@@ -31,19 +33,35 @@ public class Vjobchange {
         this.job_id = job_id;
     }
 
-    public String getBeforedp_id() {
+    public String getBeforedp_name() {
+        return beforedp_name;
+    }
+
+    public void setBeforedp_name(String beforedp_name) {
+        this.beforedp_name = beforedp_name;
+    }
+
+    public String getAfterdp_name() {
+        return afterdp_name;
+    }
+
+    public void setAfterdp_name(String afterdp_name) {
+        this.afterdp_name = afterdp_name;
+    }
+
+    public int getBeforedp_id() {
         return beforedp_id;
     }
 
-    public void setBeforedp_id(String beforedp_id) {
+    public void setBeforedp_id(int beforedp_id) {
         this.beforedp_id = beforedp_id;
     }
 
-    public String getAfterdp_id() {
+    public int getAfterdp_id() {
         return afterdp_id;
     }
 
-    public void setAfterdp_id(String afterdp_id) {
+    public void setAfterdp_id(int afterdp_id) {
         this.afterdp_id = afterdp_id;
     }
 
@@ -55,9 +73,11 @@ public class Vjobchange {
         this.changetime = changetime;
     }
 
-    public Vjobchange(int change_id, String job_id, String beforedp_id, String afterdp_id, Date changetime) {
+    public Vjobchange(int change_id, String job_id, String beforedp_name, String afterdp_name, int beforedp_id, int afterdp_id, Date changetime) {
         this.change_id = change_id;
         this.job_id = job_id;
+        this.beforedp_name = beforedp_name;
+        this.afterdp_name = afterdp_name;
         this.beforedp_id = beforedp_id;
         this.afterdp_id = afterdp_id;
         this.changetime = changetime;
@@ -72,8 +92,10 @@ public class Vjobchange {
         return "Vjobchange{" +
                 "change_id=" + change_id +
                 ", job_id='" + job_id + '\'' +
-                ", beforedp_id='" + beforedp_id + '\'' +
-                ", afterdp_id='" + afterdp_id + '\'' +
+                ", beforedp_name='" + beforedp_name + '\'' +
+                ", afterdp_name='" + afterdp_name + '\'' +
+                ", beforedp_id=" + beforedp_id +
+                ", afterdp_id=" + afterdp_id +
                 ", changetime=" + changetime +
                 '}';
     }

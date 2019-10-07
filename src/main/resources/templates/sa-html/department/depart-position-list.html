@@ -10,6 +10,7 @@
 	<link rel="stylesheet" href="../../static/sa.css">
 
 	<!-- 所有的 js 资源 -->
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 	<script src="https://unpkg.com/vue@2.6.10/dist/vue.js"></script>
 	<script src="https://unpkg.com/element-ui@2.8.2/lib/index.js"></script>
 
@@ -29,7 +30,7 @@
 <!-- 防止margin向下击穿 -->
 <div style="margin-top: -1em;"><br></div>
 
-<div class="vue-box" style="display: none;" :style="'display: block;'">
+<div id="vue-box" style="display: none;" :style="'display: block;'">
 
 	<!-- 参数栏 -->
 	<div class="c-panel">
@@ -37,25 +38,31 @@
 		<el-form ref="form">
 			<div class="c-item">
 				<label class="c-label">职位编号：</label>
-				<el-input size="mini" v-model="p.username" placeholder="模糊搜索" @keyup.enter="f5"></el-input>
+				<el-input size="mini" v-model="p.relationship_id" placeholder="模糊搜索"></el-input>
 			</div>
 
 			<div class="c-item">
 				<label class="c-label">职位名称：</label>
-				<el-input size="mini" v-model="p.username" placeholder="模糊搜索" @keyup.enter="f5"></el-input>
+				<el-input size="mini" v-model="p.position_name" placeholder="模糊搜索"></el-input>
 			</div>
 			<div class="c-item">
 				<label class="c-label">所属部门：</label>
-				<el-input size="mini" v-model="p.username" placeholder="模糊搜索" @keyup.enter="f5"></el-input>
+				<el-select  v-model="p.department_name" size="mini"  placeholder="模糊搜索" filterable clearable>
+					<el-option
+							v-for="item in departmentsList"
+							:key="item.department_id"
+							:label="item.department"
+							:value="item.department">
+					</el-option>
+				</el-select>
 			</div>
 
 
 			<div class="c-item" style="min-width: 0px;">
-				<el-button type="primary" icon="el-icon-search" size="mini" @click="f5">查询</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="findfit">查询</el-button>
 			</div>
-			<br />
 			<div class="c-item" style="min-width: 0px;">
-				<el-button type="primary" icon="el-icon-plus" size="mini" @click="f5">添加部门</el-button>
+				<el-button type="primary" icon="el-icon-plus" size="mini"   @click="addVisible = true">添加职位</el-button>
 			</div>
 
 			<br />
@@ -69,34 +76,82 @@
 	<!-- 数据栏 -->
 	<div class="c-panel">
 		<div class="c-title">职位列表</div>
-		<el-table class="data-table" :data="dataList" size="mini"  style="width: 100%">
+		<el-table class="data-table" :data="allvpositionslist" size="mini"  style="width: 100%">
 
-			<el-table-column label="职位编号" prop="id" width="100px" sortable> </el-table-column>
-			<el-table-column label="职位名称" prop="username" width="200px">
+			<el-table-column label="职位编号" prop="relationship_id" width="100px" sortable> </el-table-column>
+			<el-table-column label="职位名称" prop="position_name"  sortable></el-table-column>
+			<el-table-column label="所属部门" prop="department_name" sortable></el-table-column>
+			<el-table-column label="职位工资" prop="salary" sortable> </el-table-column>
+
+
+			<el-table-column label="操作">
 				<template slot-scope="scope">
-
-					<div style="float: left; width: 130px; line-height: 20px;">
-						<b>{{scope.row.username}}</b>
-					</div>
-				</template>
-			</el-table-column>
-			<el-table-column label="所属部门" sortable>
-				<template slot-scope="scope">
-
-					{{scope.row.avatar}}
-				</template>
-			</el-table-column>
-			<el-table-column label="职位工资" prop="sex" sortable> </el-table-column>
-
-
-			<el-table-column prop="address" label="操作">
-				<template slot-scope="scope">
-					<el-button type="primary" class="c-button" icon="el-icon-edit" @click="del()">修改</el-button>
-					<el-button type="danger" class="c-button" icon="el-icon-delete" @click="dongjie(scope.row)">删除</el-button>
+					<el-button type="primary" class="c-button" icon="el-icon-edit" @click="handleEdit(scope.row)">修改</el-button>
+					<el-button type="danger" v-if="scope.row.salary != 0" class="c-button" icon="el-icon-delete" @click="deleteposition(scope.row)">删除</el-button>
+					<span style="color: blue;" v-if="scope.row.salary == 0">职位失效</span>
 
 				</template>
 			</el-table-column>
 		</el-table>
+
+		<!-- 添加 -->
+		<el-dialog title="职位添加" :visible.sync="addVisible" width="30%">
+			<el-form  name="temp" id="temp" ref="temp"  :model="temp" label-width="100px">
+				<el-form-item label="职位名称">
+					<el-input  id="position_name" name="position_name" v-model="temp.position_name" maxlength="30" placeholder="请输入部门名称" show-word-limit />
+				</el-form-item>
+				<el-form-item label="职位工薪" >
+					<el-input id="salary" name="salary" v-model="temp.salary" maxlength="20" placeholder="请输入部门经理" show-word-limit  onkeyup="this.value=this.value.replace(/\D/g,'')" />
+				</el-form-item>
+				<el-form-item label="所属部门" >
+					<el-select  id="department_id" name="department_id" v-model="temp.department_id"   style="width: 100%;" placeholder="请选择部门" filterable clearable>
+						<el-option
+								v-for="item in departmentsList"
+								:key="item.department_id"
+								:label="item.department"
+								:value="item.department_id">
+						</el-option>
+					</el-select>
+				</el-form-item>
+
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+            <el-button  @click="addVisible = false">取 消</el-button>
+            <el-button type="primary" @click="saveAdd()">确 定</el-button>
+          </span>
+		</el-dialog>
+
+		<!-- 编辑 -->
+		<el-dialog title="职位编辑" :visible.sync="editVisible" width="30%">
+			<el-form name="form" id="form"  ref="form"  :model="form" label-width="100px">
+				<el-form-item label="职位编号">
+					{{form.relationship_id}}
+				</el-form-item>
+				<el-form-item label="职位名称">
+					<el-input  id="formposition_name" name="formposition_name" v-model="form.position_name" maxlength="30" show-word-limit/>
+				</el-form-item>
+				<el-form-item label="所属部门">
+					<el-select  id="formdepartment" name="formdepartment" v-model="form.department_id"   style="width: 100%;" placeholder="请选择部门" filterable>
+						<el-option
+								v-for="item in departmentsList"
+								:key="item.department_id"
+								:label="item.department"
+								:value="item.department_id">
+						</el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="职位薪资">
+					<el-input id="formsalary" name="formsalary" v-model="form.salary" maxlength="20" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+				</el-form-item>
+
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+            <el-button @click="editVisible = false">取 消</el-button>
+            <el-button type="primary" @click="saveEdit()">确 定</el-button>
+          </span>
+		</el-dialog>
+
+
 
 		<!-- 分页 -->
 		<div class="page-box">
@@ -113,24 +168,13 @@
 
 	</div>
 
-
-	<div class="c-panel" style="background-color: rgba(0,0,0,0);">
-		layer：<el-link type="primary" href="http://layer.layui.com/" target="_blank">
-		一个可以让你想到即可做到的JavaScript弹窗（层）解决方案
-	</el-link> <br>
-		laydate：<el-link type="primary" href="https://www.layui.com/laydate/" target="_blank">
-		世界上最好用的日期选择插件
-	</el-link> <br>
-
-	</div>
-
 	<br><br><br><br><br><br><br><br><br>
 
 
 </div>
 
-<script type="text/javascript">
-	// 定义一个 Vue 全局的过滤器，名字叫做  msgFormat
+<script>
+	// 定义一个 Vue 全局的过滤器，名字叫做  statusFormat
 	Vue.filter('statusFormat', function (val) {
 		if(val===1){
 			return '正常'
@@ -139,103 +183,179 @@
 		}
 	})
 
-	// 渲染日期选择插件 	且初始化数据
-	function init() {
-		this.statusOptions = [
-			{
-				value: 1,
-				label:'正常'
-			},
-			{
-				value: -1,
-				label:'撤销'
-			}
-		],
-		$.ajax({
-			url: "http://localhost:9900/getallPosition",
-			type: "post",
-			dataType: "json",
-			data: {},
-			success : function(data){
-				layer.alert(data,{
-					skin: 'layui-layer-molv'
-				});
-
-			},
-			error : function(data){
-				layer.alert("进入了error方法",{
-					skin: 'layui-layer-molv'
-				});
-			}
-		});
-		// 开始日期
-		laydate.render({
-			elem: '.start_time input',
-			type: 'date',
-			done: function(value, date){
-				app.p.start_time = value;
-			}
-		});
-		// 结束日期
-		laydate.render({
-			elem: '.end_time input',
-			type: 'date',
-			done: function(value, date){
-				app.p.end_time = value;
-			}
-		});
-	}
-
 	var app = new Vue({
-		el: '.vue-box',
-		// filters: {
-		// 	statusFilter(status) {
-		// 		const statusMap = {
-		// 			'1': 'success',
-		// 			'2': 'warning',
-		// 			'3': 'info',
-		// 			'4': 'danger'
-		// 		}
-		// 		return statusMap[status]
-		// 	}
-		// },
-
-		data: {
+		el: '#vue-box',
+		data:{
 			p: {	// 查询参数
-				username: '',
-				create_type: 0,
-				sort_type: 1,
-				start_time: sa.$util.forDate(new Date(new Date().getFullYear(), new Date().getMonth(), 1)), 	// 本月一号
-				end_time: sa.$util.forDate(new Date()),
-				status:undefined
+				relationship_id: "",
+				position_name: "",
+				department_name: "",
+				department_id: "",
+				position_id: "",
+				salary: ""
 			},
 			page: {	// 分页信息
 				pageNo: 1,
 				pageSize: 10,
-				count: 1422
+				count: 30
 			},
-			dataList: dataList,
+			allvpositionslist:[
+				{relationship_id:1,position_name:"基层",department_name:"工程部",department_id:0,position_id:0,salary:6000.00}
+			],
 			statusOptions:[
 				{
-					value: 1,
+					value: '1',
 					label:'正常'
 				},
 				{
-					value: -1,
+					value: '0',
 					label:'撤销'
 				}
-			]
+			],
+			editVisible:false,
+			addVisible:false,
+			form:{
+				relationship_id: "",
+				position_name: "",
+				department_name: "",
+				department_id: "",
+				position_id: "",
+				salary: ""
+			},
+			departmentsList:[],
+			temp:{
+				position_name: "",
+				department_id: "",
+				salary: ""
+			}
 		},
 
+
+
+		created: function () {
+			this.getData();
+			this.getDepartment();
+		},
+
+
 		methods: {
-			// 数据刷新
-			f5: function() {
-				sa.ajax2('/user/getList', this.p, function(res){
-					// this.dataList = res.data;	// 数据
-					// this.page = res.page;		// 分页
-					this.$message('查询：' + JSON.stringify(this.p));
-				}.bind(this));
+			getDepartment:function(){
+				var that = this
+				axios.post('http://localhost:9900/getallDepartment').then(function (res) {
+
+					//把从json获取的数据赋值给数组
+					var data = res.data.alldepartmentslist
+					that.departmentsList = data
+				}).catch(function () {
+					console.log('失败')
+				})
 			},
+			handleEdit:function(row){
+				this.form = {
+					relationship_id:row.relationship_id,
+					position_name:row.position_name,
+					department_id:row.department_id,
+					salary:row.salary,
+				}
+				this.editVisible = true
+			},
+
+			handleAdd:function(row){
+				this.addVisible = true
+			},
+
+			// 保存编辑，更新部门信息
+			saveEdit:function() {
+				var that = this
+				if (form.formposition_name.value=="")
+				{
+					layer.tips('请输入部门名称',$("#formposition_name"));
+					form.formposition_name.focus();
+					return false;
+				}else if (form.formsalary.value=="")
+				{
+					layer.tips('请输入职位薪资',$("#formsalary"));
+					form.formsalary.focus();
+					return false;
+				}
+				else {
+					$.ajax({
+						url: "http://localhost:9900/updateposition",
+						type: "post",
+						data: {
+							relationship_id: that.form.relationship_id,
+							position_name: that.form.position_name,
+							department_id: that.form.department_id,
+							salary: that.form.salary,
+						},
+						success: function () {
+							layer.alert('修改成功', {
+								skin: 'layui-layer-molv'
+								, closeBtn: 0
+								, anim: 4
+							});
+
+							that.getData()
+						}
+					})
+					that.editVisible = false
+				}
+			},
+
+			//添加职位
+			saveAdd:function() {
+				var that = this
+				if (temp.position_name.value=="")
+				{
+					layer.tips('请输入职位名称',$("#position_name"));
+					temp.position_name.focus();
+					return false;
+				}else if (temp.salary.value=="")
+				{
+					layer.tips('请输入职位工薪',$("#salary"));
+					temp.salary.focus();
+					return false;
+				}else if (temp.department_id.value=="")
+				{
+					layer.tips('请选择所属部门',$("#department_id"));
+					temp.department_id.focus();
+					return false;
+				}else{
+					$.ajax({
+						url: "http://localhost:9900/addposition",
+						type: "post",
+						data:{
+							position_name:that.temp.position_name,
+							department_id:that.temp.department_id,
+							salary:that.temp.salary
+						},
+						success:function(){
+							layer.alert('添加成功', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+							that.getData()
+						}
+					})
+					that.addVisible = false
+				}
+			},
+
+			//刷新数据
+			getData:function(){
+				var that = this
+				axios.post('http://localhost:9900/getallPosition').then(function (res) {
+
+					//把从json获取的数据赋值给数组
+					var data = res.data.allvpositionslist
+					that.allvpositionslist = data
+
+				}).catch(function () {
+					console.log('失败')
+				})
+			},
+
 			// 分页刷新
 			pageNo_f5: function(pageNo) {
 				this.$message('切换当前页：' + pageNo);
@@ -245,64 +365,99 @@
 				this.$message('切换页大小：' + pageSize);
 				this.f5();
 			},
-			// 预览图片
-			pre_img: function(data) {
-				var list = data.photo_list;
-				var arr_list = [];
-				list.forEach(function(item) {
-					arr_list.push({
-						alt: '左右键切换',
-						pid: 1,
-						src: item,
-						thumb: item
-					})
-				})
-				layer.photos({
-					photos: {
-						title: data.username + '的个人相册',
-						id: data.id,
-						start: 0,
-						data: arr_list
-					}
-					,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+
+			// 职位撤销
+			deleteposition: function(data) {
+				var that = this
+				layer.confirm('确定撤销此职位？', {icon: 3, title:'提示'}, function(index){
+					$.ajax({
+						type: 'POST',
+						url: 'http://localhost:9900/deleteposition',
+						data: {position_id:data.position_id},
+						success: function(){
+
+							layer.alert('撤销成功', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+							that.getData()
+						},
+						error: function(){
+							layer.alert('撤销失败', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+						}
+					});
 				});
 
 			},
-			// 删除
-			del: function(){
-				alert("学生id");
+
+			// 部门解禁
+			recover: function(data) {
+				var that = this
+				layer.confirm('确定解禁此部门？', {icon: 3, title:'提示'}, function(index){
+					$.ajax({
+						type: 'POST',
+						url: 'http://localhost:9900/recoverDepartment',
+						data: {department_id:data.department_id},
+						success: function(){
+
+							layer.alert('解禁成功', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+							that.getData()
+						},
+						error: function(){
+							layer.alert('解禁失败', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+						}
+					});
+				});
+			},
+
+			// 部门模糊查询
+			findfit: function() {
+
+				var that = this
+
 				$.ajax({
-					url: "http://localhost:9900/getallDepartment",
-					type: "post",
-					success:function(){
-						alert("删除收藏成功");
+					type: 'POST',
+					url: 'http://localhost:9900/getfitPosition',
+					data: {
+						relationship_id:that.p.relationship_id,
+						position_name:that.p.position_name,
+						department_name:that.p.department_name,
+					},
+					success: function(res){
+
+						layer.alert('查询成功', {
+							skin: 'layui-layer-molv'
+							,closeBtn: 0
+							,anim: 4
+						});
+						console.log(res)
+						that.allvpositionslist=res
+					},
+					error: function(){
+						layer.alert('查询失败', {
+							skin: 'layui-layer-molv'
+							,closeBtn: 0
+							,anim: 4
+						});
 					}
 				});
-			} ,
-			// 账号冻结
-			dongjie: function(data) {
-				layer.confirm('冻结此用户？', {}, function() {
-					sa.ajax2('url', {}, function(res) {
-						data.status = 2;
-						layer.msg('冻结成功');
-					}.bind(this))
-				}.bind(this));
-			},
-			// 解禁
-			jiejin: function(data) {
-				layer.confirm('解禁此用户？', {}, function() {
-					sa.ajax2('url', {}, function(res) {
-						data.status = 1;
-						layer.msg('解禁成功');
-					}.bind(this))
-				}.bind(this));
+
 			}
-		},
-		mounted:function(){
-			init();
 		}
 	})
-
 </script>
 
 

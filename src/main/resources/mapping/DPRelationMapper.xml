@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.king.hrmsdev.mapper.DPRelationMapper">
     <select id="findbyall"  resultType="com.king.hrmsdev.pojo.Vposition">
-      SELECT relationship_id,(SELECT position_name from position WHERE  position.position_id=dp_position.position_id) position_name,(SELECT department from department WHERE  dp_position.department_id = department.department_id) department_name , salary from dp_position,department,position WHERE position.position_id=dp_position.position_id and
+       SELECT dp_position.*,(SELECT position_name from position WHERE  position.position_id=dp_position.position_id) position_name,(SELECT department from department WHERE  dp_position.department_id = department.department_id) department_name , salary from dp_position,department,position WHERE position.position_id=dp_position.position_id and
       dp_position.department_id = department.department_id
     </select>
 
@@ -29,7 +29,7 @@
       insert into dp_position(position_id,department_id) values (#{position_id},#{department_id})
     </insert>
     <update id="updateDPRelation" parameterType="com.king.hrmsdev.pojo.Vposition">
-        update dp_position,position set dp_position.position_id = #{position_id} ,department_id = #{department_id}, salary=#{salary} WHERE relationship_id=#{relationship_id} and position.position_id = (SELECT position_id FROM (SELECT * FROM dp_position WHERE relationship_id = #{relationship_id}) a)
+        update dp_position,position set position_name = #{position_name} ,department_id = #{department_id}, salary=#{salary} WHERE relationship_id=#{relationship_id} and position.position_id = (SELECT position_id FROM (SELECT * FROM dp_position WHERE relationship_id = #{relationship_id}) a)
     </update>
 
 

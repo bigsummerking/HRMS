@@ -17,7 +17,7 @@ import java.util.Map;
 public interface JobChangeMapper {
      List<Vjobchange> findall();
      JobChange findByid(int id);
-     List<JobChange> findBycondition(JobChange jobChange);
+     List<Vjobchange> findBycondition(JobChange jobChange);
      int updatejobchange(JobChange jobChange);
      int deletejobchange(int id);
      int addjobchange(JobChange jobChange);

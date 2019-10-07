@@ -126,10 +126,10 @@
 		<!-- 添加 -->
 		<el-dialog title="部门添加" :visible.sync="addVisible" width="30%">
 			<el-form  name="temp" id="temp" ref="temp"  :model="temp" label-width="100px">
-				<el-form-item label="部门名称" prop="department">
+				<el-form-item label="部门名称">
 					<el-input  id="department" name="department" v-model="temp.department" maxlength="30" placeholder="请输入部门名称" show-word-limit />
 				</el-form-item>
-				<el-form-item label="部门经理" prop="manager">
+				<el-form-item label="部门经理">
 					<el-input id="manager" name="manager" v-model="temp.manager" maxlength="30" placeholder="请输入部门经理" show-word-limit  />
 				</el-form-item>
 

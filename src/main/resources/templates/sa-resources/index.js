@@ -9,13 +9,13 @@ var homePage = {
 var sa_admin = new Vue({
 	el: '.app',
 	data: {
-		version: 'v1.1.3',		// 当前版本
-		update_time: '2019-9-3',		// 更新日期
+		version: 'v1.0.0',		// 当前版本
+		update_time: '2019-10-07',		// 更新日期
 		title: '',//'人事考勤系统',				// 页面标题
 		logo_url: '',	// logo地址
 		icon_url: '',	// icon地址
 		is_log: true,				// 是否打印日志
-		github_url: 'https://github.com/',	// github地址
+		github_url: 'https://github.com/4010hrms/hrms',	// github地址
 		default_active: '0',	// 默认的高亮菜单id
 		default_openeds: [],	// 默认的打开数组
 		unique_opened: true,		// 是否保持只打开一个

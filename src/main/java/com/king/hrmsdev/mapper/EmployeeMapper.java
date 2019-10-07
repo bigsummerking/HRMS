@@ -5,6 +5,7 @@ import com.king.hrmsdev.pojo.Vemployee;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -17,11 +18,12 @@ import java.util.List;
 public interface EmployeeMapper {
      List<Vemployee> findall();
      Employee findByid(int id);
-     List<Employee> findBycondition(Employee employee);
+     List<Vemployee> findBycondition(Employee employee);
      int updateEmployee(Employee employee);
      int addEmployee(Employee employee);
      int dismissEmployee (int  id);
      int recoverEmployee (int  id);
+     int updateEmployeefordepartment(Map map);
 
 
 }

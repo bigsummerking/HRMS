@@ -10,6 +10,7 @@
 	<link rel="stylesheet" href="../../static/sa.css">
 
 	<!-- 所有的 js 资源 -->
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 	<script src="https://unpkg.com/vue@2.6.10/dist/vue.js"></script>
 	<script src="https://unpkg.com/element-ui@2.8.2/lib/index.js"></script>
 
@@ -29,7 +30,7 @@
 <!-- 防止margin向下击穿 -->
 <div style="margin-top: -1em;"><br></div>
 
-<div class="vue-box" style="display: none;" :style="'display: block;'">
+<div id="vue-box" style="display: none;" :style="'display: block;'">
 
 	<!-- 参数栏 -->
 	<div class="c-panel">
@@ -37,44 +38,52 @@
 		<el-form ref="form">
 
 			<div class="c-item">
+				<label class="c-label">调动记录：</label>
+				<el-input size="mini" v-model="p.change_id" placeholder="请输入调动记录"></el-input>
+			</div>
+			<div class="c-item">
 				<label class="c-label">员工编号：</label>
-				<el-input size="mini" v-model="p.username" placeholder="模糊搜索" @keyup.enter="f5"></el-input>
+				<el-input size="mini" v-model="p.job_id" placeholder="请输入员工编号"></el-input>
 			</div>
 			<div class="c-item">
-				<label class="c-label">员工姓名：</label>
-				<el-input size="mini" v-model="p.username" placeholder="模糊搜索" @keyup.enter="f5"></el-input>
-			</div>
-			<div class="c-item">
-				<label class="c-label">原部门：</label>
-				<el-input size="mini" v-model="p.username" placeholder="模糊搜索" @keyup.enter="f5"></el-input>
-			</div>
-			<div class="c-item">
-				<label class="c-label">调动时间：</label>
-				<el-select v-model="p.status" placeholder="请选择">
+				<label class="c-label">调动前：</label>
+				<el-select v-model="p.beforedp_id"  size="mini" placeholder="请选择部门" filterable clearable>
 					<el-option
-							v-for="item in statusOptions"
-							:key="item.value"
-							:label="item.label"
-							:value="item.value">
+							v-for="item in departmentsList"
+							:key="item.department_id"
+							:label="item.department"
+							:value="item.department_id">
+					</el-option>
+				</el-select>
+
+			</div>
+			<div class="c-item">
+				<label class="c-label">调动后：</label>
+				<el-select v-model="p.afterdp_id" size="mini" placeholder="请选择部门" filterable clearable>
+					<el-option
+
+							v-for="item in departmentsList"
+							:key="item.department_id"
+							:label="item.department"
+							:value="item.department_id">
 					</el-option>
 				</el-select>
 			</div>
-
-			<div class="c-item" style="min-width: 0px;">
-				<el-button type="primary" icon="el-icon-search" size="mini" @click="f5">查询</el-button>
+			<div class="c-item">
+				<label class="c-label">调动时间：</label>
+				<el-date-picker
+						size="mini"
+						v-model="p.changetime"
+						type="date"
+						value-format="yyyy-MM-dd"
+						placeholder="选择日期">
+				</el-date-picker>
 			</div>
 
-			<!-- <br />
-            <div class="c-item">
-                <label class="c-label">注册方式：</label>
-                <el-select size="mini" v-model="p.create_type">
-                    <el-option label="全部" :value="0"></el-option>
-                    <el-option label="账号注册" :value="1"></el-option>
-                    <el-option label="手机号注册" :value="2"></el-option>
-                    <el-option label="邮箱注册" :value="3"></el-option>
-                </el-select>
-            </div>
-             -->
+			<div class="c-item" style="min-width: 0px;">
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="findfit">查询</el-button>
+			</div>
+
 			<br />
 
 
@@ -85,33 +94,17 @@
 	<!-- 数据栏 -->
 	<div class="c-panel">
 		<div class="c-title">调动信息列表</div>
-		<el-table class="data-table" :data="dataList" size="mini"  style="width: 100%">
-			<el-table-column label="调动记录" prop="id" width="70px" > </el-table-column>
-			<el-table-column label="工号" prop="id" width="70px" > </el-table-column>
-			<el-table-column label="员工名称" prop="username" width="200px">
-				<template slot-scope="scope">
-					<div style="float: left; width: 130px; line-height: 20px;">
-						<b>{{scope.row.username}}</b>
-					</div>
-				</template>
-			</el-table-column>
-			<el-table-column label="原部门-职位">
-				<template slot-scope="scope">
-					{{scope.row.avatar}}-程序员
-				</template>
-			</el-table-column>
-			<el-table-column label="现部门-职位">
-				<template slot-scope="scope">
-					{{scope.row.avatar}}-工程师
-				</template>
-			</el-table-column>
-
-			<el-table-column label="调动时间" prop="create_time"></el-table-column>
+		<el-table class="data-table" :data="alljobChangeslist" size="mini"  style="width: 100%">
+			<el-table-column label="调动记录" prop="change_id" width="100px" > </el-table-column>
+			<el-table-column label="工号" prop="job_id" > </el-table-column>
+			<el-table-column label="调动前" prop="beforedp_name" > </el-table-column>
+			<el-table-column label="调动后" prop="afterdp_name" > </el-table-column>
+			<el-table-column label="调动时间" prop="changetime"></el-table-column>
 
 			<el-table-column prop="address" label="操作">
 				<template slot-scope="scope">
-					<el-button type="primary" class="c-button" icon="el-icon-edit" @click="dongjie(scope.row)" >修改</el-button>
-					<el-button type="danger" class="c-button" icon="el-icon-delete" @click="del(scope.row)">删除</el-button>
+					<el-button type="danger"class="c-button" icon="el-icon-delete" @click="deletejobchange(scope.row)">删除</el-button>
+
 				</template>
 			</el-table-column>
 		</el-table>
@@ -132,100 +125,138 @@
 	</div>
 
 
-	<div class="c-panel" style="background-color: rgba(0,0,0,0);">
-		layer：<el-link type="primary" href="http://layer.layui.com/" target="_blank">
-		一个可以让你想到即可做到的JavaScript弹窗（层）解决方案
-	</el-link> <br>
-		laydate：<el-link type="primary" href="https://www.layui.com/laydate/" target="_blank">
-		世界上最好用的日期选择插件
-	</el-link> <br>
-
-	</div>
-
 	<br><br><br><br><br><br><br><br><br>
 
 
 </div>
 
-<script type="text/javascript">
-
-
-	// 渲染日期选择插件 	且初始化数据
-	function init() {
-		$.ajax({
-			url: "http://localhost:9900/getAllJobChange",
-			type: "post",
-			dataType: "json",
-			data: {},
-			success : function(data){
-				layer.alert(data,{
-					skin: 'layui-layer-molv'
-				});
-
-			},
-			error : function(data){
-				layer.alert("进入了error方法",{
-					skin: 'layui-layer-molv'
-				});
-			}
-		});
-
-		// 开始日期
-		laydate.render({
-			elem: '.start_time input',
-			type: 'date',
-			done: function(value, date){
-				app.p.start_time = value;
-			}
-		});
-		// 结束日期
-		laydate.render({
-			elem: '.end_time input',
-			type: 'date',
-			done: function(value, date){
-				app.p.end_time = value;
-			}
-		});
-	}
-
-
+<script>
+	// 定义一个 Vue 全局的过滤器，名字叫做  sexFormat
+	Vue.filter('sexFormat', function (val) {
+		if(val===1){
+			return '男'
+		}else if(val===0){
+			return '女'
+		}
+	})
 
 	var app = new Vue({
-		el: '.vue-box',
-		data: {
-			p: {	// 查询参数
-				username: '',
-				create_type: 0,
-				sort_type: 1,
-				start_time: sa.$util.forDate(new Date(new Date().getFullYear(), new Date().getMonth(), 1)), 	// 本月一号
-				end_time: sa.$util.forDate(new Date()),
+		el: '#vue-box',
+		data:{
+			p:{
+				change_id: "",
+				job_id:"",
+				beforedp_id: "",
+				afterdp_id: "",
+				changetime: ""
 			},
 			page: {	// 分页信息
 				pageNo: 1,
 				pageSize: 10,
-				count: 1422
+				count: 30
 			},
-			dataList: dataList,
-			statusOptions:[
+			alljobChangeslist:[
 				{
-					value: 1,
-					label:'男'
-				},
-				{
-					value: 0,
-					label:'女'
+					change_id: 1,
+					job_id: "小马哥",
+					beforedp_name: "工程部",
+					afterdp_name: "事业部",
+					beforedp_id: 1,
+					afterdp_id: 2,
+					changetime: "2016-01-01"
 				}
-			]
+			],
+			departmentsList:[],
 		},
+
+
+
+		created: function () {
+			this.getData();
+			this.getDepartment();
+		},
+
+
 		methods: {
-			// 数据刷新
-			f5: function() {
-				sa.ajax2('/user/getList', this.p, function(res){
-					// this.dataList = res.data;	// 数据
-					// this.page = res.page;		// 分页
-					this.$message('查询：' + JSON.stringify(this.p));
-				}.bind(this));
+			handlehome:function(data){
+				if(data[1]==undefined){
+					this.temp.hometown=data[0]
+				}else{
+					this.temp.hometown=data[0]+data[1];
+					this.hometownflag=true;
+					console.log(this.temp.hometown);
+					console.log(data);
+					console.log(this.hometownflag);
+				}
 			},
+
+			getDepartment:function(){
+				var that = this
+				axios.post('http://localhost:9900/getallDepartment').then(function (res) {
+
+					//把从json获取的数据赋值给数组
+					var data = res.data.alldepartmentslist
+					that.departmentsList = data
+				}).catch(function () {
+					console.log('失败')
+				})
+			},
+
+
+
+			handleEdit:function(row){
+				this.form = {
+					department_id:row.department_id,
+					department:row.department,
+					employee_count:row.employee_count,
+					manager:row.manager,
+					state:row.state
+				}
+				this.editVisible = true
+			},
+
+			handleAdd:function(row){
+				this.addVisible = true
+			},
+
+			//显示信息
+			showInfo:function(row){
+				this.form = {
+					job_id:row.job_id,
+					ename:row.ename,
+					sex:row.sex,
+					nation:row.nation,
+					address:row.address,
+					hometown:row.hometown,
+					idcard:row.idcard,
+					phone:row.phone,
+					birth:row.birth,
+					education:row.education,
+					department:row.department,
+					position_name:row.position_name,
+					hiredate:row.hiredate,
+					workstate:row.workstate
+				}
+				this.showVisible = true
+			},
+
+
+
+			//刷新数据
+			getData:function(){
+				var that = this
+				axios.post('http://localhost:9900/getAllJobChange').then(function (res) {
+
+					//把从json获取的数据赋值给数组
+					var data = res.data.alljobChangeslist
+					that.alljobChangeslist = data
+					console.log(that.alljobChangeslist)
+
+				}).catch(function () {
+					console.log('失败')
+				})
+			},
+
 			// 分页刷新
 			pageNo_f5: function(pageNo) {
 				this.$message('切换当前页：' + pageNo);
@@ -235,67 +266,101 @@
 				this.$message('切换页大小：' + pageSize);
 				this.f5();
 			},
-			// 预览图片
-			pre_img: function(data) {
-				var list = data.photo_list;
-				var arr_list = [];
-				list.forEach(function(item) {
-					arr_list.push({
-						alt: '左右键切换',
-						pid: 1,
-						src: item,
-						thumb: item
-					})
-				})
-				layer.photos({
-					photos: {
-						title: data.username + '的个人相册',
-						id: data.id,
-						start: 0,
-						data: arr_list
-					}
-					,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+
+			// 删除记录
+			deletejobchange: function(data) {
+				var that = this
+				layer.confirm('确定删除此记录？', {icon: 3, title:'提示'}, function(index){
+					$.ajax({
+						type: 'POST',
+						url: 'http://localhost:9900/deletejobchange',
+						data: {id:data.change_id},
+						success: function(){
+
+							layer.alert('删除成功', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+							that.getData()
+						},
+						error: function(){
+							layer.alert('删除失败', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+						}
+					});
 				});
 
 			},
-			// 删除
-			del: function(data) {
-				layer.confirm('是否删除，此操作不可撤销', {}, function() {
-					sa.ajax2('url', {}, function(res) {
-						sa.$util.arrayDelete(this.dataList, data);
-						layer.msg('删除成功');
-					}.bind(this))
-				}.bind(this));
+
+			// 员工入职
+			entrywork: function(data) {
+				var that = this
+				layer.confirm('确定雇佣此员工？', {icon: 3, title:'提示'}, function(index){
+					$.ajax({
+						type: 'POST',
+						url: 'http://localhost:9900/recoverEmployee',
+						data: {job_id:data.job_id},
+						success: function(){
+
+							layer.alert('雇佣成功', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+							that.getData()
+						},
+						error: function(){
+							layer.alert('雇佣失败', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+						}
+					});
+				});
 			},
-			// 账号冻结
-			dongjie: function(data) {
-				layer.confirm('冻结此用户？', {}, function() {
-					sa.ajax2('url', {}, function(res) {
-						data.status = 2;
-						layer.msg('冻结成功');
-					}.bind(this))
-				}.bind(this));
-			},
-			// 解禁
-			jiejin: function(data) {
-				layer.confirm('解禁此用户？', {}, function() {
-					sa.ajax2('url', {}, function(res) {
-						data.status = 1;
-						layer.msg('解禁成功');
-					}.bind(this))
-				}.bind(this));
+			// 部门模糊查询
+			findfit: function() {
+
+				var that = this
+
+				$.ajax({
+					type: 'POST',
+					url: 'http://localhost:9900/getfitJobChange',
+					data: {
+						change_id:that.p.change_id,
+						job_id:that.p.job_id,
+						beforedp_id:that.p.beforedp_id,
+						afterdp_id:that.p.afterdp_id,
+						changetime:that.p.changetime
+					},
+					success: function(res){
+
+						layer.alert('查询成功', {
+							skin: 'layui-layer-molv'
+							,closeBtn: 0
+							,anim: 4
+						});
+						console.log(res)
+						that.alljobChangeslist=res
+					},
+					error: function(){
+						layer.alert('查询失败', {
+							skin: 'layui-layer-molv'
+							,closeBtn: 0
+							,anim: 4
+						});
+					}
+				});
+
 			}
-		},
-		mounted:function(){
-			init();
 		}
 	})
-
 </script>
-
-
-
-
 
 
 </body>
