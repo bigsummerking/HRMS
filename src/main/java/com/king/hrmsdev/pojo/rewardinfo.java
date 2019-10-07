@@ -1,6 +1,6 @@
 package com.king.hrmsdev.pojo;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class rewardinfo {
     private int reward_id;
@@ -9,7 +9,7 @@ public class rewardinfo {
     private int overtime;
     private int late;
     private int leaveearly;
-    private int leave;
+    private int aleave;
     private int absenteeism;
     private String ename;
     private int sex;
@@ -62,12 +62,12 @@ public class rewardinfo {
         this.leaveearly = leaveearly;
     }
 
-    public int getLeave() {
-        return leave;
+    public int getAleave() {
+        return aleave;
     }
 
-    public void setLeave(int leave) {
-        this.leave = leave;
+    public void setAleave(int aleave) {
+        this.aleave = aleave;
     }
 
     public int getAbsenteeism() {
@@ -94,14 +94,14 @@ public class rewardinfo {
         this.sex = sex;
     }
 
-    public rewardinfo(int reward_id, int job_id, Date checktime, int overtime, int late, int leaveearly, int leave, int absenteeism, String ename, int sex) {
+    public rewardinfo(int reward_id, int job_id, Date checktime, int overtime, int late, int leaveearly, int aleave, int absenteeism, String ename, int sex) {
         this.reward_id = reward_id;
         this.job_id = job_id;
         this.checktime = checktime;
         this.overtime = overtime;
         this.late = late;
         this.leaveearly = leaveearly;
-        this.leave = leave;
+        this.aleave = aleave;
         this.absenteeism = absenteeism;
         this.ename = ename;
         this.sex = sex;
@@ -119,7 +119,7 @@ public class rewardinfo {
                 ", overtime=" + overtime +
                 ", late=" + late +
                 ", leaveearly=" + leaveearly +
-                ", leave=" + leave +
+                ", aleave=" + aleave +
                 ", absenteeism=" + absenteeism +
                 ", ename='" + ename + '\'' +
                 ", sex=" + sex +

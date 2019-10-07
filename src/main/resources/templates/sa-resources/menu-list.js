@@ -52,12 +52,12 @@ var menuList =	[
 			{
 				id: '3-1',
 				name: '请假管理',
-				url: 'sa-html/home/swiper.html'
+				url: 'sa-html/attendance/attendance-manage.html'
 			},
 			{
 				id: '3-2',
 				name: '考勤状况',
-				url: 'sa-html/home/swiper.html'
+				url: 'sa-html/attendance/attendance-list.html'
 			},
 
 		]
@@ -71,7 +71,7 @@ var menuList =	[
 			{
 				id: '4-1',
 				name: '奖惩信息',
-				url: 'sa-html/home/swiper.html'
+				url: 'sa-html/reward/reward-list.html'
 			},
 		]
 	},

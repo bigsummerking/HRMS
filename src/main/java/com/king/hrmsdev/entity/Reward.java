@@ -1,6 +1,6 @@
 package com.king.hrmsdev.entity;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class Reward {
     private int reward_id;

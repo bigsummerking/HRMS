@@ -8,7 +8,6 @@ import com.king.hrmsdev.pojo.rewardinfo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,8 +98,9 @@ public class RewardService {
     public List<rewardinfo> RewardFuzzyreward(Map<String,Object> map){
         Integer job_id = (Integer) map.get("job_id");
         Integer reward_id=(Integer) map.get("reward_id");
-        Date beginDate= (Date) map.get("beginDate");
-        Date endDate=(Date)map.get("endDate");
+        Object beginDate= map.get("beginDate");
+        Object endDate=map.get("endDate");
+
 
         Map map1=new HashMap();
 
@@ -108,6 +108,11 @@ public class RewardService {
         map1.put("reward_id",reward_id);
         map1.put("beginDate",beginDate);
         map1.put("endDate",endDate);
+
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        System.out.println(beginDate);
+        System.out.println(endDate);
+
 
         List list=rewardMapper.RewardFuzzyreward(map1);
 

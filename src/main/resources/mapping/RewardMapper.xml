@@ -69,9 +69,16 @@
             <if test="reward_id != null">
                 and reward_id LIKE CONCAT('%','${reward_id}','%')
             </if>
-            <if test="beginDate !=null or endDate !=null">
+            <if test="beginDate != null and endDate ==null ">
+                and checktime &gt;  #{beginDate}
+            </if>
+            <if test="beginDate == null and endDate != null ">
+                and checktime &lt; #{endDate}
+            </if>
+            <if test="beginDate !=null and endDate !=null">
                 and checktime between #{beginDate} and #{endDate}
             </if>
+
         </where>
     </select>
 

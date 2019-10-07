@@ -1,16 +1,17 @@
 package com.king.hrmsdev.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.king.hrmsdev.entity.Reward;
 import com.king.hrmsdev.pojo.rewardinfo;
 import com.king.hrmsdev.service.RewardService;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.Date;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,9 +23,13 @@ public class RewardController {
     private RewardService rewardservice;
 
     @RequestMapping(value = "/Findallreward", method = RequestMethod.POST)
-    public List<rewardinfo> rewardList(){
+    public JSONObject rewardList(){
         List<rewardinfo> FindallList = rewardservice.Findallreward();
-        return FindallList;
+        JSONObject result = new JSONObject();
+        result.put("msg", "ok");
+        result.put("method", "rewardList");
+        result.put("allrewardinfolist",FindallList);
+        return result;
     }
 
     @RequestMapping(value = "/Findalllate", method = RequestMethod.POST)
@@ -62,26 +67,42 @@ public class RewardController {
     @RequestMapping(value = "/Insertreward", method = RequestMethod.POST)
     public int Insertreward(@RequestParam(value = "reward_id",required=false,defaultValue="") Integer reward_id,
                              @RequestParam("job_id") int job_id,
-                             @RequestParam("checktime") @DateTimeFormat(pattern="yyyy-MM-dd") Date checktime,
+                             @RequestParam("checktime") String checktime,
                              @RequestParam("overtime") int overtime,
                              @RequestParam("late") int late,
                              @RequestParam("leaveearly") int leaveearly,
                              @RequestParam("aleave") int aleave,
-                             @RequestParam("absenteeism") int absenteeism){
-        Reward reward=new Reward();
+                             @RequestParam("absenteeism") int absenteeism) {
+        Reward reward = new Reward();
 
+        String str = checktime;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+        java.util.Date d = null;
+        try {
+            d = format.parse(str);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Date date = null;
+        if (d != null) {
+            date = new Date(d.getTime());
+        }
         if (reward_id != null) {
+
             reward.setReward_id(reward_id);
         }
         reward.setJob_id(job_id);
-        reward.setChecktime(checktime);
+        reward.setChecktime(date);
         reward.setOvertime(overtime);
         reward.setLate(late);
         reward.setLeaveearly(leaveearly);
         reward.setAleave(aleave);
         reward.setAbsenteeism(absenteeism);
 
-        int flag=rewardservice.Insertreward(reward);
+        System.out.println("reward:" + reward);
+
+        int flag = rewardservice.Insertreward(reward);
+        System.out.println("flag:" + flag);
         return flag;
 
     }
@@ -89,7 +110,7 @@ public class RewardController {
     @RequestMapping(value = "/Updatereward", method = RequestMethod.POST)
     public int Updatereward(@RequestParam("reward_id") Integer reward_id,
                              @RequestParam("job_id") int job_id,
-                             @RequestParam("checktime") @DateTimeFormat(pattern="yyyy-MM-dd") Date checktime,
+                             @RequestParam("checktime") String checktime,
                              @RequestParam("overtime") int overtime,
                              @RequestParam("late") int late,
                              @RequestParam("leaveearly") int leaveearly,
@@ -97,9 +118,26 @@ public class RewardController {
                              @RequestParam("absenteeism") int absenteeism){
         Reward reward=new Reward();
 
+        String str = checktime;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+        java.util.Date d = null;
+        try {
+            d = format.parse(str);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Date date = null;
+        if (d != null) {
+            date = new Date(d.getTime());
+        }
+        if (reward_id != null) {
+
+            reward.setReward_id(reward_id);
+        }
+
         reward.setReward_id(reward_id);
         reward.setJob_id(job_id);
-        reward.setChecktime(checktime);
+        reward.setChecktime(date);
         reward.setOvertime(overtime);
         reward.setLate(late);
         reward.setLeaveearly(leaveearly);
@@ -131,11 +169,25 @@ public class RewardController {
     @RequestMapping(value = "/RewardFuzzyreward", method = RequestMethod.POST)
     public List<rewardinfo> RewardFuzzyreward(@RequestParam(value = "job_id",required=false,defaultValue="") Integer job_id,
                                               @RequestParam(value = "reward_id",required=false,defaultValue="") Integer reward_id,
-                                              @RequestParam(value = "beginDate",required=false) @DateTimeFormat(pattern="yyyy-MM-dd")  Date beginDate,
-                                              @RequestParam(value = "endDate",required=false) @DateTimeFormat(pattern="yyyy-MM-dd") Date endDate
+                                              @RequestParam(value = "beginDate",required=false) String beginDate,
+                                              @RequestParam(value = "endDate",required=false) String endDate
                                              ){
-        Map map=new HashMap();
 
+        System.out.println("****************");
+        System.out.println(beginDate);
+        System.out.println(endDate);
+        if (beginDate==""){
+            beginDate=null;
+        }
+        if (endDate==""){
+            endDate=null;
+        }
+        System.out.println("****************");
+        System.out.println(beginDate);
+        System.out.println(endDate);
+
+
+        Map map=new HashMap();
         map.put("job_id",job_id);
         map.put("reward_id",reward_id);
         map.put("beginDate",beginDate);
