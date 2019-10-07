@@ -117,7 +117,7 @@
 
 			<el-table-column prop="address" label="操作">
 				<template slot-scope="scope">
-					<el-button type="primary" class="c-button" icon="el-icon-edit" @click="" >修改</el-button>
+					<el-button type="primary" class="c-button" icon="el-icon-edit" @click="handleEdit(scope.row)" >修改</el-button>
 					<el-button type="success" class="c-button" icon="el-icon-thumb" @click="handlechange(scope.row)" >调动</el-button>
 					<el-button type="danger" class="c-button" icon="el-icon-remove-outline" @click="quitwork(scope.row)" v-if="scope.row.workstate == 1">解雇</el-button>
 					<el-button type="warning" class="c-button" icon="el-icon-refresh-right" @click="entrywork(scope.row)" v-if="scope.row.workstate == 0">入职</el-button>
@@ -289,6 +289,108 @@
 			<span slot="footer" class="dialog-footer">
             <el-button  @click="addVisible = false">取 消</el-button>
             <el-button type="primary" @click="saveAdd()">确 定</el-button>
+          </span>
+		</el-dialog>
+
+		<!--编辑 -->
+		<el-dialog title="员工编辑" :visible.sync="editVisible" width="35%">
+			<el-form  name="form" id="form" ref="form"  :model="form" label-width="100px">
+
+				<el-form-item label="员工名称">
+					<el-input  id="formename" name="formename"  v-model="form.ename" maxlength="30" placeholder="请输入员工名称" show-word-limit />
+				</el-form-item>
+
+				<el-form-item label="员工性别">
+					<el-select id="formsex" name="formsex"  v-model="form.sex" style="width: 100%;" placeholder="请选择员工性别">
+						<el-option
+								v-for="item in sexOptions"
+								:key="item.value"
+								:label="item.label"
+								:value="item.value">
+						</el-option>
+					</el-select>
+				</el-form-item>
+
+				<el-form-item label="出生日期">
+					<el-date-picker
+							id="formbirth"
+							name="formbirth"
+							style="width: 100%;"
+							format="yyyy 年 MM 月 dd 日"
+							value-format="yyyy-MM-dd"
+							v-model="form.birth"
+							type="date"
+							placeholder="选择出生日期">
+					</el-date-picker>
+
+				</el-form-item>
+
+				<el-form-item label="联系电话">
+					<el-input id="formphone" name="formphone" v-model="form.phone" maxlength="11" placeholder="请输入联系电话" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')" />
+				</el-form-item>
+
+				<el-form-item label="身份证号">
+					<el-input id="formidcard" name="formidcard" v-model="form.idcard" maxlength="18" placeholder="请输入身份证号码" show-word-limit  />
+				</el-form-item>
+
+				<el-form-item label="籍贯">
+					<el-tag style="width:45%;" type="info" effect="plain">{{form.hometown}}</el-tag>
+					<el-divider direction="vertical"></el-divider>
+					<el-cascader
+							id="formhometown"
+							name="formhometown"
+							style="width:50%;"
+							:options="countryOptions"
+							@change="handlehome"
+							:separator="' '"
+							filterable
+					>
+
+					</el-cascader>
+				</el-form-item>
+
+				<el-form-item label="住址" >
+					<el-input id="formaddress" name="formaddress" v-model="form.address" maxlength="50" placeholder="请输入现在住址" show-word-limit  />
+				</el-form-item>
+
+				<el-form-item label="民族">
+					<el-select id="formnation" name="formnation"  v-model="form.nation" style="width: 100%;" placeholder="请选择民族" filterable>
+						<el-option
+								v-for="item in nationOptions"
+								:key="item.id"
+								:label="item.name"
+								:value="item.name">
+						</el-option>
+					</el-select>
+				</el-form-item>
+
+				<el-form-item label="学历">
+					<el-select id="formeducation" name="formeducation"  v-model="form.education" style="width: 100%;" placeholder="请选择学历" filterable>
+						<el-option
+								v-for="item in educationOptions"
+								:key="item.id"
+								:label="item.name"
+								:value="item.name">
+						</el-option>
+					</el-select>
+				</el-form-item>
+
+				<el-form-item label="雇佣时间">
+					<el-date-picker
+							id="formhiredate"
+							name="formhiredate"
+							style="width: 100%;"
+							v-model="form.hiredate"
+							format="yyyy 年 MM 月 dd 日"
+							value-format="yyyy-MM-dd"
+							type="date"
+							placeholder="选择雇佣日期">
+					</el-date-picker>
+				</el-form-item>
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+            <el-button  @click="addVisible = false">取 消</el-button>
+            <el-button type="primary" @click="saveEdit()">确 定</el-button>
           </span>
 		</el-dialog>
 
@@ -467,11 +569,11 @@
 			],
 			sexOptions: [
 				{
-					value: '1',
+					value: 1,
 					label: '男'
 				},
 				{
-					value: '0',
+					value: 0,
 					label: '女'
 				}
 			],
@@ -480,20 +582,17 @@
 			changeVisible: false,
 			showVisible: false,
 			form: {
-				address: "四川成都",
-				birth: 915120000000,
-				department: "工程部",
-				education: "本科",
-				ename: "张一",
-				hiredate: 1546272000000,
-				hometown: "四川",
-				idcard: "1212",
-				job_id: 1,
-				nation: "汉",
-				phone: 111,
-				position_name: "基层",
-				sex: 1,
-				workstate: 1
+				job_id: undefined,
+				address: undefined,
+				birth: undefined,
+				education: undefined,
+				ename: undefined,
+				hiredate: undefined,
+				hometown: "",
+				idcard: undefined,
+				nation: undefined,
+				phone: undefined,
+				sex:undefined,
 			},
 			temp: {
 				address: undefined,
@@ -507,7 +606,7 @@
 				nation: undefined,
 				phone: undefined,
 				position_name: undefined,
-				sex: undefined,
+				sex: undefined
 			},
 			nationOptions: [
 				{
@@ -705,8 +804,11 @@
 			handlehome:function(data){
 				if(data[1]==undefined){
 					this.temp.hometown=data[0]
+					this.form.hometown=data[0]
+
 				}else{
 					this.temp.hometown=data[0]+data[1];
+					this.form.hometown=data[0]+data[1];
 					this.hometownflag=true;
 					console.log(this.temp.hometown);
 					console.log(data);
@@ -757,11 +859,18 @@
 
 			handleEdit:function(row){
 				this.form = {
-					department_id:row.department_id,
-					department:row.department,
-					employee_count:row.employee_count,
-					manager:row.manager,
-					state:row.state
+					job_id:row.job_id,
+					address:row.address,
+					birth: row.birth,
+					education: row.education,
+					ename:row.ename,
+					hiredate: row.hiredate,
+					hometown: row.hometown,
+					idcard: row.idcard,
+					job_id: row.job_id,
+					nation: row.nation,
+					phone: row.phone,
+					sex: row.sex
 				}
 				this.editVisible = true
 			},
@@ -803,24 +912,56 @@
 			// 保存编辑，更新部门信息
 			saveEdit:function() {
 				var that = this
-				if (form.department_name.value=="")
+				if (form.formename.value=="")
 				{
-					layer.tips('请输入部门名称',$("#department_name"));
-					form.department_name.focus();
+					layer.tips('请输入员工名称',$("#formename"));
+					form.formename.focus();
 					return false;
-				}else if (form.department_manager.value=="")
+				}else if (form.formbirth.value=="")
 				{
-					layer.tips('请输入经理名称',$("#department_manager"));
-					form.department_manager.focus();
+					layer.tips('请选择员工出生日期',$("#formbirth"));
+					form.formbirth.focus();
 					return false;
-				}else {
+				}else if (form.formphone.value=="")
+				{
+					layer.tips('请输入员工电话',$("#formphone"));
+					form.formphone.focus();
+					return false;
+				}
+				else if (form.formidcard.value=="")
+				{
+					layer.tips('请选择员工身份证号码',$("#formidcard"));
+					form.formidcard.focus();
+					return false;
+				}else if (form.formaddress.value=="")
+				{
+					layer.tips('请输入员工现在住址',$("#formaddress"));
+					form.formaddress.focus();
+					return false;
+				}
+				else if (form.formhiredate.value=="")
+				{
+					layer.tips('请选择员工雇佣日期',$("#formhiredate"));
+					form.formhiredate.focus();
+					return false;
+				}
+				else {
 					$.ajax({
-						url: "http://localhost:9900/updateDepartment",
+						url: "http://localhost:9900/updateEmployee",
 						type: "post",
 						data: {
-							department_id: that.form.department_id,
-							department_name: that.form.department,
-							manager: that.form.manager
+							job_id:that.form.job_id,
+							ename:that.form.ename,
+							sex:that.form.sex,
+							nation:that.form.nation,
+							address:that.form.address,
+							hometown:that.form.hometown,
+							idcard:that.form.idcard,
+							phone:that.form.phone,
+							birth:that.form.birth,
+							education:that.form.education,
+							hiredate:that.form.hiredate,
+
 						},
 						success: function () {
 							layer.alert('修改成功', {
@@ -849,18 +990,19 @@
 					layer.tips('该员工已在此部门',$("#afterdp_id"));
 					return false;
 				}
+				else if (changejob.changejobposition.value=="")
+				{
+					layer.tips('请选择调动职位',$("#changejobposition"));
+					changejob.changejobposition.focus();
+					return false;
+				}
 				else if (changejob.changetime.value=="")
 				{
 					layer.tips('请选择调动时间',$("#changetime"));
 					changejob.changetime.focus();
 					return false;
 				}
-				else if (changejob.changejobposition.value=="")
-				{
-					layer.tips('请选择调动职位',$("#changejobposition"));
-					changejob.changejobposition.focus();
-					return false;
-				}else {
+				else {
 					$.ajax({
 						url: "http://localhost:9900/addjobchange",
 						type: "post",

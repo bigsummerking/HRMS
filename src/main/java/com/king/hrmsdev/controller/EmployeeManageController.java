@@ -91,7 +91,35 @@ public class EmployeeManageController {
     }
 
     @RequestMapping(value = "/updateEmployee", method = RequestMethod.POST)
-    public int updateEmployee(Employee employee){
+    public int updateEmployee(@RequestParam(value="job_id") String job_id,
+                              @RequestParam(value="ename") String ename,
+                              @RequestParam(value="sex") String sex,
+                              @RequestParam(value="nation") String nation,
+                              @RequestParam(value="address") String address,
+                              @RequestParam(value="hometown") String hometown,
+                              @RequestParam(value="idcard") String idcard,
+                              @RequestParam(value="phone") String phone,
+                              @RequestParam(value="birth") String birth,
+                              @RequestParam(value="education") String education,
+                              @RequestParam(value="hiredate") String hiredate){
+        System.out.println(birth);
+        System.out.println(hiredate);
+
+        Employee employee =new Employee();
+        employee.setJob_id(Integer.parseInt(job_id));
+        employee.setEname(ename);
+        employee.setSex(Integer.valueOf(sex));
+        employee.setNation(nation);
+        employee.setAddress(address);
+        employee.setHometown(hometown);
+        employee.setIdcard(idcard);
+        employee.setPhone(phone);
+        employee.setBirth(Date.valueOf(birth));
+        employee.setEducation(education);
+        employee.setHiredate(Date.valueOf(hiredate));
+
+        System.out.println(employee.toString());
+
         int flag = employeeService.updateEmployee(employee);
         return flag;
     }
