@@ -18,7 +18,6 @@
 	<script src="https://cdn.bootcss.com/layer/3.0.1/layer.min.js"></script>
 	<script src="../../static/kj/laydate/laydate.js"></script>
 	<script src="../../static/sa.js"></script>
-	<script src="data-list.js"></script>
 
 	<style type="text/css">
 
@@ -95,11 +94,11 @@
 	<div class="c-panel">
 		<div class="c-title">调动信息列表</div>
 		<el-table class="data-table" :data="alljobChangeslist" size="mini"  style="width: 100%">
-			<el-table-column label="调动记录" prop="change_id" width="100px" > </el-table-column>
-			<el-table-column label="工号" prop="job_id" > </el-table-column>
-			<el-table-column label="调动前" prop="beforedp_name" > </el-table-column>
-			<el-table-column label="调动后" prop="afterdp_name" > </el-table-column>
-			<el-table-column label="调动时间" prop="changetime"></el-table-column>
+			<el-table-column label="调动记录" prop="change_id" width="100px" sortable> </el-table-column>
+			<el-table-column label="工号" prop="job_id" sortable> </el-table-column>
+			<el-table-column label="调动前" prop="beforedp_name" sortable> </el-table-column>
+			<el-table-column label="调动后" prop="afterdp_name" sortable> </el-table-column>
+			<el-table-column label="调动时间" prop="changetime" sortable></el-table-column>
 
 			<el-table-column prop="address" label="操作">
 				<template slot-scope="scope">
@@ -178,17 +177,6 @@
 
 
 		methods: {
-			handlehome:function(data){
-				if(data[1]==undefined){
-					this.temp.hometown=data[0]
-				}else{
-					this.temp.hometown=data[0]+data[1];
-					this.hometownflag=true;
-					console.log(this.temp.hometown);
-					console.log(data);
-					console.log(this.hometownflag);
-				}
-			},
 
 			getDepartment:function(){
 				var that = this
@@ -201,46 +189,6 @@
 					console.log('失败')
 				})
 			},
-
-
-
-			handleEdit:function(row){
-				this.form = {
-					department_id:row.department_id,
-					department:row.department,
-					employee_count:row.employee_count,
-					manager:row.manager,
-					state:row.state
-				}
-				this.editVisible = true
-			},
-
-			handleAdd:function(row){
-				this.addVisible = true
-			},
-
-			//显示信息
-			showInfo:function(row){
-				this.form = {
-					job_id:row.job_id,
-					ename:row.ename,
-					sex:row.sex,
-					nation:row.nation,
-					address:row.address,
-					hometown:row.hometown,
-					idcard:row.idcard,
-					phone:row.phone,
-					birth:row.birth,
-					education:row.education,
-					department:row.department,
-					position_name:row.position_name,
-					hiredate:row.hiredate,
-					workstate:row.workstate
-				}
-				this.showVisible = true
-			},
-
-
 
 			//刷新数据
 			getData:function(){
@@ -296,33 +244,7 @@
 
 			},
 
-			// 员工入职
-			entrywork: function(data) {
-				var that = this
-				layer.confirm('确定雇佣此员工？', {icon: 3, title:'提示'}, function(index){
-					$.ajax({
-						type: 'POST',
-						url: 'http://localhost:9900/recoverEmployee',
-						data: {job_id:data.job_id},
-						success: function(){
 
-							layer.alert('雇佣成功', {
-								skin: 'layui-layer-molv'
-								,closeBtn: 0
-								,anim: 4
-							});
-							that.getData()
-						},
-						error: function(){
-							layer.alert('雇佣失败', {
-								skin: 'layui-layer-molv'
-								,closeBtn: 0
-								,anim: 4
-							});
-						}
-					});
-				});
-			},
 			// 部门模糊查询
 			findfit: function() {
 
