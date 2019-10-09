@@ -51,14 +51,20 @@
             <if test="aleave_id != null">
                 and aleave_id LIKE CONCAT('%','${aleave_id}','%')
             </if>
-            <if test="department_id !=null">
-                and department_id like CONCAT('%','${department_id}','%')
+            <if test="department !=null">
+                and department like CONCAT('%','${department}','%')
             </if>
             <if test="btime !=null or etime !=null">
                 and btime between #{btime} and #{etime}
             </if>
             <if test="btime !=null or etime !=null">
                 and etime between #{btime} and #{etime}
+            </if>
+            <if test="btime !=null or etime ==null">
+                and btime &gt;= #{btime}
+            </if>
+            <if test="btime ==null or etime !=null">
+                and etime &lt;= #{etime}
             </if>
         </where>
     </select>
