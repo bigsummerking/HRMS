@@ -156,8 +156,8 @@ public class AttendanceService {
     public List<echeckinfo> EcheckFuzzyreward(Map<String,Object> map){
         Integer job_id=(Integer)map.get("job_id");
         Integer echeck_id=(Integer)map.get("echeck_id");
-        Date opentime=(Date)map.get("opentime");
-        Date closetime=(Date)map.get("closetime");
+        Object opentime=map.get("opentime");
+        Object closetime=map.get("closetime");
 
         Map map1=new HashMap();
 

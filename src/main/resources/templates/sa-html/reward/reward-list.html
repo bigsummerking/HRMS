@@ -154,7 +154,7 @@
 				<el-form-item label="考勤时间" >
 						<el-date-picker
 								id="checktime"
-								
+
 								name="checktime"
 								v-model="temp.checktime"
 								type="month"
@@ -464,7 +464,7 @@
 					//把从json获取的数据赋值给数组
 					var data = res.data.allrewardinfolist
 					that.rewardinfolist = data
-					console.log("rewardinfolist--->"+rewardinfolist)
+					console.log("rewardinfolist--->"+that.rewardinfolist)
 
 				}).catch(function () {
 					console.log('失败')

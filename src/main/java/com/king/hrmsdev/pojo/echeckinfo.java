@@ -8,7 +8,7 @@ public class echeckinfo {
     private Date opentime;
     private Date closetime;
     private int state;
-    private String enema;
+    private String ename;
     private int sex;
 
     public int getEcheck_id() {
@@ -51,12 +51,12 @@ public class echeckinfo {
         this.state = state;
     }
 
-    public String getEnema() {
-        return enema;
+    public String getEname() {
+        return ename;
     }
 
-    public void setEnema(String enema) {
-        this.enema = enema;
+    public void setEname(String ename) {
+        this.ename = ename;
     }
 
     public int getSex() {
@@ -67,13 +67,13 @@ public class echeckinfo {
         this.sex = sex;
     }
 
-    public echeckinfo(int echeck_id, int job_id, Date opentime, Date closetime, int state, String enema, int sex) {
+    public echeckinfo(int echeck_id, int job_id, Date opentime, Date closetime, int state, String ename, int sex) {
         this.echeck_id = echeck_id;
         this.job_id = job_id;
         this.opentime = opentime;
         this.closetime = closetime;
         this.state = state;
-        this.enema = enema;
+        this.ename = ename;
         this.sex = sex;
     }
 
@@ -88,7 +88,7 @@ public class echeckinfo {
                 ", opentime=" + opentime +
                 ", closetime=" + closetime +
                 ", state=" + state +
-                ", enema='" + enema + '\'' +
+                ", ename='" + ename + '\'' +
                 ", sex=" + sex +
                 '}';
     }

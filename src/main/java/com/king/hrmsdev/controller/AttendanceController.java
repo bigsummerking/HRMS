@@ -1,5 +1,6 @@
 package com.king.hrmsdev.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.king.hrmsdev.entity.Aleave;
 import com.king.hrmsdev.entity.Echeck;
 import com.king.hrmsdev.pojo.aleaveinfo;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -115,9 +118,16 @@ public class AttendanceController {
 
 
     @RequestMapping(value = "/Findallecheck", method = RequestMethod.POST)
-    public List<echeckinfo> Findallecheck(){
+    public JSONObject Findallecheck(){
         List<echeckinfo> echeckinfoList=attendanceservice.Findallecheck();
-        return  echeckinfoList;
+        JSONObject result = new JSONObject();
+        result.put("msg", "ok");
+        result.put("method", "Findallecheck");
+        result.put("allecheckinfoList",echeckinfoList);
+
+
+
+        return result;
     }
 
     @RequestMapping(value = "/FindByecheck_id", method = RequestMethod.POST)
@@ -129,18 +139,43 @@ public class AttendanceController {
     @RequestMapping(value = "/Insertecheck", method = RequestMethod.POST)
     public int Insertecheck(@RequestParam(value = "echeck_id",required=false,defaultValue="") Integer echeck_id,
                              @RequestParam("job_id") Integer job_id,
-                             @RequestParam("opentime") @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") Date opentime,
-                             @RequestParam(value = "closetime",required=false) @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") Date closetime,
+                             @RequestParam(value = "opentime" , required=false) String opentime,
+                             @RequestParam(value = "closetime", required=false) String  closetime,
                              @RequestParam("state") Integer state){
 
         Echeck echeck=new Echeck();
         if (echeck_id !=null){
             echeck.setEcheck_id(echeck_id);
         }
+
+        System.out.println("opentime>>>>>>>>>>"+opentime);
+        System.out.println("closetime>>>>>>>>>>"+closetime);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        ParsePosition pos = new ParsePosition(0);
+        Date strtodate = formatter.parse(opentime, pos);
+
+        SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        ParsePosition pos1 = new ParsePosition(0);
+        Date strtodate1 = formatter.parse(closetime, pos1);
+
+        System.out.println("strtodate>>>>>>>>>>"+strtodate.toString());
+
+
+
+
+
+
+
+
+
+
         echeck.setJob_id(job_id);
-        echeck.setOpentime(opentime);
-        echeck.setClosetime(closetime);
+        echeck.setOpentime(strtodate);
+        echeck.setClosetime(strtodate1);
         echeck.setState(state);
+
+        System.out.println("echeck>>>>>>>>>>"+echeck);
 
         int flag=attendanceservice.Insertecheck(echeck);
         return flag;
@@ -152,16 +187,30 @@ public class AttendanceController {
     @RequestMapping(value = "/Updateecheck", method = RequestMethod.POST)
     public int Updateecheck(@RequestParam("echeck_id") Integer echeck_id,
                              @RequestParam("job_id") Integer job_id,
-                             @RequestParam("opentime") @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") Date opentime,
-                             @RequestParam(value = "closetime",required=false) @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") Date closetime,
+                             @RequestParam("opentime") String opentime,
+                             @RequestParam(value = "closetime",required=false) String closetime,
                              @RequestParam("state") Integer state){
         Echeck echeck=new Echeck();
 
+        String opentimestr = opentime;
+        SimpleDateFormat format1 =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        ParsePosition pos1 = new ParsePosition(0);
+        Date opendate = format1.parse(opentimestr, pos1);
+
+        String closetimestr = closetime;
+        SimpleDateFormat format2 =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        ParsePosition pos2 = new ParsePosition(0);
+        Date closedate = format2.parse(closetimestr, pos2);
+
+
         echeck.setEcheck_id(echeck_id);
         echeck.setJob_id(job_id);
-        echeck.setOpentime(opentime);
-        echeck.setClosetime(closetime);
+        echeck.setOpentime(opendate);
+        echeck.setClosetime(closedate);
         echeck.setState(state);
+
+
+        System.out.println(echeck);
 
         int flag=attendanceservice.Updateecheck(echeck);
 
@@ -202,10 +251,16 @@ public class AttendanceController {
     @RequestMapping(value = "/EcheckFuzzyreward", method = RequestMethod.POST)
     public List<echeckinfo> EcheckFuzzyreward(@RequestParam(value = "job_id",required=false,defaultValue="") Integer job_id,
                                               @RequestParam(value = "echeck_id",required=false,defaultValue="") Integer echeck_id,
-                                              @RequestParam(value = "opentime",required=false) @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") Date opentime,
-                                              @RequestParam(value = "closetime",required=false) @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") Date closetime){
+                                              @RequestParam(value = "opentime",required=false) String opentime,
+                                              @RequestParam(value = "closetime",required=false) String closetime){
 
         Map map=new HashMap();
+        if (opentime==""){
+            opentime=null;
+        }
+        if (closetime==""){
+            closetime=null;
+        }
 
         map.put("job_id",job_id);
         map.put("echeck_id",echeck_id);

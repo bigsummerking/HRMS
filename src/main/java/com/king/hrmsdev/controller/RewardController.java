@@ -29,6 +29,9 @@ public class RewardController {
         result.put("msg", "ok");
         result.put("method", "rewardList");
         result.put("allrewardinfolist",FindallList);
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println(result.toJSONString());
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!");
         return result;
     }
 
