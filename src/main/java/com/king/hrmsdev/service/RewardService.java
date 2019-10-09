@@ -98,6 +98,7 @@ public class RewardService {
     public List<rewardinfo> RewardFuzzyreward(Map<String,Object> map){
         Integer job_id = (Integer) map.get("job_id");
         Integer reward_id=(Integer) map.get("reward_id");
+        String ename=(String) map.get("ename");
         Object beginDate= map.get("beginDate");
         Object endDate=map.get("endDate");
 
@@ -106,6 +107,7 @@ public class RewardService {
 
         map1.put("job_id",job_id);
         map1.put("reward_id",reward_id);
+        map1.put("ename",ename);
         map1.put("beginDate",beginDate);
         map1.put("endDate",endDate);
 

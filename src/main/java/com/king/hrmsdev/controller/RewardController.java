@@ -172,27 +172,25 @@ public class RewardController {
     @RequestMapping(value = "/RewardFuzzyreward", method = RequestMethod.POST)
     public List<rewardinfo> RewardFuzzyreward(@RequestParam(value = "job_id",required=false,defaultValue="") Integer job_id,
                                               @RequestParam(value = "reward_id",required=false,defaultValue="") Integer reward_id,
+                                              @RequestParam(value = "ename",required=false) String ename,
                                               @RequestParam(value = "beginDate",required=false) String beginDate,
                                               @RequestParam(value = "endDate",required=false) String endDate
                                              ){
 
-        System.out.println("****************");
-        System.out.println(beginDate);
-        System.out.println(endDate);
+
         if (beginDate==""){
             beginDate=null;
         }
         if (endDate==""){
             endDate=null;
         }
-        System.out.println("****************");
-        System.out.println(beginDate);
-        System.out.println(endDate);
+
 
 
         Map map=new HashMap();
         map.put("job_id",job_id);
         map.put("reward_id",reward_id);
+        map.put("ename",ename);
         map.put("beginDate",beginDate);
         map.put("endDate",endDate);
 

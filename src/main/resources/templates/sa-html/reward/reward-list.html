@@ -37,13 +37,13 @@
 			<div class="c-item">
 				<label class="c-label">工号：</label>
 				<el-input size="mini" v-model="p.job_id" placeholder="工号"></el-input>
-			</div>
 
-			<div class="c-item">
+				<label class="c-label">姓名：</label>
+				<el-input size="mini" v-model="p.ename" placeholder="工号"></el-input>
+
 				<label class="c-label">奖惩编号：</label>
 				<el-input size="mini" v-model="p.reward_id" placeholder="奖惩编号"></el-input>
 			</div>
-
 
 			<div class="c-item">
 				<label class="c-label">考勤日期：</label>
@@ -54,13 +54,11 @@
 			</div>
 
 
+			<div class="c-item" style="min-width: 0px;">
+				<el-button type="primary" icon="el-icon-search" size="mini"  @click="findfit">查询</el-button>
+				<el-button type="primary" icon="el-icon-plus" size="mini"  @click="handleAdd">添加奖惩</el-button>
+			</div>
 
-			<div class="c-item" style="min-width: 0px;">
-				<el-button type="primary" icon="el-icon-search" size="mini" @click="findfit">查询</el-button>
-			</div>
-			<div class="c-item" style="min-width: 0px;">
-				<el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd">添加奖惩</el-button>
-			</div>
 
 			<br />
 		</el-form>
@@ -102,7 +100,6 @@
 
 		</el-table>
 
-
 		<!-- 修改-->
 		<el-dialog title="奖惩信息修改" :visible.sync="editVisible" width="30%">
 			<el-form name="form" id="form"  ref="form"  :model="form" label-width="100px">
@@ -115,8 +112,8 @@
 				<el-form-item label="员工姓名">
 					{{form.ename}}
 				</el-form-item>
-				<el-form-item label="性别">
-					{{form.sex}}
+				<el-form-item label="性别" >
+					{{form.sex==1 ? '男' : '女' }}
 				</el-form-item>
 				<el-form-item label="考勤日期" id="ed_checktime" name="ed_checktime" v-model="form.checktime">
 					{{form.checktime}}
@@ -154,7 +151,6 @@
 				<el-form-item label="考勤时间" >
 						<el-date-picker
 								id="checktime"
-
 								name="checktime"
 								v-model="temp.checktime"
 								type="month"
@@ -245,7 +241,8 @@
 				job_id: "",
 				reward_id: "",
 				beginDate: "",
-				endDate: ""
+				endDate: "",
+				ename:"",
 			},
 			page: {	// 分页信息
 				pageNo: 1,
@@ -263,7 +260,7 @@
 					aleave:0,
 					absenteeism:0,
 					ename:"张哥",
-					sex:1
+					sex:0
 				}
 			],
 
@@ -525,7 +522,8 @@
 						job_id:that.p.job_id,
 						reward_id:that.p.reward_id,
 						beginDate:that.p.beginDate,
-						endDate:that.p.endDate
+						endDate:that.p.endDate,
+						ename:that.p.ename,
 					},
 					success: function(res){
 

@@ -8,7 +8,6 @@ import com.king.hrmsdev.pojo.echeckinfo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,15 +81,26 @@ public class AttendanceService {
     public List<aleaveinfo> AleaveFuzzyreward(Map<String,Object> map){
         Integer job_id=(Integer)map.get("job_id");
         Integer aleave_id=(Integer) map.get("aleave_id");
-        Integer department_id=(Integer)map.get("department_id");
-        Date btime=(Date)map.get("btime");
-        Date etime=(Date)map.get("etime");
+        Integer department_id=(Integer) map.get("department_id");
+        String ename=(String) map.get("ename");
+        Object btime=map.get("btime");
+        Object etime=map.get("etime");
+        if(btime==""){
+            btime=null;
+        }
+        if(etime=="")
+        {
+            etime=null;
+        }
+
+
 
         Map map1=new HashMap();
 
         map1.put("job_id",job_id);
         map1.put("aleave_id",aleave_id);
         map1.put("department_id",department_id);
+        map1.put("ename",ename);
         map1.put("btime",btime);
         map1.put("etime",etime);
 
@@ -157,6 +167,7 @@ public class AttendanceService {
     public List<echeckinfo> EcheckFuzzyreward(Map<String,Object> map){
         Integer job_id=(Integer)map.get("job_id");
         Integer echeck_id=(Integer)map.get("echeck_id");
+        String ename=(String) map.get("ename");
         Object opentime=map.get("opentime");
         Object closetime=map.get("closetime");
 
@@ -164,6 +175,7 @@ public class AttendanceService {
 
         map1.put("job_id",job_id);
         map1.put("echeck_id",echeck_id);
+        map1.put("ename",ename);
         map1.put("opentime",opentime);
         map1.put("closetime",closetime);
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>奖惩列表</title>
+	<title>假条列表</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 
@@ -32,21 +32,23 @@
 
 	<!-- 参数栏 -->
 	<div class="c-panel">
-		<div class="c-title">查找奖惩信息</div>
+		<div class="c-title">查找请假条</div>
 		<el-form ref="form">
 			<div class="c-item">
 				<label class="c-label">工号：</label>
 				<el-input size="mini" v-model="p.job_id" placeholder="工号"></el-input>
+
+				<label class="c-label">姓名：</label>
+				<el-input size="mini" v-model="p.ename" placeholder="工号"></el-input>
+
+				<label class="c-label">请假编号：</label>
+				<el-input size="mini" v-model="p.aleave_id" placeholder="奖惩编号"></el-input>
 			</div>
 
-			<div class="c-item">
-				<label class="c-label">奖惩编号：</label>
-				<el-input size="mini" v-model="p.reward_id" placeholder="奖惩编号"></el-input>
-			</div>
 
 
 			<div class="c-item">
-				<label class="c-label">考勤日期：</label>
+				<label class="c-label">请假日期：</label>
 
 				<el-input size="mini" v-model="p.beginDate" class="beginDate"></el-input>
 				&nbsp;至&nbsp;
@@ -57,10 +59,9 @@
 
 			<div class="c-item" style="min-width: 0px;">
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="findfit">查询</el-button>
+				<el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd">添加假条</el-button>
 			</div>
-			<div class="c-item" style="min-width: 0px;">
-				<el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd">添加奖惩</el-button>
-			</div>
+
 
 			<br />
 		</el-form>
@@ -69,10 +70,10 @@
 
 	<!-- 数据栏 -->
 	<div class="c-panel">
-		<div class="c-title">奖惩列表</div>
-		<el-table class="data-table" :data="rewardinfolist" size="mini"  style="width: 100%">
+		<div class="c-title">请假条列表</div>
+		<el-table class="data-table" :data="aleaveinfolist" size="mini"  style="width: 100%">
 
-			<el-table-column label="奖惩编号" prop="reward_id" width="100px" sortable></el-table-column>
+			<el-table-column label="请假编号" prop="aleave_id" width="100px" sortable></el-table-column>
 			<el-table-column label="工号" prop="job_id"  sortable>
 				<template slot-scope="scope">
 					<b>{{scope.row.job_id}}</b>
@@ -85,102 +86,76 @@
 					<span  v-if="scope.row.sex===0">{{scope.row.sex | sexFormat}}</span>
 				</template>
 			</el-table-column>
-			<el-table-column label="加班小时" prop="overtime"  sortable></el-table-column>
-			<el-table-column label="迟到次数" prop="late"  sortable></el-table-column>
-			<el-table-column label="早退次数" prop="leaveearly"  sortable></el-table-column>
-			<el-table-column label="请假次数" prop="aleave"  sortable></el-table-column>
-			<el-table-column label="旷工次数" prop="absenteeism"  sortable></el-table-column>
-			<el-table-column label="考勤年月" prop="checktime" sortable></el-table-column>
 
+			<el-table-column label="开始时间" prop="btime"  sortable></el-table-column>
+			<el-table-column label="结束时间" prop="etime"  sortable></el-table-column>
 
-			<el-table-column prop="address" label="操作">
+			<el-table-column label="请假理由" prop="reason"  sortable></el-table-column>
+
+			<el-table-column label="批准状态" prop="examine"  sortable>
 				<template slot-scope="scope">
-					<el-button type="primary" class="c-button" icon="el-icon-edit" @click="handleEdit(scope.row)">修改</el-button>
-					<el-button type="danger" class="c-button" icon="el-icon-delete" @click="deleterewardinfo(scope.row)" >删除</el-button>
+				<span style="color: yellow" v-if="scope.row.examine===0">{{scope.row.examine | statusFormat}}</span>
+				<span style="color: green" v-if="scope.row.examine===1">{{scope.row.examine | statusFormat}}</span>
+				<span style="color: red" v-if="scope.row.examine===2">{{scope.row.examine | statusFormat}}</span>
 				</template>
 			</el-table-column>
 
+			<el-table-column prop="address" label="操作">
+				<template slot-scope="scope">
+					<el-button type="primary" class="c-button" icon="el-icon-edit" @click="Approvalaleave(scope.row)">批准</el-button>
+					<el-button type="danger" class="c-button" icon="el-icon-delete" @click="Refusealeave(scope.row)" >拒绝</el-button>
+				</template>
+			</el-table-column>
 		</el-table>
 
 
-		<!-- 修改-->
-		<el-dialog title="奖惩信息修改" :visible.sync="editVisible" width="30%">
-			<el-form name="form" id="form"  ref="form"  :model="form" label-width="100px">
-				<el-form-item label="奖惩编号" id="ed_reward_id" name="ed_reward_id" v-model="form.reward_id">
-					{{form.reward_id}}
-				</el-form-item>
-				<el-form-item label="工号" id="ed_job_id" name="ed_job_id" v-model="form.job_id">
-					{{form.job_id}}
-				</el-form-item>
-				<el-form-item label="员工姓名">
-					{{form.ename}}
-				</el-form-item>
-				<el-form-item label="性别">
-					{{form.sex}}
-				</el-form-item>
-				<el-form-item label="考勤日期" id="ed_checktime" name="ed_checktime" v-model="form.checktime">
-					{{form.checktime}}
-				</el-form-item>
-				<el-form-item label="加班小时">
-					<el-input id="ed_overtime" name="ed_overtime" v-model="form.overtime" maxlength="30" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')"/>
-				</el-form-item>
-				<el-form-item label="迟到次数">
-					<el-input  id="ed_late" name="ed_late" v-model="form.late" maxlength="30" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')"/>
-				</el-form-item>
-				<el-form-item label="早退次数">
-					<el-input  id="ed_leaveearly" name="ed_leaveearly" v-model="form.leaveearly" maxlength="30" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')"/>
-				</el-form-item>
-				<el-form-item label="请假次数">
-					<el-input  id="ed_aleave" name="ed_aleave" v-model="form.aleave" maxlength="30" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')"/>
-				</el-form-item>
-				<el-form-item label="旷工次数">
-					<el-input  id="ed_absenteeism" name="ed_absenteeism" v-model="form.absenteeism" maxlength="30" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')"/>
-				</el-form-item>
-			</el-form>
-			<span slot="footer" class="dialog-footer">
-            <el-button @click="editVisible = false">取 消</el-button>
-            <el-button type="primary" @click="saveEdit()">确 定</el-button>
-          </span>
-		</el-dialog>
+<!--		&lt;!&ndash; 修改&ndash;&gt;-->
+<!--		<el-dialog title="假条信息修改" :visible.sync="editVisible" width="30%">-->
+
 
 		<!-- 添加 -->
-		<el-dialog title="奖惩添加" :visible.sync="addVisible" width="30%">
+		<el-dialog title="请假条添加" :visible.sync="addVisible" width="30%">
 			<el-form  name="temp" id="temp" ref="temp"  :model="temp" label-width="100px">
 
 				<el-form-item label="工号">
 					<el-input  id="job_id" name="job_id" v-model="temp.job_id" maxlength="6" placeholder="请输入工号" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')"/>
 				</el-form-item>
 
-				<el-form-item label="考勤时间" >
+				<el-form-item label="开始时间" >
 					<el-date-picker
-							id="checktime"
-
-							name="checktime"
-							v-model="temp.checktime"
-							type="month"
-							placeholder="选择月"
-							format="yyyy 年 MM 月"
-							value-format="yyyy-MM">
+							id="btime"
+							name="btime"
+							v-model="temp.btime"
+							value-format="yyyy-MM-dd"
+							type="date"
+							placeholder="开始时间">
 					</el-date-picker>
 				</el-form-item>
 
-				<el-form-item label="加班小时" prop="manager">
-					<el-input id="overtime" name="overtime" v-model="temp.overtime" maxlength="10" placeholder="请输入加班小时" show-word-limit  onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+				<el-form-item label="结束时间" >
+					<el-date-picker
+							id="etime"
+							name="etime"
+							v-model="temp.etime"
+							value-format="yyyy-MM-dd"
+							type="date"
+							placeholder="结束时间">
+					</el-date-picker>
 				</el-form-item>
-				<el-form-item label="迟到次数" prop="manager">
-					<el-input id="late" name="late" v-model="temp.late" maxlength="10" placeholder="请输入迟到次数" show-word-limit  onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+				<el-form-item label="理由">
+					<el-input
+							id="reason"
+							name="reason"
+							type="textarea"
+							autosize
+							placeholder="请输入理由"
+							maxlength="200"
+							v-model="temp.reason"
+							show-word-limit >
+					</el-input>
 				</el-form-item>
-				<el-form-item label="早退次数" prop="manager">
-					<el-input id="leaveearly" name="leaveearly" v-model="temp.leaveearly" maxlength="10" placeholder="请输入早退次数" show-word-limit  onkeyup="this.value=this.value.replace(/\D/g,'')"/>
-				</el-form-item>
-				<el-form-item label="请假次数" prop="manager">
-					<el-input id="aleave" name="aleave" v-model="temp.aleave" maxlength="10" placeholder="请输入请假次数" show-word-limit  onkeyup="this.value=this.value.replace(/\D/g,'')"/>
-				</el-form-item>
-				<el-form-item label="旷工次数" prop="manager">
-					<el-input id="absenteeism" name="absenteeism" v-model="temp.absenteeism" maxlength="10" placeholder="请输入旷工次数" show-word-limit  onkeyup="this.value=this.value.replace(/\D/g,'')"/>
-				</el-form-item>
-
 			</el-form>
+
 			<span slot="footer" class="dialog-footer">
             <el-button  @click="addVisible = false">取 消</el-button>
             <el-button type="primary" @click="saveAdd()">确 定</el-button>
@@ -217,6 +192,17 @@
 		}
 	})
 
+	Vue.filter('statusFormat', function (val) {
+		if(val===0){
+			return '未处理'
+		}else if(val===1){
+			return '批准'
+		}
+		else if(val===2){
+			return '拒绝'
+		}
+	})
+
 	function init_laydate() {
 		// 开始日期
 		laydate.render({
@@ -242,53 +228,55 @@
 		el: '#vue-box',
 		data:{
 			p: {	// 查询参数
-				job_id: "",
-				reward_id: "",
+				job_id: undefined,
+				aleave_id: undefined,
 				beginDate: "",
-				endDate: ""
+				endDate: "",
+				ename:"",
 			},
 			page: {	// 分页信息
 				pageNo: 1,
 				pageSize: 10,
 				count: 30
 			},
-			rewardinfolist:[
+			aleaveinfolist:[
 				{
-					reward_id:1,
+					aleave_id:1,
 					job_id:2,
-					checktime:"2019-01-01",
-					overtime:5,
-					late:0,
-					leaveearly:0,
-					aleave:0,
-					absenteeism:0,
+					btime:"2019-10-01",
+					etime:"2019-10-07",
+					reason:"国庆放假",
+					examine:1,
 					ename:"张哥",
 					sex:1
 				}
 			],
 
+			statusOptions:[
+				{
+					value: '0',
+					label:'未处理'
+				},
+				{
+					value: '1',
+					label:'批准'
+				},
+				{
+					value: '2',
+					label:'拒绝'
+				},
+			],
+
 			editVisible:false,
 			addVisible:false,
-			form:{
-				reward_id:undefined,
-				job_id:undefined,
-				ename:"",
-				sex:undefined,
-				checktime:"",
-				overtime:undefined,
-				late:undefined,
-				leaveearly:undefined,
-				aleave:undefined,
-				absenteeism:undefined,
-			},
+
+			//添加参数
 			temp:{
 				job_id:undefined,
-				checktime:"",
-				overtime:undefined,
-				late:undefined,
-				leaveearly:undefined,
-				aleave:undefined,
-				absenteeism:undefined,
+				btime:"",
+				etime:"",
+				reason:"",
+				examine:undefined,
 			}
 		},
 
@@ -304,86 +292,14 @@
 		methods: {
 
 
-			handleEdit:function(row){
-				this.form = {
-					reward_id:row.reward_id,
-					job_id:row.job_id,
-					ename:row.ename,
-					sex:row.sex,
-					checktime:row.checktime,
-					overtime:row.overtime,
-					late:row.late,
-					leaveearly:row.leaveearly,
-					aleave:row.aleave,
-					absenteeism:row.absenteeism
-				}
-				this.editVisible = true
-			},
 
 			handleAdd:function(row){
 				this.addVisible = true
 			},
 
-			// 保存修改，更新奖惩信息
-			saveEdit:function() {
-				var that = this
-				if (form.ed_overtime.value=="")
-				{
-					layer.tips('请输入加班小时',$("#ed_overtime"));
-					form.ed_overtime.focus();
-					return false;
-				}else if (form.ed_late.value=="")
-				{
-					layer.tips('请输入迟到次数',$("#ed_late"));
-					form.ed_late.focus();
-					return false;
-				}else if (form.ed_leaveearly.value=="")
-				{
-					layer.tips('请输入早退次数',$("#ed_leaveearly"));
-					form.ed_leaveearly.focus();
-					return false;
 
-				}else if (form.ed_aleave.value=="")
-				{
-					layer.tips('请输入请假次数',$("#ed_aleave"));
-					form.ed_aleave.focus();
-					return false;
 
-				}else if (form.ed_absenteeism.value=="")
-				{
-					layer.tips('请输入旷工次数',$("#ed_absenteeism"));
-					form.ed_absenteeism.focus();
-					return false;
-				}
-				else {
-					$.ajax({
-						url: "http://localhost:9900/Updatereward",
-						type: "post",
-						data: {
-							reward_id: that.form.reward_id,
-							job_id: that.form.job_id,
-							checktime: that.form.checktime,
-							overtime:that.form.overtime,
-							late:that.form.late,
-							leaveearly:that.form.leaveearly,
-							aleave:that.form.aleave,
-							absenteeism:that.form.absenteeism,
-						},
-						success: function () {
-							layer.alert('修改成功', {
-								skin: 'layui-layer-molv'
-								, closeBtn: 0
-								, anim: 4
-							});
-
-							that.getData()
-						}
-					})
-					that.editVisible = false
-				}
-			},
-
-			//添加奖惩
+			//添加请假条
 			saveAdd:function() {
 				var that = this
 				if (temp.job_id.value=="")
@@ -392,56 +308,37 @@
 					temp.job_id.focus();
 					return false;
 				}
-				else if (temp.checktime.value=="")
+				else if (temp.btime.value=="")
 				{
-					layer.tips('请选择考勤日期',$("#checktime"));
+					layer.tips('请选择开始时间',$("#btime"));
 
-					temp.checktime.focus();
+					temp.btime.focus();
 					return false;
 				}
 
+				else if (temp.etime.value=="")
+				{
+					layer.tips('请选择结束日期',$("#etime"));
+					temp.etime.focus();
+					return false;
+				}
 
-				else if (temp.overtime.value=="")
+				else if (temp.etime.value<temp.btime.value)
 				{
-					layer.tips('请输入加班小时',$("#overtime"));
-					temp.overtime.focus();
-					return false;
-				}
-				else if (temp.late.value=="")
-				{
-					layer.tips('请输入迟到次数',$("#late"));
-					temp.late.focus();
-					return false;
-				}
-				else if (temp.leaveearly.value=="")
-				{
-					layer.tips('请输入早退次数',$("#leaveearly"));
-					temp.leaveearly.focus();
-					return false;
-				}
-				else if (temp.aleave.value=="")
-				{
-					layer.tips('请输入请假次数',$("#aleave"));
-					temp.aleave.focus();
-					return false;
-				}
-				else if (temp.absenteeism.value=="")
-				{
-					layer.tips('请输入旷工次数',$("#absenteeism"));
-					temp.absenteeism.focus();
+					layer.tips('结束日期选择错误，请重新选择 ',$("#etime"));
+					temp.etime.focus();
 					return false;
 				}else{
+
 					$.ajax({
-						url: "http://localhost:9900/Insertreward",
+						url: "http://localhost:9900/Insertaleave",
 						type: "post",
 						data:{
 							job_id: that.temp.job_id,
-							checktime: that.temp.checktime,
-							overtime:that.temp.overtime,
-							late:that.temp.late,
-							leaveearly:that.temp.leaveearly,
-							aleave:that.temp.aleave,
-							absenteeism:that.temp.absenteeism,
+							btime: that.temp.btime,
+							etime:that.temp.etime,
+							reason:that.temp.reason,
+							examine:0,
 						},
 						success:function(){
 							layer.alert('添加成功', {
@@ -459,12 +356,12 @@
 			//刷新数据
 			getData:function(){
 				var that = this
-				axios.post('http://localhost:9900/Findallreward').then(function (res) {
+				axios.post('http://localhost:9900/Findallaleave').then(function (res) {
 
 					//把从json获取的数据赋值给数组
-					var data = res.data.allrewardinfolist
-					that.rewardinfolist = data
-					console.log("rewardinfolist--->"+that.rewardinfolist)
+					var data = res.data.allaleaveinfolist
+					that.aleaveinfolist = data
+					console.log("aleaveinfolist--->"+that.aleaveinfolist)
 
 				}).catch(function () {
 					console.log('失败')
@@ -481,17 +378,17 @@
 				this.f5();
 			},
 
-			// 奖惩删除
-			deleterewardinfo: function(data) {
+			// 请假拒绝
+			Refusealeave: function(data) {
 				var that = this
-				layer.confirm('确定删除此信息？', {icon: 3, title:'提示'}, function(index){
+				layer.confirm('确定拒绝此假条？', {icon: 3, title:'提示'}, function(index){
 					$.ajax({
 						type: 'POST',
-						url: 'http://localhost:9900/deletereward',
-						data: {reward_id:data.reward_id},
+						url: 'http://localhost:9900/Refusealeave',
+						data: {aleave_id:data.aleave_id},
 						success: function(){
 
-							layer.alert('删除成功', {
+							layer.alert('拒绝成功', {
 								skin: 'layui-layer-molv'
 								,closeBtn: 0
 								,anim: 4
@@ -499,7 +396,36 @@
 							that.getData()
 						},
 						error: function(){
-							layer.alert('删除失败', {
+							layer.alert('拒绝失败', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+						}
+					});
+				});
+
+			},
+
+			//同意假条
+			Approvalaleave: function(data) {
+				var that = this
+				layer.confirm('确定批准此假条？', {icon: 3, title:'提示'}, function(index){
+					$.ajax({
+						type: 'POST',
+						url: 'http://localhost:9900/Approvalaleave',
+						data: {aleave_id:data.aleave_id},
+						success: function(){
+
+							layer.alert('批准成功', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+							that.getData()
+						},
+						error: function(){
+							layer.alert('批准失败', {
 								skin: 'layui-layer-molv'
 								,closeBtn: 0
 								,anim: 4
@@ -512,20 +438,20 @@
 
 
 
-			// 奖惩模糊查询
+			// 请假条模糊查询
 			findfit: function() {
 
 				var that = this
 
 				$.ajax({
 					type: 'POST',
-					url: 'http://localhost:9900/RewardFuzzyreward',
+					url: 'http://localhost:9900/AleaveFuzzyreward',
 					data: {
-
+						aleave_id:that.p.aleave_id,
 						job_id:that.p.job_id,
-						reward_id:that.p.reward_id,
 						beginDate:that.p.beginDate,
-						endDate:that.p.endDate
+						endDate:that.p.endDate,
+						ename:that.p.ename,
 					},
 					success: function(res){
 
@@ -535,9 +461,10 @@
 							,anim: 4
 						});
 						console.log(res)
-						that.rewardinfolist=res
+						that.aleaveinfolist=res
 					},
 					error: function(){
+
 						layer.alert('查询失败', {
 							skin: 'layui-layer-molv'
 							,closeBtn: 0

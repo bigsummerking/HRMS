@@ -37,13 +37,13 @@
 			<div class="c-item">
 				<label class="c-label">工号：</label>
 				<el-input size="mini" v-model="p.job_id" placeholder="工号"></el-input>
-			</div>
 
-			<div class="c-item">
+				<label class="c-label">姓名：</label>
+				<el-input size="mini" v-model="p.ename" placeholder="工号"></el-input>
+
 				<label class="c-label">考勤编号：</label>
 				<el-input size="mini" v-model="p.echeck_id" placeholder="考勤编号"></el-input>
 			</div>
-
 
 			<div class="c-item">
 				<label class="c-label">考勤日期：</label>
@@ -54,12 +54,10 @@
 			</div>
 
 
-
 			<div class="c-item" style="min-width: 0px;">
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="findfit">查询</el-button>
-			</div>
-			<div class="c-item" style="min-width: 0px;">
 				<el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd">添加考勤信息</el-button>
+
 			</div>
 
 			<br />
@@ -87,7 +85,6 @@
 			</el-table-column>
 
 			<el-table-column label="上班时间" prop="opentime"  sortable></el-table-column>
-
 			<el-table-column label="下班时间" prop="closetime"  sortable></el-table-column>
 
 			<el-table-column label="状态" prop="state">
@@ -306,7 +303,8 @@
 				job_id: "",
 				echeck_id: "",
 				beginDate: "",
-				endDate: ""
+				endDate: "",
+				ename:"",
 			},
 			page: {	// 分页信息
 				pageNo: 1,
@@ -583,6 +581,7 @@
 						job_id: that.p.job_id,
 						opentime: that.p.beginDate,
 						closetime:that.p.endDate,
+						ename:that.p.ename,
 					},
 					success: function(res){
 

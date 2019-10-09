@@ -29,10 +29,13 @@ public class AttendanceController {
     private RewardService rewardService;
 
     @RequestMapping(value = "/Findallaleave", method = RequestMethod.POST)
-    public List<aleaveinfo> Findallaleave(){
+    public JSONObject Findallaleave(){
         List<aleaveinfo> FindallList = attendanceservice.Findallaleave();
-        System.out.println(FindallList);
-        return FindallList;
+        JSONObject result = new JSONObject();
+        result.put("msg", "ok");
+        result.put("method", "Findallaleave");
+        result.put("allaleaveinfolist",FindallList);
+        return result;
     }
 
     @RequestMapping(value = "/Findallapproval", method = RequestMethod.POST)
@@ -96,16 +99,19 @@ public class AttendanceController {
     public List<aleaveinfo> AleaveFuzzyreward(@RequestParam(value = "job_id",required=false,defaultValue="") Integer job_id,
                                               @RequestParam(value = "aleave_id",required=false,defaultValue="") Integer aleave_id,
                                               @RequestParam(value = "department_id",required=false,defaultValue="") Integer department_id,
-                                              @RequestParam(value = "btime",required=false) @DateTimeFormat(pattern="yyyy-MM-dd") Date btime,
-                                              @RequestParam(value = "etime",required=false) @DateTimeFormat(pattern="yyyy-MM-dd") Date etime){
+                                              @RequestParam(value = "ename",required=false) String ename,
+                                              @RequestParam(value = "beginDate",required=false) String btime,
+                                              @RequestParam(value = "endDate",required=false) String etime){
 
         Map map=new HashMap();
 
         map.put("job_id",job_id);
         map.put("aleave_id",aleave_id);
         map.put("department_id",department_id);
+        map.put("ename",ename);
         map.put("btime",btime);
         map.put("etime",etime);
+
 
         List list=attendanceservice.AleaveFuzzyreward(map);
         return list;
@@ -213,6 +219,7 @@ public class AttendanceController {
     @RequestMapping(value = "/EcheckFuzzyreward", method = RequestMethod.POST)
     public List<echeckinfo> EcheckFuzzyreward(@RequestParam(value = "job_id",required=false,defaultValue="") Integer job_id,
                                               @RequestParam(value = "echeck_id",required=false,defaultValue="") Integer echeck_id,
+                                              @RequestParam(value = "ename",required=false) String ename,
                                               @RequestParam(value = "opentime",required=false) String opentime,
                                               @RequestParam(value = "closetime",required=false) String closetime){
 
@@ -226,6 +233,7 @@ public class AttendanceController {
 
         map.put("job_id",job_id);
         map.put("echeck_id",echeck_id);
+        map.put("ename",ename);
         map.put("opentime",opentime);
         map.put("closetime",closetime);
 

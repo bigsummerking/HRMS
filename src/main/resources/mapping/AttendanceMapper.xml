@@ -27,12 +27,12 @@
 
 <!--    同意请假条-->
     <update id="Approvalaleave" parameterType="int">
-        update aleave set examine=0 where aleave_id=#{aleave_id}
+        update aleave set examine=1 where aleave_id=#{aleave_id}
     </update>
 
     <!-- 拒绝请假条-->
     <update id="Refusealeave" parameterType="int">
-        update aleave set examine=1 where aleave_id=#{aleave_id}
+        update aleave set examine=2 where aleave_id=#{aleave_id}
     </update>
 
 <!--    添加假条-->
@@ -51,19 +51,19 @@
             <if test="aleave_id != null">
                 and aleave_id LIKE CONCAT('%','${aleave_id}','%')
             </if>
-            <if test="department !=null">
-                and department like CONCAT('%','${department}','%')
+            <if test="ename != null">
+                and ename LIKE CONCAT('%','${ename}','%')
             </if>
-            <if test="btime !=null or etime !=null">
+            <if test="btime !=null and etime !=null">
                 and btime between #{btime} and #{etime}
             </if>
-            <if test="btime !=null or etime !=null">
+            <if test="btime !=null and etime !=null">
                 and etime between #{btime} and #{etime}
             </if>
-            <if test="btime !=null or etime ==null">
+            <if test="btime !=null and etime ==null">
                 and btime &gt;= #{btime}
             </if>
-            <if test="btime ==null or etime !=null">
+            <if test="btime ==null and etime !=null">
                 and etime &lt;= #{etime}
             </if>
         </where>
@@ -107,6 +107,9 @@
             </if>
             <if test="echeck_id != null">
                 and echeck_id LIKE CONCAT('%','${echeck_id}','%')
+            </if>
+            <if test="ename != null">
+                and ename LIKE CONCAT('%','${ename}','%')
             </if>
             <if test="opentime !=null and closetime !=null">
                 and opentime between #{opentime} and #{closetime}
