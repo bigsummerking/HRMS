@@ -81,7 +81,6 @@ public class AttendanceService {
     public List<aleaveinfo> AleaveFuzzyreward(Map<String,Object> map){
         Integer job_id=(Integer)map.get("job_id");
         Integer aleave_id=(Integer) map.get("aleave_id");
-        Integer department_id=(Integer) map.get("department_id");
         String ename=(String) map.get("ename");
         Object btime=map.get("btime");
         Object etime=map.get("etime");
@@ -99,7 +98,6 @@ public class AttendanceService {
 
         map1.put("job_id",job_id);
         map1.put("aleave_id",aleave_id);
-        map1.put("department_id",department_id);
         map1.put("ename",ename);
         map1.put("btime",btime);
         map1.put("etime",etime);
