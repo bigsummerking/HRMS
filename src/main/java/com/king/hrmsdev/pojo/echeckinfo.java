@@ -1,12 +1,10 @@
 package com.king.hrmsdev.pojo;
 
-import java.util.Date;
-
 public class echeckinfo {
     private int echeck_id;
     private int job_id;
-    private Date opentime;
-    private Date closetime;
+    private String opentime;
+    private String closetime;
     private int state;
     private String ename;
     private int sex;
@@ -27,19 +25,19 @@ public class echeckinfo {
         this.job_id = job_id;
     }
 
-    public Date getOpentime() {
+    public String getOpentime() {
         return opentime;
     }
 
-    public void setOpentime(Date opentime) {
+    public void setOpentime(String opentime) {
         this.opentime = opentime;
     }
 
-    public Date getClosetime() {
+    public String getClosetime() {
         return closetime;
     }
 
-    public void setClosetime(Date closetime) {
+    public void setClosetime(String closetime) {
         this.closetime = closetime;
     }
 
@@ -67,7 +65,7 @@ public class echeckinfo {
         this.sex = sex;
     }
 
-    public echeckinfo(int echeck_id, int job_id, Date opentime, Date closetime, int state, String ename, int sex) {
+    public echeckinfo(int echeck_id, int job_id, String opentime, String closetime, int state, String ename, int sex) {
         this.echeck_id = echeck_id;
         this.job_id = job_id;
         this.opentime = opentime;
@@ -77,16 +75,13 @@ public class echeckinfo {
         this.sex = sex;
     }
 
-    public echeckinfo() {
-    }
-
     @Override
     public String toString() {
         return "echeckinfo{" +
                 "echeck_id=" + echeck_id +
                 ", job_id=" + job_id +
-                ", opentime=" + opentime +
-                ", closetime=" + closetime +
+                ", opentime='" + opentime + '\'' +
+                ", closetime='" + closetime + '\'' +
                 ", state=" + state +
                 ", ename='" + ename + '\'' +
                 ", sex=" + sex +

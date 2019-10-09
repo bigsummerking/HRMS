@@ -72,8 +72,8 @@
     </select>
 
 <!--    添加考勤记录-->
-    <insert id="Insertecheck">
-        insert into echeck (job_id,opentime,closetime,state) values (#{job_id}#{opentime},#{closetime},#{state})
+    <insert id="Insertecheck" parameterType="com.king.hrmsdev.entity.Echeck">
+        insert into echeck (job_id,opentime,closetime,state) values (#{job_id},#{opentime},#{closetime},#{state})
     </insert>
 
 <!--    通过echeck_id查找信息-->
@@ -82,9 +82,8 @@
     </select>
 
 <!--    通过echeck_id修改考勤记录-->
-    <update id="Updateecheck">
-        update echeck set job_id=#{job_id},opentime=#{opentime},
-        closetime=#{closetiem},sqlstate =#{state} where echeck_id={#echeck_id}
+    <update id="Updateecheck" parameterType="com.king.hrmsdev.entity.Echeck">
+        update echeck set job_id=#{job_id},opentime=#{opentime},closetime=#{closetime},state=#{state} where echeck_id=#{echeck_id}
     </update>
 
 <!--    通过echeck_id删除考勤记录-->

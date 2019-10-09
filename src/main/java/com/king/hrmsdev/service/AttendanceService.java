@@ -133,6 +133,7 @@ public class AttendanceService {
             attendanceMapper.Updateecheck(echeck);
         } catch (Exception e) {
             flag=0;
+            System.out.println("service  ::  echeck++++++++"+echeck);
         }
         finally {
             return flag;

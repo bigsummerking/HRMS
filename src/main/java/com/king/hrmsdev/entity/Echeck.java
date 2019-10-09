@@ -1,12 +1,10 @@
 package com.king.hrmsdev.entity;
 
-import java.util.Date;
-
 public class Echeck {
     private int echeck_id;
     private int job_id;
-    private Date opentime;
-    private Date closetime;
+    private String opentime;
+    private String closetime;
     private int state;
 
     public int getEcheck_id() {
@@ -25,19 +23,19 @@ public class Echeck {
         this.job_id = job_id;
     }
 
-    public Date getOpentime() {
+    public String getOpentime() {
         return opentime;
     }
 
-    public void setOpentime(Date opentime) {
+    public void setOpentime(String opentime) {
         this.opentime = opentime;
     }
 
-    public Date getClosetime() {
+    public String getClosetime() {
         return closetime;
     }
 
-    public void setClosetime(Date closetime) {
+    public void setClosetime(String closetime) {
         this.closetime = closetime;
     }
 
@@ -49,24 +47,15 @@ public class Echeck {
         this.state = state;
     }
 
-    public Echeck(int echeck_id, int job_id, Date opentime, Date closetime, int state) {
-        this.echeck_id = echeck_id;
-        this.job_id = job_id;
-        this.opentime = opentime;
-        this.closetime = closetime;
-        this.state = state;
-    }
 
-    public Echeck() {
-    }
 
     @Override
     public String toString() {
         return "Echeck{" +
                 "echeck_id=" + echeck_id +
                 ", job_id=" + job_id +
-                ", opentime=" + opentime +
-                ", closetime=" + closetime +
+                ", opentime='" + opentime + '\'' +
+                ", closetime='" + closetime + '\'' +
                 ", state=" + state +
                 '}';
     }

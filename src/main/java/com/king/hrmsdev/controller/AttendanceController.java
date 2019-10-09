@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -144,38 +142,13 @@ public class AttendanceController {
                              @RequestParam("state") Integer state){
 
         Echeck echeck=new Echeck();
-        if (echeck_id !=null){
-            echeck.setEcheck_id(echeck_id);
-        }
-
-        System.out.println("opentime>>>>>>>>>>"+opentime);
-        System.out.println("closetime>>>>>>>>>>"+closetime);
-
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        ParsePosition pos = new ParsePosition(0);
-        Date strtodate = formatter.parse(opentime, pos);
-
-        SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        ParsePosition pos1 = new ParsePosition(0);
-        Date strtodate1 = formatter.parse(closetime, pos1);
-
-        System.out.println("strtodate>>>>>>>>>>"+strtodate.toString());
-
-
-
-
-
-
-
-
 
 
         echeck.setJob_id(job_id);
-        echeck.setOpentime(strtodate);
-        echeck.setClosetime(strtodate1);
+        echeck.setOpentime(opentime);
+        echeck.setClosetime(closetime);
         echeck.setState(state);
 
-        System.out.println("echeck>>>>>>>>>>"+echeck);
 
         int flag=attendanceservice.Insertecheck(echeck);
         return flag;
@@ -192,25 +165,14 @@ public class AttendanceController {
                              @RequestParam("state") Integer state){
         Echeck echeck=new Echeck();
 
-        String opentimestr = opentime;
-        SimpleDateFormat format1 =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        ParsePosition pos1 = new ParsePosition(0);
-        Date opendate = format1.parse(opentimestr, pos1);
-
-        String closetimestr = closetime;
-        SimpleDateFormat format2 =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        ParsePosition pos2 = new ParsePosition(0);
-        Date closedate = format2.parse(closetimestr, pos2);
-
 
         echeck.setEcheck_id(echeck_id);
         echeck.setJob_id(job_id);
-        echeck.setOpentime(opendate);
-        echeck.setClosetime(closedate);
+        echeck.setOpentime(opentime);
+        echeck.setClosetime( closetime);
         echeck.setState(state);
 
-
-        System.out.println(echeck);
+        System.out.println("echeck++++++++"+echeck);
 
         int flag=attendanceservice.Updateecheck(echeck);
 

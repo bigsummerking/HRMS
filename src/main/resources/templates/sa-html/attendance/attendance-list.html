@@ -134,6 +134,7 @@
 							id="updateopentime"
 							name="updateopentime"
 							v-model="form.opentime"
+							value-format="yyyy-MM-dd HH:mm:ss"
 							type="datetime"
 							placeholder="选择上班时间"
 							default-time="09:00:00">
@@ -143,6 +144,7 @@
 							id="updateclosetime"
 							name="updateclosetime"
 							v-model="form.closetime"
+							value-format="yyyy-MM-dd HH:mm:ss"
 							type="datetime"
 							placeholder="选择下班时间"
 							default-time="18:00:00">
@@ -431,9 +433,9 @@
 						data: {
 							echeck_id: that.form.echeck_id,
 							job_id: that.form.job_id,
-							opentime: that.form.updateopentime,
-							closetime:that.form.updateclosetime,
-							state:that.form.updatestate,
+							opentime: that.form.opentime,
+							closetime:that.form.closetime,
+							state:that.form.state,
 						},
 						success: function () {
 							layer.alert('修改成功', {
