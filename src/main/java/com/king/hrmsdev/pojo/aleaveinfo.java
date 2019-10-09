@@ -1,12 +1,10 @@
 package com.king.hrmsdev.pojo;
 
-import java.util.Date;
-
 public class aleaveinfo {
     private int aleave_id;
     private int job_id;
-    private Date btime;
-    private Date etime;
+    private String btime;
+    private String etime;
     private String reason;
     private int examine;
     private String ename;
@@ -28,19 +26,19 @@ public class aleaveinfo {
         this.job_id = job_id;
     }
 
-    public Date getBtime() {
+    public String getBtime() {
         return btime;
     }
 
-    public void setBtime(Date btime) {
+    public void setBtime(String btime) {
         this.btime = btime;
     }
 
-    public Date getEtime() {
+    public String getEtime() {
         return etime;
     }
 
-    public void setEtime(Date etime) {
+    public void setEtime(String etime) {
         this.etime = etime;
     }
 
@@ -76,7 +74,7 @@ public class aleaveinfo {
         this.sex = sex;
     }
 
-    public aleaveinfo(int aleave_id, int job_id, Date btime, Date etime, String reason, int examine, String ename, int sex) {
+    public aleaveinfo(int aleave_id, int job_id, String btime, String etime, String reason, int examine, String ename, int sex) {
         this.aleave_id = aleave_id;
         this.job_id = job_id;
         this.btime = btime;
@@ -95,8 +93,8 @@ public class aleaveinfo {
         return "aleaveinfo{" +
                 "aleave_id=" + aleave_id +
                 ", job_id=" + job_id +
-                ", btime=" + btime +
-                ", etime=" + etime +
+                ", btime='" + btime + '\'' +
+                ", etime='" + etime + '\'' +
                 ", reason='" + reason + '\'' +
                 ", examine=" + examine +
                 ", ename='" + ename + '\'' +

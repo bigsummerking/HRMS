@@ -158,9 +158,8 @@
 				<!--				</el-form-item>-->
 
 				<el-form-item label="状态" >
-					<el-select size="mini"  id="updatestate" name ="updatestate" v-model="form.state"  placeholder="请选择" clearable>
+					<el-select size="mini"  id="updatestate" name ="updatestate" v-model="select"  placeholder="请选择" clearable>
 						<el-option
-
 								v-for="item in statusOptions"
 								:key="item.value"
 								:label="item.label"
@@ -205,7 +204,7 @@
 							default-time="18:00:00">
 					</el-date-picker>
 				</el-form-item>
-
+<!--////temp.state-->
 				<el-form-item label="状态" prop="manager">
 					<el-select size="mini" id="addstate" name="addstate"  v-model="temp.state" placeholder="请选择" clearable>
 						<el-option
@@ -348,6 +347,8 @@
 					label:'旷工'
 				}
 			],
+			select:'正常',
+
 
 			editVisible:false,
 			addVisible:false,
@@ -360,6 +361,7 @@
 				opentime:"",
 				closetime:"",
 				state:undefined,
+				updatestate:undefined,
 
 			},
 			//添加参数
@@ -425,6 +427,33 @@
 
 				}
 				else {
+
+					console.log("this.form.updatestat>>>>>>"+form.updatestate.value)
+					
+					if (form.updatestate.value=="正常"){
+						that.form.state=0;
+					}
+					if (form.updatestate.value=="加班"){
+						that.form.state=1;
+					}
+					if (form.updatestate.value=="迟到"){
+						that.form.state=2;
+					}
+					if (form.updatestate.value=="早退"){
+						that.form.state=3;
+					}
+
+					if (form.updatestate.value=="请假"){
+						that.form.state=4;
+					}
+					if (form.updatestate.value=="旷工"){
+						that.form.state=5;
+					}
+
+					console.log("that.form.state>>>>>>"+that.form.state)
+
+
+
 					$.ajax({
 						url: "http://localhost:9900/Updateecheck",
 						type: "post",
@@ -434,6 +463,7 @@
 							opentime: that.form.opentime,
 							closetime:that.form.closetime,
 							state:that.form.state,
+
 						},
 						success: function () {
 							layer.alert('修改成功', {
@@ -441,8 +471,6 @@
 								, closeBtn: 0
 								, anim: 4
 							});
-							
-
 							that.getData()
 						}
 					})
@@ -521,9 +549,8 @@
 
 				}).catch(function () {
 
-					console.log('失败123')
-					console.log("error"+that.echeckinfoList)
-					console.log("res--->"+ res)
+					console.log('失败')
+
 
 				})
 			},
