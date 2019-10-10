@@ -24,6 +24,4 @@ public interface EmployeeMapper {
      int dismissEmployee (int  id);
      int recoverEmployee (int  id);
      int updateEmployeefordepartment(Map map);
-
-
 }

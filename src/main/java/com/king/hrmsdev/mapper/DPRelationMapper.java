@@ -22,7 +22,4 @@ public interface DPRelationMapper {
     int updateDPRelation(Vposition vposition);
     Vposition findbyid(int id);
 
-
-
-
 }
