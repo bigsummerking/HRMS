@@ -305,7 +305,7 @@
 			//刷新数据
 			getData:function(){
 				var that = this
-				axios.post('http://localhost:9900/getallDepartment').then(function (res) {
+				axios.post('http://localhost:9900/getallDepartments').then(function (res) {
 
 					//把从json获取的数据赋值给数组
 					var data = res.data.alldepartmentslist

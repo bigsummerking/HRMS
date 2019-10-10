@@ -21,6 +21,7 @@ public interface PositionMapper {
      int deleteposition(int id);
      int addposition(Position position);
      List<Vposition> findBydepartmentid(Vposition vposition);
+     List<Vposition> findBydepartmentidinused(Vposition vposition);
      int finglastid();
 }
 

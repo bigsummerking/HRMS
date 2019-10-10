@@ -7,6 +7,9 @@
         <select id="findall" resultType="com.king.hrmsdev.entity.Department">
             SELECT * FROM department
         </select>
+        <select id="findallused" resultType="com.king.hrmsdev.entity.Department">
+            SELECT * FROM department WHERE  state = 1
+        </select>
         <!--根据部门编号查询部门 -->
         <select id="findByid" parameterType="int"  resultType="com.king.hrmsdev.entity.Department">
             SELECT * FROM department WHERE department_id = #{id}

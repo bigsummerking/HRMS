@@ -40,9 +40,16 @@
                 AND dp_position.department_id =  #{department_id}
     </select>
 
+    <select id="findBydepartmentidinused" parameterType="com.king.hrmsdev.pojo.Vposition" resultType="com.king.hrmsdev.pojo.Vposition">
+        select dp_position.*,position.position_name,(department.department) department_name,salary from position,department,dp_position where
+        position.position_id=dp_position.position_id
+        AND department.department_id=dp_position.department_id
+        AND dp_position.department_id =  #{department_id}
+        AND position.salary  <![CDATA[ >= ]]>  1
+    </select>
     <!--&lt;!&ndash;删除职位 &ndash;&gt;-->
     <!--<delete id="deleteposition" parameterType="int">-->
-        <!--DELETE from position  WHERE position_id=#{id}-->
+    <!--DELETE from position  WHERE position_id=#{id}-->
     <!--</delete>-->
 
     <!--删除职位 -->

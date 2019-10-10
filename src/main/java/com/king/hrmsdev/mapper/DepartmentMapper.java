@@ -16,6 +16,7 @@ import java.util.List;
 public interface DepartmentMapper {
 
      List<Department> findall();
+     List<Department> findallused();
      Department findByid(int id);
      List<Department> findBycondition(Department department);
      int dismissdepart(int id);

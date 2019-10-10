@@ -39,6 +39,13 @@ public class DepartmentService {
         return alldepartmentslist;
     }
 
+    public List<Department> findallused(){
+
+        List<Department> alldepartmentslist = departmentMapper.findallused();
+        return alldepartmentslist;
+    }
+
+
 
     public List<Department> findDepartmentBycondition(Department department){
         List<Department> fitdepartmentslist = departmentMapper.findBycondition(department);
@@ -82,6 +89,11 @@ public class DepartmentService {
         return  fitpositionslist;
     }
 
+
+    public List<Vposition>  findBydepartmentidinused(Vposition vposition){
+        List<Vposition> fitpositionslist = positionMapper.findBydepartmentidinused(vposition);
+        return  fitpositionslist;
+    }
 
 //    public int deleteposition(int id){
 //        int flag=0;

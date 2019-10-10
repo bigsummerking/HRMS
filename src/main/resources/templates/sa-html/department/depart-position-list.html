@@ -97,13 +97,13 @@
 		<el-dialog title="职位添加" :visible.sync="addVisible" width="30%">
 			<el-form  name="temp" id="temp" ref="temp"  :model="temp" label-width="100px">
 				<el-form-item label="职位名称">
-					<el-input  id="position_name" name="position_name" v-model="temp.position_name" maxlength="30" placeholder="请输入部门名称" show-word-limit />
+					<el-input  id="position_name" name="position_name" v-model="temp.position_name" maxlength="30" placeholder="请输入职位名称" show-word-limit />
 				</el-form-item>
 				<el-form-item label="职位工薪" >
-					<el-input id="salary" name="salary" v-model="temp.salary" maxlength="20" placeholder="请输入部门经理" show-word-limit  onkeyup="this.value=this.value.replace(/\D/g,'')" />
+					<el-input id="salary" name="salary" v-model="temp.salary" maxlength="20" placeholder="请输入职位薪资" show-word-limit  onkeyup="this.value=this.value.replace(/\D/g,'')" />
 				</el-form-item>
 				<el-form-item label="所属部门" >
-					<el-select  id="department_id" name="department_id" v-model="temp.department_id"   style="width: 100%;" placeholder="请选择部门" filterable clearable>
+					<el-select  id="department_id" name="department_id" v-model="temp.department_id"   style="width: 100%;" placeholder="请选择所属部门" filterable clearable>
 						<el-option
 								v-for="item in departmentsList"
 								:key="item.department_id"

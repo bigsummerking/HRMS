@@ -27,6 +27,20 @@ public class DepartmentManageController {
 
     @ResponseBody
     @RequestMapping(value = "/getallDepartment", method = RequestMethod.POST,produces = "application/json;charset=UTF-8")
+    public JSONObject  getAllDepartmentused(){
+        List<Department> alldepartmentslistused = departmentService.findallused();
+
+        JSONObject result = new JSONObject();
+        result.put("msg", "ok");
+        result.put("method", "getAllDepartment");
+        result.put("alldepartmentslist", alldepartmentslistused);
+        System.out.println(result.toJSONString());
+
+        return result;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/getallDepartments", method = RequestMethod.POST,produces = "application/json;charset=UTF-8")
     public JSONObject  getAllDepartment(){
         List<Department> alldepartmentslist = departmentService.getAllDepartment();
 
@@ -147,7 +161,7 @@ public class DepartmentManageController {
 
         System.out.println(vposition1);
 
-        List<Vposition> positionslist = departmentService.findBydepartmentid(vposition1);
+        List<Vposition> positionslist = departmentService.findBydepartmentidinused(vposition1);
 
         return positionslist;
     }
