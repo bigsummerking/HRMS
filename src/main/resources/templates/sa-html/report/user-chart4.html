@@ -4,39 +4,39 @@
 		<title>用户列表</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-
+		
 		<!-- 所有的 css 资源 -->
 		<link rel="stylesheet" href="https://unpkg.com/element-ui@2.8.2/lib/theme-chalk/index.css">
-		<link rel="stylesheet" href="../../static/sa.css">
-
+		<link rel="stylesheet" href="../../static/sa.css"> 
+		
 		<!-- 所有的 js 资源 -->
 		<script src="https://unpkg.com/vue@2.6.10/dist/vue.js"></script>
 		<script src="https://unpkg.com/element-ui@2.8.2/lib/index.js"></script>
-
+		
 		<script src="https://unpkg.com/jquery@3.4.1/dist/jquery.js"></script>
 		<script src="https://cdn.bootcss.com/layer/3.0.1/layer.min.js"></script>
 		<script src="../../static/sa.js"></script>
-
+		
 		<style type="text/css">
 			.echarts-div{
 				height: 450px;
 			}
 
 		</style>
-
+		
 	</head>
 	<body>
-
+		
 		<!-- 防止margin向下击穿 -->
 		<div style="margin-top: -1em;"><br></div>
-
+		
 		<div class="vue-box">
-
+			
 			<!-- 参数栏 -->
 			<div style="padding: 2em;">
 				<div class="c-title">检索参数</div>
 				<el-form ref="form">
-
+	
 					<div class="c-item">
 						<label class="c-label">选择年份：</label>
 						<el-select size="mini" v-model="p.year" @change="f5()">
@@ -49,27 +49,27 @@
 							<el-option label="2021年" :value="2021"></el-option>
 						</el-select>
 					</div>
-
+					
 					<div class="c-item" style="min-width: 0px;">
 						<el-button type="primary" icon="el-icon-search" size="mini" @click="f5">查询</el-button>
 					</div>
-
+					
 				</el-form>
 
 			</div>
-
+			
 			<!-- 数据栏 -->
 			<div style="display: flex; margin-top: -1em;">
-				<div style="padding: 2em; flex: 4; margin-right: 0;">
+				<div style="padding: 2em; flex: 4; margin-right: 0;">			
 					<div class="c-title" style="margin-bottom: 50px;">饼图</div>
 					<div class="echarts-div" id='e-type'></div>
 				</div>
-				<div style="padding: 2em; flex: 6;">
+				<div style="padding: 2em; flex: 6;">			
 					<div class="c-title">折线图</div>
 					<div class="echarts-div" id='e-month'></div>
 				</div>
 			</div>
-
+			
 			<div style="clear: both;"></div>
 
 			<div style="padding: 2em;">
@@ -77,14 +77,14 @@
 					一个使用 JavaScript 实现的开源可视化库，可以流畅的运行在 PC 和移动设备上，兼容当前绝大部分浏览器
 				</el-link>
 			</div>
-
+			
 			<br><br><br><br><br><br><br><br><br>
 
-
+			
 		</div>
-
-
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.2.1/echarts-en.js"></script>
+		
+		
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.2.1/echarts-en.js"></script> 
 		<script type="text/javascript">
 
 			// 随机数
@@ -95,7 +95,7 @@
 			new Vue({
 				el: '.vue-box',
 				data: {
-					p: {	// 查询参数
+					p: {	// 查询参数 
 						year: new Date().getFullYear()
 					}
 				},
@@ -115,27 +115,27 @@
 						var dataArray = [
 							{
 								name: '人事部',
-								value: randomNum(100, 1000)
+								value: randomNum(10, 50)
 							},
 							{
 								name: '工程部',
-								value: randomNum(100, 1000)
+								value: randomNum(10, 50)
 							},
 							{
 								name: '事业部',
-								value: randomNum(100, 1000)
+								value: randomNum(10, 50)
 							},
 							{
 								name: 'QQ登陆',
-								value: randomNum(100, 1000)
+								value:randomNum(10, 50)
 							},
 							{
 								name: '管理员添加',
-								value: randomNum(100, 1000)
+								value:randomNum(10, 50)
 							},
 						]; // 坐标X轴数据
 
-
+						
 
 
 						// ===========================================  开始渲染
@@ -143,7 +143,7 @@
 						var myChart = echarts.init(document.getElementById('e-type'));
 						option = {
 							title: {
-								text: '各部门人数',
+								text: '部门缺勤次数',
 								left: 'center',
 								top: 40,
 								textStyle: {
@@ -165,7 +165,7 @@
 							},
 
 							series: [{
-								name: '各部门人数',
+								name: '部门缺勤次数',
 								type: 'pie',
 								radius : '50%',  // 半径大小
 								center: ['50%', '50%'],
@@ -213,23 +213,38 @@
 					// 更新Echarts, 每月注册量
 					updateEchartsMonth: function() {
 
-
+						
 
 						// ===========================================  定义数据
 						var x_name = this.p.year + "年"; // x轴名称
-						var y_name = "各部门人数"; // y轴名称
+						var y_name = "部门缺勤次数"; // y轴名称
 						var dataArray = []; // 坐标X轴数据
 						var valueArray = []; //  坐标Y轴数据
 
-						var arr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+
+						var arr = [ 1, 2, 3, 4, 5, 6, 7, ];
 						for (var i in arr) {
 							i = parseInt(i) + 1;
-							dataArray.push(i + '月');
+							if(i==1)
+								dataArray.push("人事部");
+							else if (i==2){
+								dataArray.push("事业部");
+							}else if(i==3){
+								dataArray.push("秘书室");
+							}else if(i==4){
+								dataArray.push("市场部");
+							}else if(i==5){
+								dataArray.push("策划部");
+							}
+							else if(i==6){
+								dataArray.push("营销部");
+							}else
+								dataArray.push("工程部");
 							if(i < 10){
 								i = "0" + i;
 							}
 							i = i + "";
-							valueArray.push(randomNum(100, 1000) || 0);
+							valueArray.push(randomNum(10,50) || 0);
 						}
 
 
@@ -320,8 +335,8 @@
 					}.bind(this), 0)
 				}
 			})
-
-
+			
+			
 			var myChartList = [{}, {}];
 			window.onresize = function() {
 				myChartList.forEach(function(myChart){
@@ -329,13 +344,13 @@
 				})
 			};
 
-
+			
 		</script>
-
-
-
-
-
-
+		
+		
+		
+		
+		
+		
 	</body>
 </html>

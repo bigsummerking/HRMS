@@ -1,4 +1,4 @@
-package com.king.hrmsdev.entity;
+package com.king.hrmsdev.pojo;
 
 import java.math.BigDecimal;
 

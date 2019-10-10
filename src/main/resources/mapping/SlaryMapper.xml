@@ -6,6 +6,17 @@
     <select id="QuaryRewordByID"  parameterType="int" resultType="com.king.hrmsdev.entity.EmployReword">
          select reward.* from reward,employees where reward.job_id=employees.job_id AND employees.job_id=#{job_id};
   </select>
+    <select id="QuaryReword"  parameterType="com.king.hrmsdev.entity.Employees" resultType="com.king.hrmsdev.entity.Salary">
+         select salary.* from employees,salary  <where>
+                salary.job_id=employees.job_id
+            <if test="job_id != null and job_id != 0">
+                  and  employees.job_id=#{job_id}
+            </if>
+            <if test="ename != null">
+                AND employees.ename  LIKE  CONCAT('%',#{ename},'%')
+            </if>
+    </where>
+  </select>
     <select id="QuaryPositionByJobID"  parameterType="int" resultType="com.king.hrmsdev.entity.Position">
          select position.* from position,employees where position.position_id=employees.position_id AND  employees.job_id=#{job_id};
   </select>
@@ -15,8 +26,50 @@
     <select id="QuaryALL"  parameterType="int" resultType="com.king.hrmsdev.entity.Employees">
                 select * from employees where job_id=#{job_id}
   </select>
+    <select id="QuaryIdByName"  parameterType="String" resultType="int[]">
+                select job_id from employees where ename like CONCAT('%',#{ename},'%')
+  </select>
+    <select id="QuaryAllSalary"   resultMap="resultMap">
+        select employees.job_id,employees.ename,employees.sex,department.department,position.position_name,position.salary,salary.finasalary from
+        employees,department,position,salary
+            <where>
+                 employees.job_id=department.department_id
+                 and  employees.position_id=position.position_id
+                 and  employees.job_id=salary.job_id
+          </where>
+  </select>
+    <select id="QuarySalary"  parameterType="com.king.hrmsdev.entity.Employees" resultMap="resultMap">
+        select employees.job_id,employees.ename,employees.sex,department.department,position.position_name,position.salary,salary.finasalary from
+        employees,department,position,salary
+         <where>
+             employees.job_id=department.department_id
+             and  employees.position_id=position.position_id
+             and  employees.job_id=salary.job_id
+             <if test="job_id != null and job_id != 0">
+               and employees.job_id  = #{job_id}
+             </if>
+             <if test="ename!=null ">
+                 AND employees.ename LIKE CONCAT('%',#{ename},'%')
+             </if>
+             <if test="time!=null ">
+                 AND salary.payday LIKE CONCAT('%',#{time},'%')
+             </if>
+    </where>
+  </select>
     <insert id="AddSalary" parameterType="com.king.hrmsdev.entity.Salary"  >
         insert into salary values (null,#{job_id},#{finasalary},#{payday});
     </insert>
-
+    <delete id="deleteSalary" parameterType="int">
+            delete from  salary where job_id=#{job_id}
+    </delete>
+    <resultMap id="resultMap" type="com.king.hrmsdev.pojo.SalaryList" >
+        <id column="id" property="id"  />
+        <result column="job_id" property="job_id" />
+        <result column="ename" property="ename" />
+        <result column="sex" property="sex" />
+        <result column="department" property="department" />
+        <result column="position_name" property="position" />
+        <result column="salary" property="baseMoney" />
+        <result column="finasalary" property="finalMoney" />
+    </resultMap>
 </mapper>

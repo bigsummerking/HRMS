@@ -84,12 +84,7 @@ var menuList =	[
 			{
 				id: '5-1',
 				name: '员工工资信息',
-				url: 'sa-html/home/swiper.html'
-			},
-			{
-				id: '5-2',
-				name: '员工工资录入',
-				url: 'sa-html/home/swiper.html'
+				url: 'sa-html/salary/salary-list.html'
 			},
 		]
 	},
@@ -102,17 +97,17 @@ var menuList =	[
 			{
 				id: '6-1',
 				name: '部门人数统计',
-				url: 'sa-html/home/swiper.html'
+				url: 'sa-html/report/user-chart2.html'
 			},
 			{
 				id: '6-2',
-				name: '员工工资统计',
-				url: 'sa-html/home/swiper.html'
+				name: '部门平均工资统计',
+				url: 'sa-html/report/user-chart3.html'
 			},
 			{
 				id: '6-3',
-				name: '考勤信息统计',
-				url: 'sa-html/home/swiper.html'
+				name: '部门缺勤次数',
+				url: 'sa-html/report/user-chart4.html'
 			},
 
 		]
