@@ -1,278 +1,641 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>用户列表</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-		
-		<!-- 所有的 css 资源 -->
-		<link rel="stylesheet" href="https://unpkg.com/element-ui@2.8.2/lib/theme-chalk/index.css">
-		<link rel="stylesheet" href="../../static/sa.css"> 
-		
-		<!-- 所有的 js 资源 -->
-		<script src="https://unpkg.com/vue@2.6.10/dist/vue.js"></script>
-		<script src="https://unpkg.com/element-ui@2.8.2/lib/index.js"></script>
-		
-		<script src="https://unpkg.com/jquery@3.4.1/dist/jquery.js"></script>
-		<script src="https://cdn.bootcss.com/layer/3.0.1/layer.min.js"></script>
-		<script src="../../static/kj/laydate/laydate.js"></script>
-		<script src="../../static/sa.js"></script>
-		<script src="data-list.js"></script>
-		
-		<style type="text/css">
-			
-		</style>
-		
-	</head>
-	<body>
-		
-		<!-- 防止margin向下击穿 -->
-		<div style="margin-top: -1em;"><br></div>
-		
-		<div class="vue-box" style="display: none;" :style="'display: block;'">
-			
-			<!-- 参数栏 -->
-			<div class="c-panel">
-				<div class="c-title">检索参数</div>
-				<el-form ref="form">
-	
-					<div class="c-item">
-						<label class="c-label">昵称：</label>
-						<el-input size="mini" v-model="p.username" placeholder="模糊搜索" @keyup.enter="f5"></el-input>
-					</div>
-					
-					<div class="c-item">
-						<label class="c-label">注册日期：</label>
-						<el-input size="mini" v-model="p.start_time" class="start_time"></el-input>
-						&nbsp;至&nbsp;
-						<el-input size="mini" v-model="p.end_time" class="end_time"></el-input>
-					</div>
-					
-					<div class="c-item" style="min-width: 0px;">
-						<el-button type="primary" icon="el-icon-search" size="mini" @click="f5">查询</el-button>
-					</div>
-					
-					<!-- <br />
-					<div class="c-item">
-						<label class="c-label">注册方式：</label>
-						<el-select size="mini" v-model="p.create_type">
-							<el-option label="全部" :value="0"></el-option>
-							<el-option label="账号注册" :value="1"></el-option>
-							<el-option label="手机号注册" :value="2"></el-option>
-							<el-option label="邮箱注册" :value="3"></el-option>
-						</el-select>
-					</div>
-					 -->
-					<br />
-					<div class="c-item">
-						<label class="c-label">排序：</label>
-						<el-radio-group v-model="p.sort_type">
-							<el-radio :label="1">注册时间</el-radio>
-							<el-radio :label="2">最近登录</el-radio>
-							<el-radio :label="3">登陆次数</el-radio>
-							<el-radio :label="4">最近签到</el-radio>
-							<el-radio :label="5">签到次数</el-radio>
-						</el-radio-group>
-					</div>
+<head>
+	<title>考勤列表</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 
-				</el-form>
+	<!-- 所有的 css 资源 -->
+	<link rel="stylesheet" href="https://unpkg.com/element-ui@2.8.2/lib/theme-chalk/index.css">
+	<link rel="stylesheet" href="../../static/sa.css">
+
+	<!-- 所有的 js 资源 -->
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="https://unpkg.com/vue@2.6.10/dist/vue.js"></script>
+	<script src="https://unpkg.com/element-ui@2.8.2/lib/index.js"></script>
+	<script src="https://unpkg.com/jquery@3.4.1/dist/jquery.js"></script>
+	<script src="https://cdn.bootcss.com/layer/3.0.1/layer.min.js"></script>
+	<script src="../../static/kj/laydate/laydate.js"></script>
+	<script src="../../static/sa.js"></script>
+
+	<style type="text/css">
+
+	</style>
+
+</head>
+<body>
+
+<!-- 防止margin向下击穿 -->
+<div style="margin-top: -1em;"><br></div>
+
+<div id="vue-box" style="display: none;" :style="'display: block;'">
+
+	<!-- 参数栏 -->
+	<div class="c-panel">
+		<div class="c-title">查找考勤状况信息</div>
+		<el-form ref="form">
+			<div class="c-item">
+				<label class="c-label">工号：</label>
+				<el-input size="mini" v-model="p.job_id" placeholder="工号"></el-input>
+
+				<label class="c-label">姓名：</label>
+				<el-input size="mini" v-model="p.ename" placeholder="工号"></el-input>
+
+				<label class="c-label">考勤编号：</label>
+				<el-input size="mini" v-model="p.echeck_id" placeholder="考勤编号"></el-input>
+			</div>
+
+			<div class="c-item">
+				<label class="c-label">考勤日期：</label>
+
+				<el-input size="mini" v-model="p.beginDate" class="beginDate"></el-input>
+				&nbsp;至&nbsp;
+				<el-input size="mini" v-model="p.endDate" class="endDate"></el-input>
+			</div>
+
+
+			<div class="c-item" style="min-width: 0px;">
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="findfit">查询</el-button>
+				<el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd">添加考勤信息</el-button>
 
 			</div>
-			
-			<!-- 数据栏 -->
-			<div class="c-panel">			
-				<div class="c-title">列表</div>
-				<el-table class="data-table" :data="dataList" size="mini"  style="width: 100%">
-					
-					<el-table-column label="编号" prop="id" width="70px" > </el-table-column>
-					<el-table-column label="昵称" prop="username" width="200px">
-						<template slot-scope="scope">
-							<img :src="scope.row.avatar" style="width: 3em; height: 3em; float: left; margin-right: 1em; border-radius: 50%;" >
-							<div style="float: left; width: 130px; line-height: 20px;">
-								<b>{{scope.row.username}}</b>
-								<p>{{scope.row.tell}}</p>
-							</div>
-						</template>
-					</el-table-column>
-					<el-table-column label="个人相册">
-						<template slot-scope="scope">
-							<img :src="scope.row.photo_list[0]" style="width: 40px; height: 40px; cursor: pointer;" @click="pre_img(scope.row)" >
-							共{{scope.row.photo_list.length}}张, 点击预览
-						</template>
-					</el-table-column>
-					<el-table-column label="性别" prop="sex"> </el-table-column>
 
-					<el-table-column label="注册方式" prop="create_type"></el-table-column>
-					<el-table-column label="注册于" prop="create_time"></el-table-column>
-					<el-table-column label="状态">
-						<template slot-scope="scope">
-							<span style="color: green;" v-if="scope.row.status == 1">正常</span>
-							<span style="color: red;" v-if="scope.row.status == 2">禁用</span>
-						</template>
-					</el-table-column>
+			<br />
+		</el-form>
 
-					<el-table-column prop="address" label="操作">
-						<template slot-scope="scope">
-							<el-button type="primary" class="c-button" icon="el-icon-edit" @click="dongjie(scope.row)" v-if="scope.row.status == 1">禁用</el-button>
-							<el-button type="primary" class="c-button" icon="el-icon-edit" @click="jiejin(scope.row)" v-if="scope.row.status == 2">解禁</el-button>
-							<el-button type="danger" class="c-button" icon="el-icon-delete" @click="del(scope.row)">删除</el-button>
-						</template>
-					</el-table-column>
-				</el-table>
-		
-				<!-- 分页 -->
-				<div class="page-box">
-					<el-pagination background
-						layout="total, prev, pager, next, sizes, jumper" 
-						:current-page.sync="page.pageNo" 
-						:page-size.sync="page.pageSize" 
-						:total="page.count" 
-						:page-sizes="[1, 10, 20, 30, 40, 50, 100]" 
-						@current-change="f5(true)" 
-						@size-change="f5(true)">
-					</el-pagination>
-				</div>
+	</div>
 
-			</div>
-			
-			
-			<div class="c-panel" style="background-color: rgba(0,0,0,0);">
-				layer：<el-link type="primary" href="http://layer.layui.com/" target="_blank">
-					一个可以让你想到即可做到的JavaScript弹窗（层）解决方案
-				</el-link> <br>
-				laydate：<el-link type="primary" href="https://www.layui.com/laydate/" target="_blank">
-					世界上最好用的日期选择插件 
-				</el-link> <br>
-				
-			</div>
-			
-			<br><br><br><br><br><br><br><br><br>
+	<!-- 数据栏 -->
+	<div class="c-panel">
+		<div class="c-title">考勤状况</div>
+		<el-table class="data-table" :data="echeckinfoList" size="mini"  style="width: 100%">
+			<el-table-column label="考勤编号" prop="echeck_id" sortable></el-table-column>
 
-			
+			<el-table-column label="工号" prop="job_id"  sortable>
+				<template slot-scope="scope">
+					<b>{{scope.row.job_id}}</b>
+				</template>
+			</el-table-column>
+			<el-table-column label="员工姓名" prop="ename" sortable></el-table-column>
+			<el-table-column label="性别" prop="sex">
+				<template slot-scope="scope">
+					<span  v-if="scope.row.sex===1">{{scope.row.sex | sexFormat}}</span>
+					<span  v-if="scope.row.sex===0">{{scope.row.sex | sexFormat}}</span>
+				</template>
+			</el-table-column>
+
+			<el-table-column label="上班时间" prop="opentime"  sortable></el-table-column>
+			<el-table-column label="下班时间" prop="closetime"  sortable></el-table-column>
+
+			<el-table-column label="状态" prop="state">
+				<template slot-scope="scope">
+					<span style="color: blue" v-if="scope.row.state===0">{{scope.row.state | statusFormat}}</span>
+					<span style="color: green" v-if="scope.row.state===1">{{scope.row.state | statusFormat}}</span>
+					<span style="color: orange" v-if="scope.row.state===2">{{scope.row.state | statusFormat}}</span>
+					<span style="color: orangered" v-if="scope.row.state===3">{{scope.row.state | statusFormat}}</span>
+					<span style="color: red" v-if="scope.row.state===4">{{scope.row.state | statusFormat}}</span>
+					<span style="color: darkred" v-if="scope.row.state===5">{{scope.row.state | statusFormat}}</span>
+
+				</template>
+			</el-table-column>
+
+
+			<el-table-column prop="address" label="操作">
+				<template slot-scope="scope">
+					<el-button type="primary" class="c-button" icon="el-icon-edit" @click="handleEdit(scope.row)">修改</el-button>
+					<el-button type="danger" class="c-button" icon="el-icon-delete" @click="deleteecheckinfo(scope.row)" >删除</el-button>
+				</template>
+			</el-table-column>
+
+		</el-table>
+
+
+		<!-- 修改-->
+		<el-dialog title="考勤信息修改" :visible.sync="editVisible" >
+			<el-form name="form" id="form"  ref="form"  :model="form" label-width="100px">
+
+				<el-form-item label="考勤编号" id="ed_echeck_id" name="ed_echeck_id" v-model="form.echeck_id">
+					{{form.echeck_id}}
+				</el-form-item>
+
+				<el-form-item label="工号" id="ed_job_id" name="ed_job_id" v-model="form.job_id">
+					{{form.job_id}}
+				</el-form-item>
+
+				<el-form-item label="员工姓名">
+					{{form.ename}}
+				</el-form-item>
+
+				<el-form-item label="考勤时间" >
+					<el-date-picker
+							id="updateopentime"
+							name="updateopentime"
+							v-model="form.opentime"
+							value-format="yyyy-MM-dd HH:mm:ss"
+							type="datetime"
+							placeholder="选择上班时间"
+							default-time="09:00:00">
+					</el-date-picker>
+					至
+					<el-date-picker
+							id="updateclosetime"
+							name="updateclosetime"
+							v-model="form.closetime"
+							value-format="yyyy-MM-dd HH:mm:ss"
+							type="datetime"
+							placeholder="选择下班时间"
+							default-time="18:00:00">
+					</el-date-picker>
+				</el-form-item>
+
+
+
+				<!--				<el-form-item label="上班时间">-->
+				<!--					<el-input id="ed_opentime" name="ed_opentime" v-model="form.opentime"  />-->
+				<!--				</el-form-item>-->
+				<!--				<el-form-item label="下班时间">-->
+				<!--					<el-input  id="ed_closetime" name="ed_closetime" v-model="form.closetime"  />-->
+				<!--				</el-form-item>-->
+
+				<el-form-item label="状态" >
+					<el-select size="mini"  id="updatestate" name ="updatestate" v-model="select"  placeholder="请选择" clearable>
+						<el-option
+								v-for="item in statusOptions"
+								:key="item.value"
+								:label="item.label"
+								:value="item.value">
+						</el-option>
+					</el-select>
+				</el-form-item>
+
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+            <el-button @click="editVisible = false">取 消</el-button>
+            <el-button type="primary" @click="saveEdit()">确 定</el-button>
+          </span>
+		</el-dialog>
+
+		<!-- 添加 -->
+		<el-dialog title="考勤添加" :visible.sync="addVisible" >
+			<el-form  name="temp" id="temp" ref="temp"  :model="temp" label-width="100px">
+
+				<el-form-item label="工号">
+					<el-input  id="job_id" name="job_id" v-model="temp.job_id" maxlength="6" placeholder="请输入工号" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+				</el-form-item>
+
+				<el-form-item label="考勤时间" >
+					<el-date-picker
+							id="addopentime"
+							name="addopentime"
+							v-model="temp.opentime"
+							value-format="yyyy-MM-dd HH:mm:ss"
+							type="datetime"
+							placeholder="选择上班时间"
+							default-time="09:00:00">
+					</el-date-picker>
+					至
+					<el-date-picker
+							id="addclosetime"
+							name="addclosetime"
+							v-model="temp.closetime"
+							value-format="yyyy-MM-dd HH:mm:ss"
+							type="datetime"
+							placeholder="选择下班时间"
+							default-time="18:00:00">
+					</el-date-picker>
+				</el-form-item>
+<!--////temp.state-->
+				<el-form-item label="状态" prop="manager">
+					<el-select size="mini" id="addstate" name="addstate"  v-model="temp.state" placeholder="请选择" clearable>
+						<el-option
+								v-for="item in statusOptions"
+								:key="item.value"
+								:label="item.label"
+								:value="item.value">
+						</el-option>
+					</el-select>
+				</el-form-item>
+
+
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+            <el-button  @click="addVisible = false">取 消</el-button>
+            <el-button type="primary" @click="saveAdd()">确 定</el-button>
+          </span>
+		</el-dialog>
+
+		<!-- 分页 -->
+		<div class="page-box">
+			<el-pagination background
+						   layout="total, prev, pager, next, sizes, jumper"
+						   :current-page.sync="page.pageNo"
+						   :page-size.sync="page.pageSize"
+						   :total="page.count"
+						   :page-sizes="[1, 10, 20, 30, 40, 50, 100]"
+						   @current-change="f5(true)"
+						   @size-change="f5(true)">
+			</el-pagination>
 		</div>
-		
-		<script type="text/javascript">
-			
-			
-			// 渲染日期选择插件 
-			function init_laydate() {
-				// 开始日期
-				laydate.render({
-					elem: '.start_time input',
-					type: 'date',
-					done: function(value, date){
-						app.p.start_time = value;
-					}
-				});
-				// 结束日期
-				laydate.render({
-					elem: '.end_time input',
-					type: 'date',
-					done: function(value, date){
-						app.p.end_time = value;
-					}
-				});
-			}
-			
-			
-			
-			var app = new Vue({
-				el: '.vue-box',
-				data: {
-					p: {	// 查询参数 
-						username: '',
-						create_type: 0,
-						sort_type: 1,
-						start_time: sa.$util.forDate(new Date(new Date().getFullYear(), new Date().getMonth(), 1)), 	// 本月一号 
-						end_time: sa.$util.forDate(new Date()),
-					},
-					page: {	// 分页信息
-						pageNo: 1,
-						pageSize: 10,
-						count: 1422
-					},
-					dataList: dataList
-				},
-				methods: {
-					// 数据刷新
-					f5: function() {
-						sa.ajax2('/user/getList', this.p, function(res){
-							// this.dataList = res.data;	// 数据
-							// this.page = res.page;		// 分页 
-							this.$message('查询：' + JSON.stringify(this.p));
-						}.bind(this));
-					},
-					// 分页刷新
-					pageNo_f5: function(pageNo) {
-						this.$message('切换当前页：' + pageNo);
-						this.f5();
-					},
-					pageSize_f5: function(pageSize) {
-						this.$message('切换页大小：' + pageSize);
-						this.f5();
-					},
-					// 预览图片
-					pre_img: function(data) {
-						var list = data.photo_list;
-						var arr_list = [];
-						list.forEach(function(item) {
-							arr_list.push({
-								alt: '左右键切换',
-								pid: 1,
-								src: item,
-								thumb: item
-							})
-						})
-						layer.photos({
-							photos: {
-								title: data.username + '的个人相册',
-								id: data.id,
-								start: 0,
-								data: arr_list
-							}
-							,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
-						});
 
-					},
-					// 删除
-					del: function(data) {
-						layer.confirm('是否删除，此操作不可撤销', {}, function() {
-							sa.ajax2('url', {}, function(res) {
-								sa.$util.arrayDelete(this.dataList, data);
-								layer.msg('删除成功');
-							}.bind(this))
-						}.bind(this));
-					},
-					// 账号冻结
-					dongjie: function(data) {
-						layer.confirm('冻结此用户？', {}, function() {
-							sa.ajax2('url', {}, function(res) {
-								data.status = 2;
-								layer.msg('冻结成功');
-							}.bind(this))
-						}.bind(this));
-					},
-					// 解禁 
-					jiejin: function(data) {
-						layer.confirm('解禁此用户？', {}, function() {
-							sa.ajax2('url', {}, function(res) {
-								data.status = 1;
-								layer.msg('解禁成功');
-							}.bind(this))
-						}.bind(this));
-					}
-				},
-				mounted:function(){
-					init_laydate();
+	</div>
+
+	<br><br><br><br><br><br><br><br><br>
+
+
+</div>
+
+<script>
+	// 定义一个 Vue 全局的过滤器，名字叫做  statusFormat
+	Vue.filter('sexFormat', function (val) {
+		if(val===1){
+			return '男'
+		}else if(val===0){
+			return '女'
+		}
+	})
+
+	Vue.filter('statusFormat', function (val) {
+		if(val===0){
+			return '正常'
+		}else if(val===1){
+			return '加班'
+		}
+		else if(val===2){
+			return '迟到'
+		}
+		else if(val===3){
+			return '早退'
+		}
+		else if(val===4){
+			return '请假'
+		}
+		else if(val===5){
+			return '旷工'
+		}
+	})
+
+	function init_laydate() {
+		// 开始日期
+		laydate.render({
+			elem: '.beginDate input',
+			type: 'date',
+			done: function(value, date){
+				app.p.beginDate = value;
+			}
+		});
+		// 结束日期
+		laydate.render({
+			elem: '.endDate input',
+			type: 'date',
+			done: function(value, date){
+				app.p.endDate = value;
+			}
+		});
+	}
+
+
+
+	var app = new Vue({
+		el: '#vue-box',
+		data:{
+			p: {	// 查询参数
+				job_id: "",
+				echeck_id: "",
+				beginDate: "",
+				endDate: "",
+				ename:"",
+			},
+			page: {	// 分页信息
+				pageNo: 1,
+				pageSize: 10,
+				count: 30
+			},
+			echeckinfoList:[
+				{
+					echeck_id:11,
+					job_id:1,
+					opentime:"2019-09-22T09:29:07.000+0000",
+					closetime:"2019-09-05 18:03:15",
+					state:3,
+					ename:"张哥",
+					sex:1
 				}
-			})
-			
-		</script>
-		
-		
-		
-		
-		
-		
-	</body>
+			],
+			statusOptions:[
+				{
+					value: '0',
+					label:'正常'
+				},
+				{
+					value: '1',
+					label:'加班'
+				},
+				{
+					value: '2',
+					label:'迟到'
+				},
+				{
+					value: '3',
+					label:'早退'
+				},
+				{
+					value: '4',
+					label:'请假'
+				},
+				{
+					value: '5',
+					label:'旷工'
+				}
+			],
+			select:'正常',
+
+
+			editVisible:false,
+			addVisible:false,
+			//修改参数
+			form:{
+				echeck_id:undefined,
+				job_id:undefined,
+				ename:"",
+				sex:undefined,
+				opentime:"",
+				closetime:"",
+				state:undefined,
+				updatestate:undefined,
+
+			},
+			//添加参数
+			temp:{
+				job_id:undefined,
+				opentime:"",
+				closetime:"",
+				state:undefined,
+			}
+
+		},
+
+
+
+		created: function () {
+			this.getData();
+			init_laydate();
+
+		},
+
+
+		methods: {
+
+			handleEdit:function(row){
+				this.form = {
+					echeck_id:row.echeck_id,
+					job_id:row.job_id,
+					ename:row.ename,
+					state:row.state,
+				}
+
+				// this.form.updateopentime = row.opentime;
+				// this.form.updateclosetime = row.closetime;
+				//
+				// console.log(this.form.updateopentime)
+				// console.log("12321321")
+
+				this.editVisible = true
+			},
+
+			handleAdd:function(row){
+				this.addVisible = true
+			},
+
+			// 保存修改，更新考勤信息
+			saveEdit:function() {
+				var that = this
+				if (form.updateopentime.value=="")
+				{
+					layer.tips('请选择上班时间',$("#updateopentime"));
+					form.updateopentime.focus();
+					return false;
+				}else if (form.updateclosetime.value=="")
+				{
+					layer.tips('请选择下班时间',$("#updateclosetime"));
+					form.updateclosetime.focus();
+					return false;
+				}else if (form.updatestate.value=="")
+				{
+					layer.tips('请选择状态',$("#updatestate"));
+					form.updatestate.focus();
+					return false;
+
+				}
+				else {
+
+					console.log("this.form.updatestat>>>>>>"+form.updatestate.value)
+					
+					if (form.updatestate.value=="正常"){
+						that.form.state=0;
+					}
+					if (form.updatestate.value=="加班"){
+						that.form.state=1;
+					}
+					if (form.updatestate.value=="迟到"){
+						that.form.state=2;
+					}
+					if (form.updatestate.value=="早退"){
+						that.form.state=3;
+					}
+
+					if (form.updatestate.value=="请假"){
+						that.form.state=4;
+					}
+					if (form.updatestate.value=="旷工"){
+						that.form.state=5;
+					}
+
+					console.log("that.form.state>>>>>>"+that.form.state)
+
+
+
+					$.ajax({
+						url: "http://localhost:9900/Updateecheck",
+						type: "post",
+						data: {
+							echeck_id: that.form.echeck_id,
+							job_id: that.form.job_id,
+							opentime: that.form.opentime,
+							closetime:that.form.closetime,
+							state:that.form.state,
+
+						},
+						success: function () {
+							layer.alert('修改成功', {
+								skin: 'layui-layer-molv'
+								, closeBtn: 0
+								, anim: 4
+							});
+							that.getData()
+						}
+					})
+					that.editVisible = false
+				}
+			},
+
+			//添加考勤
+			saveAdd:function() {
+				var that = this
+				if (temp.job_id.value=="")
+				{
+					layer.tips('请输入工号',$("#job_id"));
+					temp.job_id.focus();
+					return false;
+				}
+				else if (temp.addopentime.value=="")
+				{
+					layer.tips('请选择上班时间',$("#addopentime"));
+					temp.addopentime.focus();
+					return false;
+				}else if (temp.addclosetime.value=="")
+				{
+					layer.tips('请选择下班时间',$("#addclosetime"));
+					temp.addclosetime.focus();
+					return false;
+				}
+				else if (temp.addstate.value=="")
+				{
+					layer.tips('请选择状态',$("#addstate"));
+					temp.addstate.focus();
+					return false;
+				} else{
+					console.log("that.temp.addopentime---->"+ that.temp.opentime)
+					console.log("that.temp.closetime---->"+ that.temp.closetime)
+					console.log("that.temp.state---->"+ that.temp.state)
+
+					$.ajax({
+						url: "http://localhost:9900/Insertecheck",
+						type: "post",
+						data:{
+							echeck_id: that.temp.echeck_id,
+							job_id: that.temp.job_id,
+							opentime: that.temp.opentime,
+							closetime:that.temp.closetime,
+							state:that.temp.state,
+						},
+						success:function(){
+							layer.alert('添加成功', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+							that.getData()
+						}
+					})
+					that.addVisible = false
+				}
+			},
+
+			//刷新数据
+
+
+
+
+			getData:function(){
+				var that = this
+				axios.post('http://localhost:9900/Findallecheck').then(function (res) {
+
+					//把从json获取的数据赋值给数组
+					var data = res.data.allecheckinfoList
+					that.echeckinfoList = data
+
+					console.log("echeckinfoList--->"+ that.echeckinfoList)
+					console.log("res--->"+  data)
+
+				}).catch(function () {
+
+					console.log('失败')
+
+
+				})
+			},
+
+			// 分页刷新
+			pageNo_f5: function(pageNo) {
+				this.$message('切换当前页：' + pageNo);
+				this.f5();
+			},
+			pageSize_f5: function(pageSize) {
+				this.$message('切换页大小：' + pageSize);
+				this.f5();
+			},
+
+			// 考勤删除
+			deleteecheckinfo: function(data) {
+				var that = this
+				layer.confirm('确定删除此信息？', {icon: 3, title:'提示'}, function(index){
+					$.ajax({
+						type: 'POST',
+						url: 'http://localhost:9900/Deleteecheck',
+						data: {echeck_id:data.echeck_id},
+						success: function(){
+
+							layer.alert('删除成功', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+							that.getData()
+						},
+						error: function(){
+							layer.alert('删除失败', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+						}
+					});
+				});
+
+			},
+
+
+
+			// 奖惩模糊查询
+			findfit: function() {
+
+				var that = this
+
+				$.ajax({
+					type: 'POST',
+					url: 'http://localhost:9900/EcheckFuzzyreward',
+					data: {
+						echeck_id: that.p.echeck_id,
+						job_id: that.p.job_id,
+						opentime: that.p.beginDate,
+						closetime:that.p.endDate,
+						ename:that.p.ename,
+					},
+					success: function(res){
+
+						layer.alert('查询成功', {
+							skin: 'layui-layer-molv'
+							,closeBtn: 0
+							,anim: 4
+						});
+						console.log(res)
+						that.echeckinfoList=res
+					},
+					error: function(){
+						layer.alert('查询失败', {
+							skin: 'layui-layer-molv'
+							,closeBtn: 0
+							,anim: 4
+						});
+					}
+				});
+
+			}
+		}
+
+	})
+
+</script>
+
+</body>
 </html>

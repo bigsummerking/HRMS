@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>奖惩列表</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+
+	<!-- 所有的 css 资源 -->
+	<link rel="stylesheet" href="https://unpkg.com/element-ui@2.8.2/lib/theme-chalk/index.css">
+	<link rel="stylesheet" href="../../static/sa.css">
+
+	<!-- 所有的 js 资源 -->
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="https://unpkg.com/vue@2.6.10/dist/vue.js"></script>
+	<script src="https://unpkg.com/element-ui@2.8.2/lib/index.js"></script>
+	<script src="https://unpkg.com/jquery@3.4.1/dist/jquery.js"></script>
+	<script src="https://cdn.bootcss.com/layer/3.0.1/layer.min.js"></script>
+	<script src="../../static/kj/laydate/laydate.js"></script>
+	<script src="../../static/sa.js"></script>
+
+	<style type="text/css">
+
+	</style>
+
+</head>
+<body>
+
+<!-- 防止margin向下击穿 -->
+<div style="margin-top: -1em;"><br></div>
+
+<div id="vue-box" style="display: none;" :style="'display: block;'">
+
+	<!-- 参数栏 -->
+	<div class="c-panel">
+		<div class="c-title">查找奖惩信息</div>
+		<el-form ref="form">
+			<div class="c-item">
+				<label class="c-label">工号：</label>
+				<el-input size="mini" v-model="p.job_id" placeholder="工号"></el-input>
+
+				<label class="c-label">姓名：</label>
+				<el-input size="mini" v-model="p.ename" placeholder="姓名"></el-input>
+
+				<label class="c-label">奖惩编号：</label>
+				<el-input size="mini" v-model="p.reward_id" placeholder="奖惩编号"></el-input>
+			</div>
+
+			<div class="c-item">
+				<label class="c-label">考勤日期：</label>
+
+				<el-input size="mini" v-model="p.beginDate" class="beginDate"></el-input>
+				&nbsp;至&nbsp;
+				<el-input size="mini" v-model="p.endDate" class="endDate"></el-input>
+			</div>
+
+
+			<div class="c-item" style="min-width: 0px;">
+				<el-button type="primary" icon="el-icon-search" size="mini"  @click="findfit">查询</el-button>
+				<el-button type="primary" icon="el-icon-plus" size="mini"  @click="handleAdd">添加奖惩</el-button>
+			</div>
+
+
+			<br />
+		</el-form>
+
+	</div>
+
+	<!-- 数据栏 -->
+	<div class="c-panel">
+		<div class="c-title">奖惩列表</div>
+		<el-table class="data-table" :data="rewardinfolist" size="mini"  style="width: 100%">
+
+			<el-table-column label="奖惩编号" prop="reward_id" width="100px" sortable></el-table-column>
+			<el-table-column label="工号" prop="job_id"  sortable>
+				<template slot-scope="scope">
+					<b>{{scope.row.job_id}}</b>
+				</template>
+			</el-table-column>
+			<el-table-column label="员工姓名" prop="ename" sortable></el-table-column>
+			<el-table-column label="性别">
+				<template slot-scope="scope">
+					<span  v-if="scope.row.sex===1">{{scope.row.sex | sexFormat}}</span>
+					<span  v-if="scope.row.sex===0">{{scope.row.sex | sexFormat}}</span>
+				</template>
+			</el-table-column>
+			<el-table-column label="加班小时" prop="overtime"  sortable></el-table-column>
+			<el-table-column label="迟到次数" prop="late"  sortable></el-table-column>
+			<el-table-column label="早退次数" prop="leaveearly"  sortable></el-table-column>
+			<el-table-column label="请假次数" prop="aleave"  sortable></el-table-column>
+			<el-table-column label="旷工次数" prop="absenteeism"  sortable></el-table-column>
+			<el-table-column label="考勤年月" prop="checktime" sortable></el-table-column>
+
+
+			<el-table-column prop="address" label="操作">
+				<template slot-scope="scope">
+					<el-button type="primary" class="c-button" icon="el-icon-edit" @click="handleEdit(scope.row)">修改</el-button>
+					<el-button type="danger" class="c-button" icon="el-icon-delete" @click="deleterewardinfo(scope.row)" >删除</el-button>
+				</template>
+			</el-table-column>
+
+		</el-table>
+
+		<!-- 修改-->
+		<el-dialog title="奖惩信息修改" :visible.sync="editVisible" width="30%">
+			<el-form name="form" id="form"  ref="form"  :model="form" label-width="100px">
+				<el-form-item label="奖惩编号" id="ed_reward_id" name="ed_reward_id" v-model="form.reward_id">
+					{{form.reward_id}}
+				</el-form-item>
+				<el-form-item label="工号" id="ed_job_id" name="ed_job_id" v-model="form.job_id">
+					{{form.job_id}}
+				</el-form-item>
+				<el-form-item label="员工姓名">
+					{{form.ename}}
+				</el-form-item>
+				<el-form-item label="性别" >
+					{{form.sex==1 ? '男' : '女' }}
+				</el-form-item>
+				<el-form-item label="考勤日期" id="ed_checktime" name="ed_checktime" v-model="form.checktime">
+					{{form.checktime}}
+				</el-form-item>
+				<el-form-item label="加班小时">
+					<el-input id="ed_overtime" name="ed_overtime" v-model="form.overtime" maxlength="30" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+				</el-form-item>
+				<el-form-item label="迟到次数">
+					<el-input  id="ed_late" name="ed_late" v-model="form.late" maxlength="30" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+				</el-form-item>
+				<el-form-item label="早退次数">
+					<el-input  id="ed_leaveearly" name="ed_leaveearly" v-model="form.leaveearly" maxlength="30" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+				</el-form-item>
+				<el-form-item label="请假次数">
+					<el-input  id="ed_aleave" name="ed_aleave" v-model="form.aleave" maxlength="30" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+				</el-form-item>
+				<el-form-item label="旷工次数">
+					<el-input  id="ed_absenteeism" name="ed_absenteeism" v-model="form.absenteeism" maxlength="30" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+				</el-form-item>
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+            <el-button @click="editVisible = false">取 消</el-button>
+            <el-button type="primary" @click="saveEdit()">确 定</el-button>
+          </span>
+		</el-dialog>
+
+		<!-- 添加 -->
+		<el-dialog title="奖惩添加" :visible.sync="addVisible" width="30%">
+			<el-form  name="temp" id="temp" ref="temp"  :model="temp" label-width="100px">
+
+				<el-form-item label="工号">
+					<el-input  id="job_id" name="job_id" v-model="temp.job_id" maxlength="6" placeholder="请输入工号" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+				</el-form-item>
+
+				<el-form-item label="考勤时间" >
+						<el-date-picker
+								id="checktime"
+								name="checktime"
+								v-model="temp.checktime"
+								type="month"
+								placeholder="选择月"
+								format="yyyy 年 MM 月"
+								value-format="yyyy-MM">
+						</el-date-picker>
+				</el-form-item>
+
+				<el-form-item label="加班小时" prop="manager">
+					<el-input id="overtime" name="overtime" v-model="temp.overtime" maxlength="10" placeholder="请输入加班小时" show-word-limit  onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+				</el-form-item>
+				<el-form-item label="迟到次数" prop="manager">
+					<el-input id="late" name="late" v-model="temp.late" maxlength="10" placeholder="请输入迟到次数" show-word-limit  onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+				</el-form-item>
+				<el-form-item label="早退次数" prop="manager">
+					<el-input id="leaveearly" name="leaveearly" v-model="temp.leaveearly" maxlength="10" placeholder="请输入早退次数" show-word-limit  onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+				</el-form-item>
+				<el-form-item label="请假次数" prop="manager">
+					<el-input id="aleave" name="aleave" v-model="temp.aleave" maxlength="10" placeholder="请输入请假次数" show-word-limit  onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+				</el-form-item>
+				<el-form-item label="旷工次数" prop="manager">
+					<el-input id="absenteeism" name="absenteeism" v-model="temp.absenteeism" maxlength="10" placeholder="请输入旷工次数" show-word-limit  onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+				</el-form-item>
+
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+            <el-button  @click="addVisible = false">取 消</el-button>
+            <el-button type="primary" @click="saveAdd()">确 定</el-button>
+          </span>
+		</el-dialog>
+
+		<!-- 分页 -->
+		<div class="page-box">
+			<el-pagination background
+						   layout="total, prev, pager, next, sizes, jumper"
+						   :current-page.sync="page.pageNo"
+						   :page-size.sync="page.pageSize"
+						   :total="page.count"
+						   :page-sizes="[1, 10, 20, 30, 40, 50, 100]"
+						   @current-change="f5(true)"
+						   @size-change="f5(true)">
+			</el-pagination>
+		</div>
+
+	</div>
+
+	<br><br><br><br><br><br><br><br><br>
+
+
+</div>
+
+<script>
+	// 定义一个 Vue 全局的过滤器，名字叫做  statusFormat
+	Vue.filter('sexFormat', function (val) {
+		if(val===1){
+			return '男'
+		}else if(val===0){
+			return '女'
+		}
+	})
+
+	function init_laydate() {
+		// 开始日期
+		laydate.render({
+			elem: '.beginDate input',
+			type: 'date',
+			done: function(value, date){
+				app.p.beginDate = value;
+			}
+		});
+		// 结束日期
+		laydate.render({
+			elem: '.endDate input',
+			type: 'date',
+			done: function(value, date){
+				app.p.endDate = value;
+			}
+		});
+	}
+
+
+
+	var app = new Vue({
+		el: '#vue-box',
+		data:{
+			p: {	// 查询参数
+				job_id: "",
+				reward_id: "",
+				beginDate: "",
+				endDate: "",
+				ename:"",
+			},
+			page: {	// 分页信息
+				pageNo: 1,
+				pageSize: 10,
+				count: 30
+			},
+			rewardinfolist:[
+				{
+					reward_id:1,
+					job_id:2,
+					checktime:"2019-01-01",
+					overtime:5,
+					late:0,
+					leaveearly:0,
+					aleave:0,
+					absenteeism:0,
+					ename:"张哥",
+					sex:0
+				}
+			],
+
+			editVisible:false,
+			addVisible:false,
+			form:{
+				reward_id:undefined,
+				job_id:undefined,
+				ename:"",
+				sex:undefined,
+				checktime:"",
+				overtime:undefined,
+				late:undefined,
+				leaveearly:undefined,
+				aleave:undefined,
+				absenteeism:undefined,
+			},
+			temp:{
+				job_id:undefined,
+				checktime:"",
+				overtime:undefined,
+				late:undefined,
+				leaveearly:undefined,
+				aleave:undefined,
+				absenteeism:undefined,
+			}
+		},
+
+
+
+		created: function () {
+			this.getData();
+			init_laydate();
+
+		},
+
+
+		methods: {
+
+
+			handleEdit:function(row){
+				this.form = {
+					reward_id:row.reward_id,
+					job_id:row.job_id,
+					ename:row.ename,
+					sex:row.sex,
+					checktime:row.checktime,
+					overtime:row.overtime,
+					late:row.late,
+					leaveearly:row.leaveearly,
+					aleave:row.aleave,
+					absenteeism:row.absenteeism
+				}
+				this.editVisible = true
+			},
+
+			handleAdd:function(row){
+				this.addVisible = true
+			},
+
+			// 保存修改，更新奖惩信息
+			saveEdit:function() {
+				var that = this
+				if (form.ed_overtime.value=="")
+				{
+					layer.tips('请输入加班小时',$("#ed_overtime"));
+					form.ed_overtime.focus();
+					return false;
+				}else if (form.ed_late.value=="")
+				{
+					layer.tips('请输入迟到次数',$("#ed_late"));
+					form.ed_late.focus();
+					return false;
+				}else if (form.ed_leaveearly.value=="")
+				{
+					layer.tips('请输入早退次数',$("#ed_leaveearly"));
+					form.ed_leaveearly.focus();
+					return false;
+
+				}else if (form.ed_aleave.value=="")
+				{
+					layer.tips('请输入请假次数',$("#ed_aleave"));
+					form.ed_aleave.focus();
+					return false;
+
+				}else if (form.ed_absenteeism.value=="")
+				{
+					layer.tips('请输入旷工次数',$("#ed_absenteeism"));
+					form.ed_absenteeism.focus();
+					return false;
+				}
+				else {
+					$.ajax({
+						url: "http://localhost:9900/Updatereward",
+						type: "post",
+						data: {
+							reward_id: that.form.reward_id,
+							job_id: that.form.job_id,
+							checktime: that.form.checktime,
+							overtime:that.form.overtime,
+							late:that.form.late,
+							leaveearly:that.form.leaveearly,
+							aleave:that.form.aleave,
+							absenteeism:that.form.absenteeism,
+						},
+						success: function () {
+							layer.alert('修改成功', {
+								skin: 'layui-layer-molv'
+								, closeBtn: 0
+								, anim: 4
+							});
+
+							that.getData()
+						}
+					})
+					that.editVisible = false
+				}
+			},
+
+			//添加奖惩
+			saveAdd:function() {
+				var that = this
+				if (temp.job_id.value=="")
+				{
+					layer.tips('请输入工号',$("#job_id"));
+					temp.job_id.focus();
+					return false;
+				}
+				else if (temp.checktime.value=="")
+				{
+					layer.tips('请选择考勤日期',$("#checktime"));
+
+					temp.checktime.focus();
+					return false;
+				}
+
+
+				else if (temp.overtime.value=="")
+				{
+					layer.tips('请输入加班小时',$("#overtime"));
+					temp.overtime.focus();
+					return false;
+				}
+				else if (temp.late.value=="")
+				{
+					layer.tips('请输入迟到次数',$("#late"));
+					temp.late.focus();
+					return false;
+				}
+				else if (temp.leaveearly.value=="")
+				{
+					layer.tips('请输入早退次数',$("#leaveearly"));
+					temp.leaveearly.focus();
+					return false;
+				}
+				else if (temp.aleave.value=="")
+				{
+					layer.tips('请输入请假次数',$("#aleave"));
+					temp.aleave.focus();
+					return false;
+				}
+				else if (temp.absenteeism.value=="")
+				{
+					layer.tips('请输入旷工次数',$("#absenteeism"));
+					temp.absenteeism.focus();
+					return false;
+				}else{
+					$.ajax({
+						url: "http://localhost:9900/Insertreward",
+						type: "post",
+						data:{
+							job_id: that.temp.job_id,
+							checktime: that.temp.checktime,
+							overtime:that.temp.overtime,
+							late:that.temp.late,
+							leaveearly:that.temp.leaveearly,
+							aleave:that.temp.aleave,
+							absenteeism:that.temp.absenteeism,
+						},
+						success:function(){
+							layer.alert('添加成功', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+							that.getData()
+						}
+					})
+					that.addVisible = false
+				}
+			},
+
+			//刷新数据
+			getData:function(){
+				var that = this
+				axios.post('http://localhost:9900/Findallreward').then(function (res) {
+
+					//把从json获取的数据赋值给数组
+					var data = res.data.allrewardinfolist
+					that.rewardinfolist = data
+					console.log("rewardinfolist--->"+that.rewardinfolist)
+
+				}).catch(function () {
+					console.log('失败')
+				})
+			},
+
+			// 分页刷新
+			pageNo_f5: function(pageNo) {
+				this.$message('切换当前页：' + pageNo);
+				this.f5();
+			},
+			pageSize_f5: function(pageSize) {
+				this.$message('切换页大小：' + pageSize);
+				this.f5();
+			},
+
+			// 奖惩删除
+			deleterewardinfo: function(data) {
+				var that = this
+				layer.confirm('确定删除此信息？', {icon: 3, title:'提示'}, function(index){
+					$.ajax({
+						type: 'POST',
+						url: 'http://localhost:9900/deletereward',
+						data: {reward_id:data.reward_id},
+						success: function(){
+
+							layer.alert('删除成功', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+							that.getData()
+						},
+						error: function(){
+							layer.alert('删除失败', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+						}
+					});
+				});
+
+			},
+
+
+
+			// 奖惩模糊查询
+			findfit: function() {
+
+				var that = this
+
+				$.ajax({
+					type: 'POST',
+					url: 'http://localhost:9900/RewardFuzzyreward',
+					data: {
+
+						job_id:that.p.job_id,
+						reward_id:that.p.reward_id,
+						beginDate:that.p.beginDate,
+						endDate:that.p.endDate,
+						ename:that.p.ename,
+					},
+					success: function(res){
+
+						layer.alert('查询成功', {
+							skin: 'layui-layer-molv'
+							,closeBtn: 0
+							,anim: 4
+						});
+						console.log(res)
+						that.rewardinfolist=res
+					},
+					error: function(){
+						layer.alert('查询失败', {
+							skin: 'layui-layer-molv'
+							,closeBtn: 0
+							,anim: 4
+						});
+					}
+				});
+
+			}
+		}
+
+	})
+
+</script>
+
+</body>
+</html>

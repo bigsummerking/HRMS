@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.king.hrmsdev.mapper.ReportMapper">
+    <select id="QuaryToualByID"  parameterType="int" resultType="Integer">
+        select employee_count from department where department_id=#{department_id};
+  </select>
+    <select id="QuaryCheckByID"  parameterType="int" resultType="Integer">
+       select sum(salary.finasalary) from salary ,employees where
+                salary.job_id=employees.job_id and employees.department_id=#{department_id};
+
+  </select>
+    <select id="QuarySlaryByID"  parameterType="int" resultType="BigDecimal">
+         select sum(salary.finasalary) from salary ,employees where    salary.job_id=employees.job_id and employees.department_id=#{department_id} ;
+  </select>
+
+
+
+</mapper>
