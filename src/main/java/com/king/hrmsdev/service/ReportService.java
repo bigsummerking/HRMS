@@ -4,6 +4,7 @@ package com.king.hrmsdev.service;
 
 import com.king.hrmsdev.mapper.ReportMapper;
 import com.king.hrmsdev.pojo.ReportSalary;
+import com.king.hrmsdev.pojo.employee_check;
 import com.king.hrmsdev.pojo.employee_counts;
 import com.king.hrmsdev.pojo.employee_salary;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,12 @@ public class ReportService implements ReportMapper {
     public List<ReportSalary> employee_salaryTop5() {
         List<ReportSalary> Top5List = reportMapper.employee_salaryTop5();
         return Top5List;
+    }
+
+    @Override
+    public List<employee_check> employee_echeck() {
+        List<employee_check> checkList = reportMapper.employee_echeck();
+        return checkList;
     }
 
 

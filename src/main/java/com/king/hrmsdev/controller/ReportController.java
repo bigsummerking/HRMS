@@ -3,6 +3,7 @@ package com.king.hrmsdev.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.king.hrmsdev.pojo.ReportSalary;
+import com.king.hrmsdev.pojo.employee_check;
 import com.king.hrmsdev.pojo.employee_counts;
 import com.king.hrmsdev.pojo.employee_salary;
 import com.king.hrmsdev.service.ReportService;
@@ -48,6 +49,17 @@ public class ReportController {
         jsonObject.put("EmployeesalaryTop5",list);
         return  jsonObject;
     }
+
+
+    @RequestMapping(value = "/getEmployeecheck",method=RequestMethod.POST)
+    //返回各部门总人数
+    public JSONObject getEmployeecheck() {
+        List<employee_check>  list= reportService.employee_echeck();
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("Employeecheck",list);
+        return  jsonObject;
+    }
+
 
 
 

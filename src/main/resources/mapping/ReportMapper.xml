@@ -15,6 +15,14 @@
 and e.position_id = p.position_id order by salary desc limit 5
     </select>
 
+    <select id="employee_echeck"  resultType="com.king.hrmsdev.pojo.employee_check">
+     select	state,COUNT(state) count  FROM echeck GROUP BY state
+    </select>
+
+
+
+
+
 
 
 
