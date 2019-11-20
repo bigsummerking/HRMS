@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.king.hrmsdev.mapper.RoleMapper">
+
+    <!--通过job_id用户信息-->
+    <select id = "FindByroleID" parameterType="int" resultType="com.king.hrmsdev.pojo.Roleinfo">
+        select * from users where job_id = #{job_id};
+    </select>
+    <!--通过真实姓名查找-->
+    <select id = "FindRealname" resultType="com.king.hrmsdev.pojo.Roleinfo">
+        select * from users where realname = #{realname};
+    </select>
+    <!--查找权限信息-->
+    <select id = "Findallrole" resultType="com.king.hrmsdev.pojo.Roleinfo">
+        select users.job_id,users.role_id,users.realname from users where users.job_id = #{users.job_id};
+    </select>
+
+
+    <!--添加员工信息-->
+    <insert id = "Insertrole">
+        insert  into employyes values(#{ename},#{sex},#{phone},#{birth},#{idcard},#{hometown},#{nation},#{education},#{address},#{hiredate},#{department_id},#{position_id},#{workstate},#{inco})
+    </insert>
+    <!--添加账号信息-->
+    <insert id = "Insertinformation">
+        insert into users(user_id,job_id,username,password,wechat,realname,role_id,state)values (#{user_id},#{job_id},#{username},#{password},#{wechat},#{realname},#{role_id},#{state})
+    </insert>
+
+    <!--删除员工信息-->
+    <delete id = "deleterole">
+        delete  from employees where job_id = #{job_id};
+    </delete>
+
+
+    <!--修改员工信息-->
+    <update id = "Updaterole">
+        update employees set job_id=#{job_id},ename = #{ename},sex = #{sex},phone = #{phone},birth = #{birth},idcard = #{idcard},hometown = #{hometown},nation = #{nation},education = #{education},address = #{address}, hiredate = #{hiredate},department_id = #{department_id},position_id = #{position_id},workstate = #{workstate},icon = #{icon} where job_id = #{job_id}
+    </update>
+    <!--修改用户密码-->
+    <!--<update id = "Updaterole">-->
+        <!--update from users-->
+              <!--set password = #{password}-->
+              <!--where  job_id - #{job_id}-->
+    <!--</update>-->
+    <!--修改权限信息-->
+    <!--<update id = "Updaterole">-->
+        <!--update from users set role_id = #{role_id} where job_id = #{job_id};-->
+    <!--</update>-->
+    <!--    权限信息模糊条件查询-->
+    <select id="RoleFuzzyrole" parameterType="map" resultType="com.king.hrmsdev.pojo.Roleinfo">
+        select role.*,role.job_id,Role.role_id from role,employees
+        <where>
+            role.job_id=employees.job_id
+            <if test="job_id != null">
+                and role.job_id LIKE CONCAT('%','${job_id}','%')
+            </if>
+            <if test="realname != null">
+                and realname LIKE CONCAT('%','${realname}','%')
+            </if>
+        </where>
+    </select>
+
+</mapper>
