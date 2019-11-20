@@ -36,13 +36,13 @@
 		<el-form ref="form">
 			<div class="c-item">
 				<label class="c-label">工号：</label>
-				<el-input size="mini" v-model="p.job_id" placeholder="工号"></el-input>
+				<el-input size="mini" v-model="p.job_id" placeholder="请输入工号"></el-input>
 
 				<label class="c-label">姓名：</label>
-				<el-input size="mini" v-model="p.ename" placeholder="工号"></el-input>
+				<el-input size="mini" v-model="p.ename" placeholder="请输入姓名"></el-input>
 
 				<label class="c-label">考勤编号：</label>
-				<el-input size="mini" v-model="p.echeck_id" placeholder="考勤编号"></el-input>
+				<el-input size="mini" v-model="p.echeck_id" placeholder="请输入考勤编号"></el-input>
 			</div>
 
 			<div class="c-item">
@@ -87,7 +87,7 @@
 			<el-table-column label="上班时间" prop="opentime"  sortable></el-table-column>
 			<el-table-column label="下班时间" prop="closetime"  sortable></el-table-column>
 
-			<el-table-column label="状态" prop="state">
+			<el-table-column label="状态" prop="state" sortable>
 				<template slot-scope="scope">
 					<span style="color: blue" v-if="scope.row.state===0">{{scope.row.state | statusFormat}}</span>
 					<span style="color: green" v-if="scope.row.state===1">{{scope.row.state | statusFormat}}</span>
@@ -176,14 +176,14 @@
 		</el-dialog>
 
 		<!-- 添加 -->
-		<el-dialog title="考勤添加" :visible.sync="addVisible" >
+		<el-dialog title="考勤信息添加" :visible.sync="addVisible" width="30%">
 			<el-form  name="temp" id="temp" ref="temp"  :model="temp" label-width="100px">
 
 				<el-form-item label="工号">
-					<el-input  id="job_id" name="job_id" v-model="temp.job_id" maxlength="6" placeholder="请输入工号" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+					<el-input  id="job_id" name="job_id" v-model="temp.job_id" maxlength="6" placeholder="请输入工号" size="mini" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')"/>
 				</el-form-item>
 
-				<el-form-item label="考勤时间" >
+				<el-form-item label="上班时间" >
 					<el-date-picker
 							id="addopentime"
 							name="addopentime"
@@ -191,9 +191,11 @@
 							value-format="yyyy-MM-dd HH:mm:ss"
 							type="datetime"
 							placeholder="选择上班时间"
+							size="mini"
 							default-time="09:00:00">
 					</el-date-picker>
-					至
+				</el-form-item>
+				<el-form-item label="下班时间" >
 					<el-date-picker
 							id="addclosetime"
 							name="addclosetime"
@@ -201,10 +203,11 @@
 							value-format="yyyy-MM-dd HH:mm:ss"
 							type="datetime"
 							placeholder="选择下班时间"
+							size="mini"
 							default-time="18:00:00">
 					</el-date-picker>
 				</el-form-item>
-<!--////temp.state-->
+				<!--////temp.state-->
 				<el-form-item label="状态" prop="manager">
 					<el-select size="mini" id="addstate" name="addstate"  v-model="temp.state" placeholder="请选择" clearable>
 						<el-option
@@ -429,7 +432,7 @@
 				else {
 
 					console.log("this.form.updatestat>>>>>>"+form.updatestate.value)
-					
+
 					if (form.updatestate.value=="正常"){
 						that.form.state=0;
 					}

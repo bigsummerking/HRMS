@@ -2,9 +2,10 @@ package com.king.hrmsdev.controller;
 
 
 import com.alibaba.fastjson.JSONObject;
-import com.king.hrmsdev.entity.Department;
-import com.king.hrmsdev.pojo.DepartMentAverage;
-import com.king.hrmsdev.service.ReportMapperService;
+import com.king.hrmsdev.pojo.ReportSalary;
+import com.king.hrmsdev.pojo.employee_counts;
+import com.king.hrmsdev.pojo.employee_salary;
+import com.king.hrmsdev.service.ReportService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,26 +20,37 @@ import java.util.List;
 public class ReportController {
 
     @Resource
-    private ReportMapperService reportMapperService;
+    private ReportService reportService;
 
-    @RequestMapping(value = "/getDepartmentToutal",method=RequestMethod.POST)
+    @RequestMapping(value = "/getEmployeecounts",method=RequestMethod.POST)
     //返回各部门总人数
-    public JSONObject getDepartmentToutal() {
-        List<Department>  list= reportMapperService.getToutal();
+    public JSONObject getEmployeecounts() {
+        List<employee_counts>  list= reportService.depart_employee_count();
         JSONObject jsonObject=new JSONObject();
-        jsonObject.put("departmentCount",list);
+        jsonObject.put("Employeecounts",list);
         return  jsonObject;
     }
-    //返回各部门旷工总数
-    @RequestMapping(value = "/department2",method=RequestMethod.POST)
-    public List<Department> getDepartMentCheck(){
-        return  reportMapperService.getCheckToutal();
+
+    @RequestMapping(value = "/getEmployeesalary",method=RequestMethod.POST)
+    //返回各部门总人数
+    public JSONObject getEmployeesalary() {
+        List<employee_salary>  list= reportService.depart_employee_salary();
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("Employeesalary",list);
+        return  jsonObject;
     }
-    @RequestMapping(value = "/department3",method=RequestMethod.POST)
-    //返回部门平均工资
-    public List<DepartMentAverage> getDepartmentAvrage(){
-        return reportMapperService.getAverageSalary();
+
+    @RequestMapping(value = "/getEmployeesalaryTop5",method=RequestMethod.POST)
+    //返回各部门总人数
+    public JSONObject getEmployeesalaryTop5() {
+        List<ReportSalary>  list= reportService.employee_salaryTop5();
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("EmployeesalaryTop5",list);
+        return  jsonObject;
     }
+
+
+
 
 }
 

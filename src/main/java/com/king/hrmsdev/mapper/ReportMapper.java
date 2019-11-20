@@ -1,16 +1,21 @@
 package com.king.hrmsdev.mapper;
 
+import com.king.hrmsdev.pojo.ReportSalary;
+import com.king.hrmsdev.pojo.employee_salary;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.math.BigDecimal;
+import com.king.hrmsdev.pojo.employee_counts;
+
+import java.util.List;
 
 /**
  * creat By ReportMapper 0n 2019/9/21
  */
 @Mapper
 public interface ReportMapper {
-    Integer   QuaryToualByID(int department_id);//查询每个部门总人数
-    Integer   QuaryCheckByID(int department_id);//查询每个部门月旷工次数
-    BigDecimal QuarySlaryByID(int department_id);//查询每个部门月总工资
+    List<employee_counts> depart_employee_count();
+    List<employee_salary> depart_employee_salary();
+    List<ReportSalary> employee_salaryTop5();
+
 
 }

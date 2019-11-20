@@ -84,10 +84,6 @@
 
 			<el-table-column label="职位" prop="position"></el-table-column>
 
-			<el-table-column label="基础工资" prop="baseMoney"></el-table-column>
-			<el-table-column label="考勤奖金" prop="checkMoney"></el-table-column>
-			<el-table-column label="最终薪资" prop="finalMoney"></el-table-column>
-
 			<el-table-column prop="address" label="操作" width="">
 				<template slot-scope="scope">
 					<el-button type="primary" class="c-button" icon="el-icon-edit" @click="handleEdit(scope.row)">修改</el-button>
@@ -158,7 +154,7 @@
 				count: 30
 			},
 			SalaryList:[
-				{job_id:1,ename: "小王",department:"工程部",sex:"男",position:"白领",baseMoney:"10000",checkMoney:"500",finalMoney:"10500",}
+				{job_id:1,ename: "测试名称",department:"测试",sex:"0",position:"测试",baseMoney:"999999",checkMoney:"999999",finalMoney:"0",}
 			],
 			addVisible:false,
 			temp:{

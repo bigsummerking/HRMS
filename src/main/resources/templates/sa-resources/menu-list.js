@@ -97,17 +97,17 @@ var menuList =	[
 			{
 				id: '6-1',
 				name: '部门人数统计',
-				url: 'sa-html/report/user-chart2.html'
+				url: 'sa-html/report/user-chart.html'
 			},
 			{
 				id: '6-2',
-				name: '部门平均工资统计',
-				url: 'sa-html/report/user-chart3.html'
+				name: '员工工资统计',
+				url: 'sa-html/report/user-chart2.html'
 			},
 			{
 				id: '6-3',
-				name: '部门缺勤次数',
-				url: 'sa-html/report/user-chart4.html'
+				name: '考勤信息统计',
+				url: 'sa-html/report/user-chart3.html'
 			},
 
 		]
@@ -133,6 +133,31 @@ var menuList =	[
 				name: '个人信息维护',
 				url: 'sa-html/home/swiper.html'
 			},
+
+		]
+	},
+	{
+		id: '8',
+		name: '平台设置',
+		icon: 'el-icon-setting',
+		info: '对系统运行时的一些参数的设置',
+		childList: [
+			{
+				id: '8-1',
+				name: '服务器设置',
+				url: 'sa-html/cfg/system-cfg.html',
+				info: '对服务器参数的设置'	// 菜单的介绍，在设置角色分配权限时将会用到此字段
+			},
+			{
+				id: '8-2',
+				name: '404页面',
+				url: 'sa-html/cfg/404.html',
+			},
+			{
+				id: '8-3',
+				name: '500页面',
+				url: 'sa-html/cfg/500.html',
+			}
 
 		]
 	},
@@ -213,21 +238,6 @@ var menuList =	[
 // 				name: '文章发表',
 // 				url: 'sa-html/article/art-add.html'
 // 			}
-// 		]
-// 	},
-// 	{
-// 		id: '14',
-// 		name: '系统设置',
-// 		icon: 'el-icon-setting',
-// 		info: '对系统运行时的一些参数的设置',
-// 		childList: [
-// 			{
-// 				id: '4-1',
-// 				name: '服务器设置',
-// 				url: 'sa-html/cfg/system-cfg.html',
-// 				info: '对服务器参数的设置'	// 菜单的介绍，在设置角色分配权限时将会用到此字段
-// 			}
-//
 // 		]
 // 	},
 // 	//  ========= 示例 外部链接 点击从新窗口打开 ================

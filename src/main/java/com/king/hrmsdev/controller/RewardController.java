@@ -69,13 +69,13 @@ public class RewardController {
 
     @RequestMapping(value = "/Insertreward", method = RequestMethod.POST)
     public int Insertreward(@RequestParam(value = "reward_id",required=false,defaultValue="") Integer reward_id,
-                             @RequestParam("job_id") int job_id,
-                             @RequestParam("checktime") String checktime,
-                             @RequestParam("overtime") int overtime,
-                             @RequestParam("late") int late,
-                             @RequestParam("leaveearly") int leaveearly,
-                             @RequestParam("aleave") int aleave,
-                             @RequestParam("absenteeism") int absenteeism) {
+                            @RequestParam("job_id") int job_id,
+                            @RequestParam("checktime") String checktime,
+                            @RequestParam("overtime") int overtime,
+                            @RequestParam("late") int late,
+                            @RequestParam("leaveearly") int leaveearly,
+                            @RequestParam("aleave") int aleave,
+                            @RequestParam("absenteeism") int absenteeism) {
         Reward reward = new Reward();
 
         String str = checktime;
@@ -105,20 +105,20 @@ public class RewardController {
         System.out.println("reward:" + reward);
 
         int flag = rewardservice.Insertreward(reward);
-        System.out.println("flag:" + flag);
+        System.out.println("flag:546546546546546546546546546546456:                 " + flag);
         return flag;
 
     }
 
     @RequestMapping(value = "/Updatereward", method = RequestMethod.POST)
     public int Updatereward(@RequestParam("reward_id") Integer reward_id,
-                             @RequestParam("job_id") int job_id,
-                             @RequestParam("checktime") String checktime,
-                             @RequestParam("overtime") int overtime,
-                             @RequestParam("late") int late,
-                             @RequestParam("leaveearly") int leaveearly,
-                             @RequestParam("aleave") int aleave,
-                             @RequestParam("absenteeism") int absenteeism){
+                            @RequestParam("job_id") int job_id,
+                            @RequestParam("checktime") String checktime,
+                            @RequestParam("overtime") int overtime,
+                            @RequestParam("late") int late,
+                            @RequestParam("leaveearly") int leaveearly,
+                            @RequestParam("aleave") int aleave,
+                            @RequestParam("absenteeism") int absenteeism){
         Reward reward=new Reward();
 
         String str = checktime;
@@ -175,7 +175,7 @@ public class RewardController {
                                               @RequestParam(value = "ename",required=false) String ename,
                                               @RequestParam(value = "beginDate",required=false) String beginDate,
                                               @RequestParam(value = "endDate",required=false) String endDate
-                                             ){
+    ){
 
 
         if (beginDate==""){

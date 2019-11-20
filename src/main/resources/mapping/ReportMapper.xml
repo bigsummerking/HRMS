@@ -3,17 +3,18 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.king.hrmsdev.mapper.ReportMapper">
-    <select id="QuaryToualByID"  parameterType="int" resultType="Integer">
-        select employee_count from department where department_id=#{department_id};
-  </select>
-    <select id="QuaryCheckByID"  parameterType="int" resultType="Integer">
-       select sum(salary.finasalary) from salary ,employees where
-                salary.job_id=employees.job_id and employees.department_id=#{department_id};
+    <select id="depart_employee_count"  resultType="com.king.hrmsdev.pojo.employee_counts">
+        SELECT department,employee_count FROM department
+    </select>
+    <select id="depart_employee_salary"  resultType="com.king.hrmsdev.pojo.employee_salary">
+      SELECT d.department,AVG(p.salary) employee_salarys FROM department d,employees e,position p,dp_position dp WHERE dp.department_id =d.department_id and dp.position_id = p.position_id
+        and e.position_id = p.position_id GROUP BY d.department_id
+    </select>
+    <select id="employee_salaryTop5"  resultType="com.king.hrmsdev.pojo.ReportSalary">
+      SELECT  e.ename,d.department,p.salary  FROM department d,employees e,position p,dp_position dp WHERE dp.department_id =d.department_id and dp.position_id = p.position_id
+and e.position_id = p.position_id order by salary desc limit 5
+    </select>
 
-  </select>
-    <select id="QuarySlaryByID"  parameterType="int" resultType="BigDecimal">
-         select sum(salary.finasalary) from salary ,employees where    salary.job_id=employees.job_id and employees.department_id=#{department_id} ;
-  </select>
 
 
 

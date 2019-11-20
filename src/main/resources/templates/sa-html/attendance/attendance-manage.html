@@ -36,13 +36,13 @@
 		<el-form ref="form">
 			<div class="c-item">
 				<label class="c-label">工号：</label>
-				<el-input size="mini" v-model="p.job_id" placeholder="工号"></el-input>
+				<el-input size="mini" v-model="p.job_id" placeholder="请输入工号"></el-input>
 
 				<label class="c-label">姓名：</label>
-				<el-input size="mini" v-model="p.ename" placeholder="工号"></el-input>
+				<el-input size="mini" v-model="p.ename" placeholder="请输入姓名"></el-input>
 
 				<label class="c-label">请假编号：</label>
-				<el-input size="mini" v-model="p.aleave_id" placeholder="奖惩编号"></el-input>
+				<el-input size="mini" v-model="p.aleave_id" placeholder="请输入请假编号"></el-input>
 			</div>
 
 
@@ -102,8 +102,8 @@
 
 			<el-table-column prop="address" label="操作">
 				<template slot-scope="scope">
-					<el-button type="primary" class="c-button" icon="el-icon-edit" @click="Approvalaleave(scope.row)">批准</el-button>
-					<el-button type="danger" class="c-button" icon="el-icon-delete" @click="Refusealeave(scope.row)" >拒绝</el-button>
+					<el-button type="primary" class="c-button" icon="el-icon-edit" @click="Approvalaleave(scope.row)" v-if="scope.row.examine===2 ||  scope.row.examine===0">批准</el-button>
+					<el-button type="danger" class="c-button" icon="el-icon-delete" @click="Refusealeave(scope.row)" v-if="scope.row.examine===1  ||  scope.row.examine===0">拒绝</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -118,7 +118,7 @@
 			<el-form  name="temp" id="temp" ref="temp"  :model="temp" label-width="100px">
 
 				<el-form-item label="工号">
-					<el-input  id="job_id" name="job_id" v-model="temp.job_id" maxlength="6" placeholder="请输入工号" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+					<el-input  id="job_id" name="job_id" v-model="temp.job_id" maxlength="6" placeholder="请输入工号" size="mini" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')"/>
 				</el-form-item>
 
 				<el-form-item label="开始时间" >
@@ -127,6 +127,7 @@
 							name="btime"
 							v-model="temp.btime"
 							value-format="yyyy-MM-dd"
+							size="mini"
 							type="date"
 							placeholder="开始时间">
 					</el-date-picker>
@@ -137,6 +138,7 @@
 							id="etime"
 							name="etime"
 							v-model="temp.etime"
+							size="mini"
 							value-format="yyyy-MM-dd"
 							type="date"
 							placeholder="结束时间">

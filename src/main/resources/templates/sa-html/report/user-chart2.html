@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>用户列表</title>
+	<title>员工工资统计</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 
@@ -32,51 +32,18 @@
 
 <div class="vue-box">
 
-	<!-- 参数栏 -->
-	<div style="padding: 2em;">
-		<div class="c-title">检索参数</div>
-		<el-form ref="form">
-
-			<div class="c-item">
-				<label class="c-label">选择年份：</label>
-				<el-select size="mini" v-model="p.year" @change="f5()">
-					<el-option label="不限年份" :value="0"></el-option>
-					<el-option label="2016年" :value="2016"></el-option>
-					<el-option label="2017年" :value="2017"></el-option>
-					<el-option label="2018年" :value="2018"></el-option>
-					<el-option label="2019年" :value="2019"></el-option>
-					<el-option label="2020年" :value="2020"></el-option>
-					<el-option label="2021年" :value="2021"></el-option>
-				</el-select>
-			</div>
-
-			<div class="c-item" style="min-width: 0px;">
-				<el-button type="primary" icon="el-icon-search" size="mini" @click="f5">查询</el-button>
-			</div>
-
-		</el-form>
-
-	</div>
-
 	<!-- 数据栏 -->
 	<div style="display: flex; margin-top: -1em;">
 		<div style="padding: 2em; flex: 4; margin-right: 0;">
-			<div class="c-title" style="margin-bottom: 50px;">饼图</div>
 			<div class="echarts-div" id='e-type'></div>
 		</div>
 		<div style="padding: 2em; flex: 6;">
-			<div class="c-title">折线图</div>
 			<div class="echarts-div" id='e-month'></div>
 		</div>
 	</div>
 
 	<div style="clear: both;"></div>
 
-	<div style="padding: 2em;">
-		ECharts：<el-link type="primary" href="https://echarts.baidu.com/" target="_blank">
-		一个使用 JavaScript 实现的开源可视化库，可以流畅的运行在 PC 和移动设备上，兼容当前绝大部分浏览器
-	</el-link>
-	</div>
 
 	<br><br><br><br><br><br><br><br><br>
 
