@@ -98,7 +98,6 @@ public class AttendanceController {
     @RequestMapping(value = "/AleaveFuzzyreward", method = RequestMethod.POST)
     public List<aleaveinfo> AleaveFuzzyreward(@RequestParam(value = "job_id",required=false,defaultValue="") Integer job_id,
                                               @RequestParam(value = "aleave_id",required=false,defaultValue="") Integer aleave_id,
-                                              @RequestParam(value = "department_id",required=false,defaultValue="") Integer department_id,
                                               @RequestParam(value = "ename",required=false) String ename,
                                               @RequestParam(value = "beginDate",required=false) String btime,
                                               @RequestParam(value = "endDate",required=false) String etime){
@@ -107,7 +106,6 @@ public class AttendanceController {
 
         map.put("job_id",job_id);
         map.put("aleave_id",aleave_id);
-        map.put("department_id",department_id);
         map.put("ename",ename);
         map.put("btime",btime);
         map.put("etime",etime);

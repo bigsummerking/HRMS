@@ -94,7 +94,7 @@
 
 			<el-table-column label="批准状态" prop="examine"  sortable>
 				<template slot-scope="scope">
-				<span style="color: yellow" v-if="scope.row.examine===0">{{scope.row.examine | statusFormat}}</span>
+				<span style="color: orange" v-if="scope.row.examine===0">{{scope.row.examine | statusFormat}}</span>
 				<span style="color: green" v-if="scope.row.examine===1">{{scope.row.examine | statusFormat}}</span>
 				<span style="color: red" v-if="scope.row.examine===2">{{scope.row.examine | statusFormat}}</span>
 				</template>

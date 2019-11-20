@@ -1,9 +1,9 @@
 package com.king.hrmsdev.service;
 
 
-import com.king.hrmsdev.entity.DepartMentAverage;
 import com.king.hrmsdev.entity.Department;
 import com.king.hrmsdev.mapper.ReportMapper;
+import com.king.hrmsdev.pojo.DepartMentAverage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

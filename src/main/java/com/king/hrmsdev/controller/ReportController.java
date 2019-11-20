@@ -1,8 +1,9 @@
 package com.king.hrmsdev.controller;
 
 
-import com.king.hrmsdev.entity.DepartMentAverage;
+import com.alibaba.fastjson.JSONObject;
 import com.king.hrmsdev.entity.Department;
+import com.king.hrmsdev.pojo.DepartMentAverage;
 import com.king.hrmsdev.service.ReportMapperService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,10 +21,13 @@ public class ReportController {
     @Resource
     private ReportMapperService reportMapperService;
 
-    @RequestMapping(value = "/department1",method=RequestMethod.POST)
+    @RequestMapping(value = "/getDepartmentToutal",method=RequestMethod.POST)
     //返回各部门总人数
-    public List<Department> getDepartmentToutal() {
-        return reportMapperService.getToutal();
+    public JSONObject getDepartmentToutal() {
+        List<Department>  list= reportMapperService.getToutal();
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("departmentCount",list);
+        return  jsonObject;
     }
     //返回各部门旷工总数
     @RequestMapping(value = "/department2",method=RequestMethod.POST)

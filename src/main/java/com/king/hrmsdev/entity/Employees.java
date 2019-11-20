@@ -6,7 +6,7 @@ import java.util.Date;
  * creat By Position 0n 2019/9/21
  */
 public class Employees {
-    private  int job_id;
+    private  Integer job_id;
     private  String ename;
     private  int sex;
     private  int phone;
@@ -21,13 +21,14 @@ public class Employees {
     private  int position_id;
     private  int  workstate;
     private  String icon;
+    private  String time;
 
-    public int getJob_id() {
-        return job_id;
+    public String getTime() {
+        return time;
     }
 
-    public void setJob_id(int job_id) {
-        this.job_id = job_id;
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public String getEname() {
@@ -142,7 +143,15 @@ public class Employees {
         this.icon = icon;
     }
 
-    public Employees(int job_id, String ename, int sex, int phone, Date birth, String idcard, String hometown, String nation, String education, String address, Date hiredate, int department_id, int position_id, int workstate, String icon) {
+    public Integer getJob_id() {
+        return job_id;
+    }
+
+    public void setJob_id(Integer job_id) {
+        this.job_id = job_id;
+    }
+
+    public Employees(Integer job_id, String ename, int sex, int phone, Date birth, String idcard, String hometown, String nation, String education, String address, Date hiredate, int department_id, int position_id, int workstate, String icon) {
         this.job_id = job_id;
         this.ename = ename;
         this.sex = sex;

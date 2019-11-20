@@ -1,278 +1,304 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>用户列表</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-		
-		<!-- 所有的 css 资源 -->
-		<link rel="stylesheet" href="https://unpkg.com/element-ui@2.8.2/lib/theme-chalk/index.css">
-		<link rel="stylesheet" href="../../static/sa.css"> 
-		
-		<!-- 所有的 js 资源 -->
-		<script src="https://unpkg.com/vue@2.6.10/dist/vue.js"></script>
-		<script src="https://unpkg.com/element-ui@2.8.2/lib/index.js"></script>
-		
-		<script src="https://unpkg.com/jquery@3.4.1/dist/jquery.js"></script>
-		<script src="https://cdn.bootcss.com/layer/3.0.1/layer.min.js"></script>
-		<script src="../../static/kj/laydate/laydate.js"></script>
-		<script src="../../static/sa.js"></script>
-		<script src="data-list.js"></script>
-		
-		<style type="text/css">
-			
-		</style>
-		
-	</head>
-	<body>
-		
-		<!-- 防止margin向下击穿 -->
-		<div style="margin-top: -1em;"><br></div>
-		
-		<div class="vue-box" style="display: none;" :style="'display: block;'">
-			
-			<!-- 参数栏 -->
-			<div class="c-panel">
-				<div class="c-title">检索参数</div>
-				<el-form ref="form">
-	
-					<div class="c-item">
-						<label class="c-label">昵称：</label>
-						<el-input size="mini" v-model="p.username" placeholder="模糊搜索" @keyup.enter="f5"></el-input>
-					</div>
-					
-					<div class="c-item">
-						<label class="c-label">注册日期：</label>
-						<el-input size="mini" v-model="p.start_time" class="start_time"></el-input>
-						&nbsp;至&nbsp;
-						<el-input size="mini" v-model="p.end_time" class="end_time"></el-input>
-					</div>
-					
-					<div class="c-item" style="min-width: 0px;">
-						<el-button type="primary" icon="el-icon-search" size="mini" @click="f5">查询</el-button>
-					</div>
-					
-					<!-- <br />
-					<div class="c-item">
-						<label class="c-label">注册方式：</label>
-						<el-select size="mini" v-model="p.create_type">
-							<el-option label="全部" :value="0"></el-option>
-							<el-option label="账号注册" :value="1"></el-option>
-							<el-option label="手机号注册" :value="2"></el-option>
-							<el-option label="邮箱注册" :value="3"></el-option>
-						</el-select>
-					</div>
-					 -->
-					<br />
-					<div class="c-item">
-						<label class="c-label">排序：</label>
-						<el-radio-group v-model="p.sort_type">
-							<el-radio :label="1">注册时间</el-radio>
-							<el-radio :label="2">最近登录</el-radio>
-							<el-radio :label="3">登陆次数</el-radio>
-							<el-radio :label="4">最近签到</el-radio>
-							<el-radio :label="5">签到次数</el-radio>
-						</el-radio-group>
-					</div>
+<head>
+	<title>薪水管理</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 
-				</el-form>
+	<!-- 所有的 css 资源 -->
+	<link rel="stylesheet" href="https://unpkg.com/element-ui@2.8.2/lib/theme-chalk/index.css">
+	<link rel="stylesheet" href="../../static/sa.css">
 
+	<!-- 所有的 js 资源 -->
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="https://unpkg.com/vue@2.6.10/dist/vue.js"></script>
+	<script src="https://unpkg.com/element-ui@2.8.2/lib/index.js"></script>
+	<script src="https://unpkg.com/jquery@3.4.1/dist/jquery.js"></script>
+	<script src="https://cdn.bootcss.com/layer/3.0.1/layer.min.js"></script>
+	<script src="../../static/kj/laydate/laydate.js"></script>
+	<script src="../../static/sa.js"></script>
+
+	<style type="text/css">
+
+	</style>
+
+</head>
+<body>
+
+<!-- 防止margin向下击穿 -->
+<div style="margin-top: -1em;"><br></div>
+
+<div id="vue-box" style="display: none;" :style="'display: block;'">
+
+	<!-- 参数栏 -->
+	<div class="c-panel">
+		<div class="c-title">检索参数</div>
+		<el-form ref="form">
+			<div class="c-item">
+				<label class="c-label">工号：</label>
+				<el-input size="mini" v-model="p.job_id" placeholder="工号"></el-input>
+				<label class="c-label">姓名：</label>
+				<el-input size="mini" v-model="p.ename"  placeholder="姓名" ></el-input>
 			</div>
-			
-			<!-- 数据栏 -->
-			<div class="c-panel">			
-				<div class="c-title">列表</div>
-				<el-table class="data-table" :data="dataList" size="mini"  style="width: 100%">
-					
-					<el-table-column label="编号" prop="id" width="70px" > </el-table-column>
-					<el-table-column label="昵称" prop="username" width="200px">
-						<template slot-scope="scope">
-							<img :src="scope.row.avatar" style="width: 3em; height: 3em; float: left; margin-right: 1em; border-radius: 50%;" >
-							<div style="float: left; width: 130px; line-height: 20px;">
-								<b>{{scope.row.username}}</b>
-								<p>{{scope.row.tell}}</p>
-							</div>
-						</template>
-					</el-table-column>
-					<el-table-column label="个人相册">
-						<template slot-scope="scope">
-							<img :src="scope.row.photo_list[0]" style="width: 40px; height: 40px; cursor: pointer;" @click="pre_img(scope.row)" >
-							共{{scope.row.photo_list.length}}张, 点击预览
-						</template>
-					</el-table-column>
-					<el-table-column label="性别" prop="sex"> </el-table-column>
 
-					<el-table-column label="注册方式" prop="create_type"></el-table-column>
-					<el-table-column label="注册于" prop="create_time"></el-table-column>
-					<el-table-column label="状态">
-						<template slot-scope="scope">
-							<span style="color: green;" v-if="scope.row.status == 1">正常</span>
-							<span style="color: red;" v-if="scope.row.status == 2">禁用</span>
-						</template>
-					</el-table-column>
-
-					<el-table-column prop="address" label="操作">
-						<template slot-scope="scope">
-							<el-button type="primary" class="c-button" icon="el-icon-edit" @click="dongjie(scope.row)" v-if="scope.row.status == 1">禁用</el-button>
-							<el-button type="primary" class="c-button" icon="el-icon-edit" @click="jiejin(scope.row)" v-if="scope.row.status == 2">解禁</el-button>
-							<el-button type="danger" class="c-button" icon="el-icon-delete" @click="del(scope.row)">删除</el-button>
-						</template>
-					</el-table-column>
-				</el-table>
-		
-				<!-- 分页 -->
-				<div class="page-box">
-					<el-pagination background
-						layout="total, prev, pager, next, sizes, jumper" 
-						:current-page.sync="page.pageNo" 
-						:page-size.sync="page.pageSize" 
-						:total="page.count" 
-						:page-sizes="[1, 10, 20, 30, 40, 50, 100]" 
-						@current-change="f5(true)" 
-						@size-change="f5(true)">
-					</el-pagination>
-				</div>
-
+			<div class="c-item">
+				<span class="c-label">当前月份:</span>
+				<el-date-picker id="time" name="time" size="mini" v-model="p.time"  value-format="yyyy-MM" type="month"  placeholder="选择月"></el-date-picker>
 			</div>
-			
-			
-			<div class="c-panel" style="background-color: rgba(0,0,0,0);">
-				layer：<el-link type="primary" href="http://layer.layui.com/" target="_blank">
-					一个可以让你想到即可做到的JavaScript弹窗（层）解决方案
-				</el-link> <br>
-				laydate：<el-link type="primary" href="https://www.layui.com/laydate/" target="_blank">
-					世界上最好用的日期选择插件 
-				</el-link> <br>
-				
+			<div class="c-item" style="min-width: 0px;">
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="findSalary">查询</el-button>
+				<el-button type="primary" icon="el-icon-plus" size="mini"  @click="SalaryAdd">月薪计算</el-button>
 			</div>
-			
-			<br><br><br><br><br><br><br><br><br>
+			<br />
 
-			
+			<div class="c-item">
+				<label class="c-label">排序：</label>
+				<el-radio-group v-model="p.sort_type">
+					<el-radio :label="1">薪资最高</el-radio>
+					<el-radio :label="2">职位最高</el-radio>
+					<el-radio :label="3">奖金最高</el-radio>
+				</el-radio-group>
+			</div>
+
+		</el-form>
+
+	</div>
+
+	<!-- 数据栏 -->
+	<div class="c-panel">
+		<div class="c-title">部门列表</div>
+		<el-table class="data-table" :data="SalaryList" size="mini"  style="width: 100%">
+
+			<el-table-column label="工号"   prop="job_id" width="70px" > </el-table-column>
+			<el-table-column label="姓名" prop="ename" width="200px">
+				<template slot-scope="scope">
+					<b>{{scope.row.ename}}</b>
+				</template>
+			</el-table-column>
+			<el-table-column label="性别" prop="sex"> </el-table-column>
+			<el-table-column label="所属部门" prop="department" width="70px">
+				<template slot-scope="scope">
+					<b>{{scope.row.department}}</b>
+				</template>
+			</el-table-column>
+
+			<el-table-column label="职位" prop="position"></el-table-column>
+
+			<el-table-column label="基础工资" prop="baseMoney"></el-table-column>
+			<el-table-column label="考勤奖金" prop="checkMoney"></el-table-column>
+			<el-table-column label="最终薪资" prop="finalMoney"></el-table-column>
+
+			<el-table-column prop="address" label="操作" width="">
+				<template slot-scope="scope">
+					<el-button type="primary" class="c-button" icon="el-icon-edit" @click="handleEdit(scope.row)">修改</el-button>
+					<el-button type="danger" class="c-button" icon="el-icon-delete" @click="deleteSalary(scope.row)" >删除</el-button>
+				</template>
+			</el-table-column>
+
+		</el-table>
+		<!--计算工资-->
+		<el-dialog title="月薪计算" :visible.sync="addVisible" width="30%">
+			<el-form  name="temp" id="temp" ref="temp"  :model="temp" label-width="100px">
+
+				<el-form-item label="工号">
+					<el-input  id="job_id" name="job_id" v-model="temp.job_id" maxlength="6" placeholder="输入工号" show-word-limit onkeyup="this.value=this.value.replace(/\D/g,'')"/>
+				</el-form-item>
+				<el-form-item label="月份">
+					<el-date-picker id="time" name="time"  v-model="temp.time"  value-format="yyyy-MM-dd" type="date"  placeholder="选择月份"></el-date-picker>
+				</el-form-item>
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+            <el-button  @click="addVisible = false">取 消</el-button>
+            <el-button type="primary" @click="saveAdd()">确 定</el-button>
+          </span>
+		</el-dialog>
+
+		<!-- 分页 -->
+		<div class="page-box">
+			<el-pagination background
+						   layout="total, prev, pager, next, sizes, jumper"
+						   :current-page.sync="page.pageNo"
+						   :page-size.sync="page.pageSize"
+						   :total="page.count"
+						   :page-sizes="[1, 10, 20, 30, 40, 50, 100]"
+						   @current-change="f5(true)"
+						   @size-change="f5(true)">
+			</el-pagination>
 		</div>
-		
-		<script type="text/javascript">
-			
-			
-			// 渲染日期选择插件 
-			function init_laydate() {
-				// 开始日期
-				laydate.render({
-					elem: '.start_time input',
-					type: 'date',
-					done: function(value, date){
-						app.p.start_time = value;
-					}
-				});
-				// 结束日期
-				laydate.render({
-					elem: '.end_time input',
-					type: 'date',
-					done: function(value, date){
-						app.p.end_time = value;
-					}
-				});
-			}
-			
-			
-			
-			var app = new Vue({
-				el: '.vue-box',
-				data: {
-					p: {	// 查询参数 
-						username: '',
-						create_type: 0,
-						sort_type: 1,
-						start_time: sa.$util.forDate(new Date(new Date().getFullYear(), new Date().getMonth(), 1)), 	// 本月一号 
-						end_time: sa.$util.forDate(new Date()),
-					},
-					page: {	// 分页信息
-						pageNo: 1,
-						pageSize: 10,
-						count: 1422
-					},
-					dataList: dataList
-				},
-				methods: {
-					// 数据刷新
-					f5: function() {
-						sa.ajax2('/user/getList', this.p, function(res){
-							// this.dataList = res.data;	// 数据
-							// this.page = res.page;		// 分页 
-							this.$message('查询：' + JSON.stringify(this.p));
-						}.bind(this));
-					},
-					// 分页刷新
-					pageNo_f5: function(pageNo) {
-						this.$message('切换当前页：' + pageNo);
-						this.f5();
-					},
-					pageSize_f5: function(pageSize) {
-						this.$message('切换页大小：' + pageSize);
-						this.f5();
-					},
-					// 预览图片
-					pre_img: function(data) {
-						var list = data.photo_list;
-						var arr_list = [];
-						list.forEach(function(item) {
-							arr_list.push({
-								alt: '左右键切换',
-								pid: 1,
-								src: item,
-								thumb: item
-							})
-						})
-						layer.photos({
-							photos: {
-								title: data.username + '的个人相册',
-								id: data.id,
-								start: 0,
-								data: arr_list
-							}
-							,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
-						});
 
-					},
-					// 删除
-					del: function(data) {
-						layer.confirm('是否删除，此操作不可撤销', {}, function() {
-							sa.ajax2('url', {}, function(res) {
-								sa.$util.arrayDelete(this.dataList, data);
-								layer.msg('删除成功');
-							}.bind(this))
-						}.bind(this));
-					},
-					// 账号冻结
-					dongjie: function(data) {
-						layer.confirm('冻结此用户？', {}, function() {
-							sa.ajax2('url', {}, function(res) {
-								data.status = 2;
-								layer.msg('冻结成功');
-							}.bind(this))
-						}.bind(this));
-					},
-					// 解禁 
-					jiejin: function(data) {
-						layer.confirm('解禁此用户？', {}, function() {
-							sa.ajax2('url', {}, function(res) {
-								data.status = 1;
-								layer.msg('解禁成功');
-							}.bind(this))
-						}.bind(this));
-					}
-				},
-				mounted:function(){
-					init_laydate();
+	</div>
+
+	<br><br><br><br><br><br><br><br><br>
+
+
+</div>
+
+<script>
+	// 定义一个 Vue 全局的过滤器，名字叫做  statusFormat
+	Vue.filter('statusFormat', function (val) {
+		if(val===1){
+			return '正常'
+		}else if(val===0){
+			return '撤销'
+		}
+	})
+
+	var app = new Vue({
+		el: '#vue-box',
+		data:{
+			p: {	// 查询参数
+				job_id:undefined,
+				ename:"",
+				time:"",
+
+			},
+			page: {	// 分页信息
+				pageNo: 1,
+				pageSize: 10,
+				count: 30
+			},
+			SalaryList:[
+				{job_id:1,ename: "小王",department:"工程部",sex:"男",position:"白领",baseMoney:"10000",checkMoney:"500",finalMoney:"10500",}
+			],
+			addVisible:false,
+			temp:{
+				department:"",
+				time:"",
+			}
+		},
+
+
+
+		methods: {
+			handleEdit:function(row){
+				this.form = {
+					job_id:row.job_id,
+					ename:row.ename,
+					sex:row.sex,
+					department:row.department,
+					position:row.position,
+					baseMoney:row.baseMoney,
+					checkMoney:row.checkMoney,
+					finalMoney:row.finalMoney,
 				}
-			})
-			
-		</script>
-		
-		
-		
-		
-		
-		
-	</body>
+				this.editVisible = true
+			},
+			SalaryAdd:function(row){
+				this.addVisible=true;
+			},
+			//刷新数据
+			getData:function(){
+				var that = this
+				axios.post('http://localhost:9900/FindallSalary').then(function (res) {
+
+					//把从json获取的数据赋值给数
+					var data = res.data
+					that.SalaryList = data
+					console.log("SalaryList--->"+that.SalaryList)
+
+				}).catch(function () {
+					console.log('失败')
+				})
+			},
+			//计算月薪
+			saveAdd:function() {
+				var that = this
+				if (temp.job_id.value=="")
+				{
+					layer.tips('请输入工号',$("#job_id"));
+					temp.job_id.focus();
+					return false;
+				}
+				else if (temp.time=="")
+				{
+					layer.tips('请选择日期',$("#time"));
+					temp.time.focus();
+					return false;
+				}
+				else{
+					$.ajax({
+						url: "http://localhost:9900/AddSalary",
+						type: "post",
+						data:{
+							job_id: that.temp.job_id,
+							time:that.temp.time,
+						},
+						success:function(){
+							layer.alert('添加成功', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+							that.getData()
+						}
+					})
+					that.addVisible = false
+				}
+			},
+			deleteSalary: function(data) {
+				var that = this
+				layer.confirm('确定删除此信息？', {icon: 3, title:'提示'}, function(index){
+					$.ajax({
+						type: 'POST',
+						url: 'http://localhost:9900/deleteSalary',
+						data: {job_id:data.job_id},
+						success: function(){
+							layer.alert('删除成功', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+							that.getData()
+						},
+						error: function(){
+							layer.alert('删除失败', {
+								skin: 'layui-layer-molv'
+								,closeBtn: 0
+								,anim: 4
+							});
+						}
+					});
+				});
+
+			},
+			// 部门模糊查询
+			findSalary: function() {
+
+				var that = this
+
+				console.log("that.p.time+++++++++++"+that.p.time)
+				$.ajax({
+					type: 'POST',
+					url: 'http://localhost:9900/QuarySalaryList',
+					data: {
+						job_id:that.p.job_id,
+						ename:that.p.ename,
+						time:that.p.time,
+					},
+					success: function(res){
+						layer.alert('查询成功', {
+							skin: 'layui-layer-molv'
+
+							,closeBtn: 0
+							,anim: 4
+						});
+						console.log(res);
+						that.SalaryList=res;
+						console.log(that.SalaryList);
+					},
+					error: function(){
+						layer.alert('查询失败', {
+							skin: 'layui-layer-molv'
+							,closeBtn: 0
+							,anim: 4
+						});
+					}
+				});
+
+			}
+		}
+	})
+</script>
+
+</body>
 </html>
