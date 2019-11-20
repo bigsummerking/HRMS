@@ -125,20 +125,19 @@ var menuList =	[
 		childList: [
 			{
 				id: '7-1',
-				name: '用户管理',
-				url: 'sa-html/home/swiper.html'
+				name: '角色设置',
+				url: 'sa-html/platform/role-list.html'
 			},
 			{
 				id: '7-2',
-				name: '角色设置',
-				url: 'sa-html/home/swiper.html'
+				name: '个人信息维护',
+				url: 'sa-html/platform/information-change.html'
 			},
 			{
 				id: '7-3',
-				name: '个人信息维护',
-				url: 'sa-html/home/swiper.html'
+				name: '个人信息页面',
+				url: 'sa-html/user/user-list.html'
 			},
-
 		]
 	},
 // 	{
